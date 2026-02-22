@@ -1,75 +1,38 @@
-.login-bg {
+.login-container-main {
   height: 100vh;
-  width: 100%;
-  background-size: cover;
-  background-position: center;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    #ff9933,
+    #ffffff,
+    #138808
+  );
 }
 
-
-/* Login card */
-.login-container {
-  width: 340px;
-  background-color: #ffffff;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  font-family: Arial, sans-serif;
-  text-align: center;
+.login-card {
+  width: 400px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-/* Toggle */
-.login-toggle {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-bottom: 10px;
-  cursor: pointer;
+/* Card Top Border */
+.user-card {
+  border-top: 5px solid #52c41a;
 }
 
-.login-toggle span {
-  color: #555;
+.admin-card {
+  border-top: 5px solid #fa8c16;
 }
 
-.login-toggle .active {
-  font-weight: bold;
-  color: #1b5e20;
-  border-bottom: 2px solid #1b5e20;
+/* Segmented Active Color */
+.user-segment .ant-segmented-item-selected {
+  background-color: #52c41a !important;
+  color: white !important;
 }
 
-/* GOI logo */
-.goi-logo {
-  width: 60px;
-  margin: 10px auto;
-}
-
-/* Inputs */
-.login-form input {
-  width: 100%;
-  padding: 9px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.signup-text {
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.signup-text a {
-  color: #2e7d32;
-  text-decoration: none;
-}
-
-.login-form button {
-  width: 100%;
-  padding: 10px;
-  background-color: #2e7d32;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.admin-segment .ant-segmented-item-selected {
+  background-color: #fa8c16 !important;
+  color: white !important;
 }

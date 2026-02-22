@@ -1,431 +1,339 @@
 import { useState } from "react";
+import {
+  Layout,
+  Card,
+  Steps,
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Select,
+  Typography,
+  Row,
+  Col,
+  message,
+} from "antd";
+import dayjs from "dayjs";
 import "../styles/updateProfile.css";
 
+const { Content } = Layout;
+const { Title } = Typography;
+const { Step } = Steps;
+const { Option } = Select;
+
 function UpdateProfile() {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [completedStep, setCompletedStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [form] = Form.useForm();
 
-    const [basicInfo, setBasicInfo] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    dob: "",
-    fatherName: "",
-    motherName: "",
-  });
-
-    const [error, setError] = useState("");
-
-    const handleChange = (e) => {
-    setBasicInfo({
-      ...basicInfo,
-      [e.target.name]: e.target.value,
-    });
+  const next = async () => {
+    try {
+      await form.validateFields();
+      setCurrentStep(currentStep + 1);
+    } catch (error) {}
   };
 
-    const handleSaveContinue = () => {
-    setError("");
-
-    if (
-      !basicInfo.firstName ||
-      !basicInfo.lastName ||
-      !basicInfo.dob ||
-      !basicInfo.fatherName ||
-      !basicInfo.motherName
-    ) {
-      setError("Please fill all required fields");
-      return;
-    }
-
-    // 🔹 For now just log (later API call)
-    console.log("Basic Info Saved:", basicInfo);
-
-    alert("Basic Info saved successfully");
-    setCurrentStep(2);
-    setCompletedStep(1);
-
+  const prev = () => {
+    setCurrentStep(currentStep - 1);
   };
-    
-    const [commInfo, setCommInfo] = useState({  
-        phone: "",
-        email: "",
-        doorNo: "",
-        address1: "",
-        address2: "",
-        taluk: "",
-        district: "",
-        state: "Tamil Nadu",
-        country: "India",
-        postalCode: "",
-        });
 
-    const handleCommChange = (e) => {
-    setCommInfo({
-        ...commInfo,
-        [e.target.name]: e.target.value,
-    });
-    };
+  const handleSubmit = async (values) => {
+    console.log("Final Profile Data:", values);
+    message.success("Profile Updated Successfully 🎉");
+  };
 
-    const handleCommSave = () => {
-    setError("");
+  const steps = [
+    {
+      title: "Basic",
+      content: (
+        <>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-    if (
-        !commInfo.phone ||
-        !commInfo.doorNo ||
-        !commInfo.address1 ||
-        !commInfo.address2 ||
-        !commInfo.district ||
-        !commInfo.postalCode
-    ) {
-        setError("Please fill all required fields");
-        return;
-    }
+            <Col span={12}>
+              <Form.Item name="middleName" label="Middle Name">
+                <Input />
+              </Form.Item>
+            </Col>
 
-    const pin = Number(commInfo.postalCode);
-    if (pin < 600001 || pin > 642207) {
-        setError("Postal Code must be between 600001 and 642207");
-        return;
-    }
+            <Col span={12}>
+              <Form.Item
+                name="lastName"
+                label="Last Name"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-    console.log("Communication Info Saved:", commInfo);
-    alert("Communication Info saved successfully");
-    setCurrentStep(3); 
-    setCompletedStep(2);
-    };
+            <Col span={12}>
+              <Form.Item
+                name="dob"
+                label="Date of Birth"
+                rules={[{ required: true }]}
+              >
+                <DatePicker style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
 
-    const [educationInfo, setEducationInfo] = useState({
-        qualification: "",
-        institution: "",
-        board: "",
-        yearOfPassing: "",
-        score: "",
-        });
+            <Col span={12}>
+              <Form.Item
+                name="fatherName"
+                label="Father Name"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-    const handleEduChange = (e) => {
-        setEducationInfo({
-            ...educationInfo,
-            [e.target.name]: e.target.value,
-        });
-        };
+            <Col span={12}>
+              <Form.Item
+                name="motherName"
+                label="Mother Name"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </>
+      ),
+    },
+    {
+      title: "Communication",
+      content: (
+        <>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="phone"
+                label="Phone"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-        const handleEduSave = () => {
-        setError("");
+            <Col span={12}>
+              <Form.Item name="email" label="Email">
+                <Input />
+              </Form.Item>
+            </Col>
 
-        if (
-            !educationInfo.qualification ||
-            !educationInfo.institution ||
-            !educationInfo.board ||
-            !educationInfo.yearOfPassing ||
-            !educationInfo.score
-        ) {
-            setError("Please fill all required fields");
-            return;
-        }
+            <Col span={12}>
+              <Form.Item
+                name="district"
+                label="District"
+                rules={[{ required: true }]}
+              >
+            <Select>
+            <Option value="Ariyalur">Ariyalur</Option>
+            <Option value="Chengalpattu">Chengalpattu</Option>
+            <Option value="Chennai">Chennai</Option>
+            <Option value="Coimbatore">Coimbatore</Option>
+            <Option value="Cuddalore">Cuddalore</Option>
+            <Option value="Dharmapuri">Dharmapuri</Option>
+            <Option value="Dindigul">Dindigul</Option>
+            <Option value="Erode">Erode</Option>
+            <Option value="Kallakurichi">Kallakurichi</Option>
+            <Option value="Kanchipuram">Kanchipuram</Option>
+            <Option value="Kanniyakumari">Kanniyakumari</Option>
+            <Option value="Karur">Karur</Option>
+            <Option value="Krishnagiri">Krishnagiri</Option>
+            <Option value="Madurai">Madurai</Option>
+            <Option value="Mayiladuthurai">Mayiladuthurai</Option>
+            <Option value="Nagapattinam">Nagapattinam</Option>
+            <Option value="Namakkal">Namakkal</Option>
+            <Option value="Nilgiris">Nilgiris</Option>
+            <Option value="Perambalur">Perambalur</Option>
+            <Option value="Pudukkottai">Pudukkottai</Option>
+            <Option value="Ramanathapuram">Ramanathapuram</Option>
+            <Option value="Ranipet">Ranipet</Option>
+            <Option value="Salem">Salem</Option>
+            <Option value="Sivaganga">Sivaganga</Option>
+            <Option value="Tenkasi">Tenkasi</Option>
+            <Option value="Thanjavur">Thanjavur</Option>
+            <Option value="Theni">Theni</Option>
+            <Option value="Thoothukudi">Thoothukudi</Option>
+            <Option value="Tiruchirappalli">Tiruchirappalli</Option>
+            <Option value="Tirunelveli">Tirunelveli</Option>
+            <Option value="Tirupattur">Tirupattur</Option>
+            <Option value="Tiruppur">Tiruppur</Option>
+            <Option value="Tiruvallur">Tiruvallur</Option>
+            <Option value="Tiruvannamalai">Tiruvannamalai</Option>
+            <Option value="Tiruvarur">Tiruvarur</Option>
+            <Option value="Vellore">Vellore</Option>
+            <Option value="Viluppuram">Viluppuram</Option>
+            <Option value="Virudhunagar">Virudhunagar</Option>
+            </Select>
 
-        console.log("Education Info Saved:", educationInfo);
-        setCurrentStep(4); 
-        setCompletedStep(3);
-        };
+              </Form.Item>
+            </Col>
 
-        return (
-            <div className="profile-bg">
-                <div className="profile-container">
-                    
-                    <div className="step-indicator">
-                    {/* STEP 1 */}
-                    <div className={`step ${
-                        completedStep >= 1 ? "completed" : currentStep === 1 ? "active" : ""
-                    }`}>
-                        <div className="circle">1</div>
-                        <span>Basic</span>
-                    </div>
+            <Col span={12}>
+              <Form.Item name="state" label="State">
+                <Input defaultValue="Tamil Nadu" disabled />
+              </Form.Item>
+            </Col>
+            
+            <Col span={12}>
+              <Form.Item name="country" label="Country">
+                <Input defaultValue="India" disabled />
+              </Form.Item>
+            </Col>
 
-                    <div className="line"></div>
+            <Col span={12}>
+              <Form.Item
+                name="postalCode"
+                label="Postal Code"
+                rules={[
+                  { required: true },
+                  {
+                    pattern: /^[0-9]{6}$/,
+                    message: "Enter valid 6 digit PIN",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </>
+      ),
+    },
+    {
+      title: "Education",
+      content: (
+        <>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="qualification"
+                label="Qualification"
+                rules={[{ required: true }]}
+              >
+                <Select>
+                  <Option value="SSLC">SSLC</Option>
+                  <Option value="HSC">HSC</Option>
+                  <Option value="Diploma">Diploma</Option>
+                  <Option value="UG">Undergraduate</Option>
+                  <Option value="PG">Postgraduate</Option>
+                </Select>
+              </Form.Item>
+            </Col>
 
-                    {/* STEP 2 */}
-                    <div className={`step ${
-                        completedStep >= 2 ? "completed" : currentStep === 2 ? "active" : ""
-                    }`}>
-                        <div className="circle">2</div>
-                        <span>Communication</span>
-                    </div>
+            <Col span={12}>
+              <Form.Item
+                name="institution"
+                label="Institution"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-                    <div className="line"></div>
+            <Col span={12}>
+              <Form.Item
+                name="yearOfPassing"
+                label="Year of Passing"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
 
-                    {/* STEP 3 */}
-                    <div className={`step ${
-                        completedStep >= 3 ? "completed" : currentStep === 3 ? "active" : ""
-                    }`}>
-                        <div className="circle">3</div>
-                        <span>Education</span>
-                    </div>
+            <Col span={12}>
+              <Form.Item
+                name="score"
+                label="Percentage / CGPA"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </>
+      ),
+    },
+  ];
 
-                    <div className="line"></div>
+  return (
+    <Layout className="profile-layout">
+      <Content className="profile-content">
+        <Card className="profile-card" bordered={false}>
+          {/* <Title level={10}>Update Profile</Title> */}
+            {/* ✅ Steps must be inside return */}
+            <Steps
+            current={currentStep}
+            labelPlacement="vertical"
+            size="large"
+            items={[
+                { title: "Basic" },
+                { title: "Communication" },
+                { title: "Education" },
+            ]}
+            />
+          <Steps current={currentStep} style={{ marginBottom: 40 }}>
+            {steps.map((item, index) => (
+              <Step key={index} title={item.title} />
+            ))}
+          </Steps>
 
-                    {/* STEP 4 */}
-                    <div className={`step ${currentStep === 4 ? "active" : ""}`}>
-                        <div className="circle">4</div>
-                        <span>Beneficiary</span>
-                    </div>
-                    </div>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+          >
+            {steps[currentStep].content}
 
+            <div style={{ marginTop: 30 }}>
+              {currentStep > 0 && (
+                <Button
+                  style={{ marginRight: 10 }}
+                  onClick={prev}
+                >
+                  Previous
+                </Button>
+              )}
 
-            {/* ================= STEP 1 ================= */}
-            {currentStep === 1 && (
-                <>
-                <h2>Update Profile</h2>
-                <p className="step-title">Step 1: Basic Information</p>
+              {currentStep < steps.length - 1 && (
+                <Button
+                  type="primary"
+                  onClick={next}
+                  style={{
+                    backgroundColor: "#52c41a",
+                    borderColor: "#52c41a",
+                  }}
+                >
+                  Save & Continue
+                </Button>
+              )}
 
-                <div className="form-group">
-                    <label>First Name *</label>
-                    <input
-                    type="text"
-                    name="firstName"
-                    value={basicInfo.firstName}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Middle Name</label>
-                    <input
-                    type="text"
-                    name="middleName"
-                    value={basicInfo.middleName}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Last Name *</label>
-                    <input
-                    type="text"
-                    name="lastName"
-                    value={basicInfo.lastName}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Date of Birth *</label>
-                    <input
-                    type="date"
-                    name="dob"
-                    value={basicInfo.dob}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Father Name *</label>
-                    <input
-                    type="text"
-                    name="fatherName"
-                    value={basicInfo.fatherName}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Mother Name *</label>
-                    <input
-                    type="text"
-                    name="motherName"
-                    value={basicInfo.motherName}
-                    onChange={handleChange}
-                    />
-                </div>
-
-                {error && <p className="error-text">{error}</p>}
-
-                <button className="primary-btn" onClick={handleSaveContinue}>
-                    Save & Continue
-                </button>
-                </>
-            )}
-
-            {/* ================= STEP 2 ================= */}
-            {currentStep === 2 && (
-                <>
-                <p className="step-title">Step 2: Communication Information</p>
-
-                <div className="form-group">
-                    <label>Phone Number *</label>
-                    <input
-                    type="text"
-                    name="phone"
-                    value={commInfo.phone}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Email</label>
-                    <input
-                    type="email"
-                    name="email"
-                    value={commInfo.email}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Door No *</label>
-                    <input
-                    type="text"
-                    name="doorNo"
-                    value={commInfo.doorNo}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Address Line 1 *</label>
-                    <input
-                    type="text"
-                    name="address1"
-                    value={commInfo.address1}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Address Line 2 *</label>
-                    <input
-                    type="text"
-                    name="address2"
-                    value={commInfo.address2}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Taluk</label>
-                    <input
-                    type="text"
-                    name="taluk"
-                    value={commInfo.taluk}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>District *</label>
-                    <select
-                    name="district"
-                    value={commInfo.district}
-                    onChange={handleCommChange}
-                    >
-                    <option value="">Select District</option>
-                    <option value="Chennai">Chennai</option>
-                    <option value="Coimbatore">Coimbatore</option>
-                    <option value="Madurai">Madurai</option>
-                    <option value="Salem">Salem</option>
-                    <option value="Trichy">Trichy</option>
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label>State</label>
-                    <input type="text" value="Tamil Nadu" disabled />
-                </div>
-
-                <div className="form-group">
-                    <label>Country</label>
-                    <input type="text" value="India" disabled />
-                </div>
-
-                <div className="form-group">
-                    <label>Postal Code *</label>
-                    <input
-                    type="text"
-                    name="postalCode"
-                    value={commInfo.postalCode}
-                    onChange={handleCommChange}
-                    />
-                </div>
-
-                {error && <p className="error-text">{error}</p>}
-
-                <button className="primary-btn" onClick={handleCommSave}>
-                    Save & Continue
-                </button>
-                </>
-            )}
-
-                {/* ================= STEP 3 ================= */}
-                {currentStep === 3 && (
-                <>
-                    <p className="step-title">Step 3: Education Information</p>
-
-                    <div className="form-group">
-                    <label>Highest Qualification *</label>
-                    <select
-                        name="qualification"
-                        value={educationInfo.qualification}
-                        onChange={handleEduChange}
-                    >
-                        <option value="">Select Qualification</option>
-                        <option value="SSLC">SSLC</option>
-                        <option value="HSC">HSC</option>
-                        <option value="Diploma">Diploma</option>
-                        <option value="UG">Undergraduate</option>
-                        <option value="PG">Postgraduate</option>
-                    </select>
-                    </div>
-
-                    <div className="form-group">
-                    <label>Institution Name *</label>
-                    <input
-                        type="text"
-                        name="institution"
-                        value={educationInfo.institution}
-                        onChange={handleEduChange}
-                    />
-                    </div>
-
-                    <div className="form-group">
-                    <label>Board / University *</label>
-                    <input
-                        type="text"
-                        name="board"
-                        value={educationInfo.board}
-                        onChange={handleEduChange}
-                    />
-                    </div>
-
-                    <div className="form-group">
-                    <label>Year of Passing *</label>
-                    <input
-                        type="number"
-                        name="yearOfPassing"
-                        value={educationInfo.yearOfPassing}
-                        onChange={handleEduChange}
-                    />
-                    </div>
-
-                    <div className="form-group">
-                    <label>Percentage / CGPA *</label>
-                    <input
-                        type="text"
-                        name="score"
-                        value={educationInfo.score}
-                        onChange={handleEduChange}
-                    />
-                    </div>
-
-                    {error && <p className="error-text">{error}</p>}
-
-                    <button className="primary-btn" onClick={handleEduSave}>
-                    Save & Continue
-                    </button>
-                </>
-                )}
-
-    </div>
-  </div>
-);
-
+              {currentStep === steps.length - 1 && (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{
+                    backgroundColor: "#fa8c16",
+                    borderColor: "#fa8c16",
+                  }}
+                >
+                  Submit Profile
+                </Button>
+              )}
+            </div>
+          </Form>
+        </Card>
+      </Content>
+    </Layout>
+  );
 }
 
 export default UpdateProfile;

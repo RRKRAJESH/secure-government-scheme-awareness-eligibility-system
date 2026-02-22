@@ -1,19 +1,26 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import bgImage from "../assets/ashoka_chakra.png";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Typography,
+  Segmented,
+  message,
+} from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/login.css";
+
+const { Title, Text } = Typography;
 
 function Login() {
   const [loginType, setLoginType] = useState("USER");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleLogin = async (values) => {
+    setLoading(true);
 
     try {
       const response = await fetch(
@@ -24,96 +31,121 @@ function Login() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username,
-            password,
+            username: values.username,
+            password: values.password,
+            role: loginType,
           }),
         }
       );
 
       const result = await response.json();
 
-      if (result.error) {
-        setError(result.data.errorMessage);
+      if (!response.ok) {
+        message.error(result?.message || "Invalid credentials");
+        setLoading(false);
         return;
       }
 
       const token = result.data.access_token;
 
-      // store token (localStorage for now)
       localStorage.setItem("access_token", token);
       localStorage.setItem("role", loginType);
 
-      // redirect based on role
+      message.success("Login Successful");
+
       if (loginType === "ADMIN") {
         navigate("/admin");
       } else {
         navigate("/home");
       }
-
     } catch (err) {
-      setError("Server error. Please try again.");
+      message.error("Server error. Please try again.");
     }
+
+    setLoading(false);
   };
 
+  const isAdmin = loginType === "ADMIN";
+
   return (
-    <div
-      className="login-bg"
-      style={{
-        backgroundImage: `linear-gradient(
-          rgba(0, 0, 0, 0.55),
-          rgba(0, 0, 0, 0.55)
-        ), url(${bgImage})`,
-      }}
-    >
-      <div className="login-container">
+    <div className="login-container-main">
+      <Card
+        className={`login-card ${isAdmin ? "admin-card" : "user-card"}`}
+        bordered={false}
+      >
+        <Title level={3} style={{ textAlign: "center" }}>
+          Government Scheme Portal
+        </Title>
 
-        <div className="login-toggle">
-          <span
-            className={loginType === "ADMIN" ? "active" : ""}
-            onClick={() => setLoginType("ADMIN")}
+        <Segmented
+          block
+          size="large"
+          options={[
+            { label: "User", value: "USER" },
+            { label: "Admin", value: "ADMIN" },
+          ]}
+          value={loginType}
+          onChange={setLoginType}
+          className={isAdmin ? "admin-segment" : "user-segment"}
+          style={{ marginBottom: 20 }}
+        />
+
+        <Form layout="vertical" onFinish={handleLogin}>
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              { required: true, message: "Please enter username" },
+            ]}
           >
-            Admin
-          </span>
-          <span
-            className={loginType === "USER" ? "active" : ""}
-            onClick={() => setLoginType("USER")}
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Enter username"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              { required: true, message: "Please enter password" },
+            ]}
           >
-            User
-          </span>
-        </div>
-        
-        <h2>{loginType} Login</h2>
-
-          <form className="login-form" onSubmit={handleLogin}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Enter password"
+              size="large"
             />
+          </Form.Item>
 
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          <Form.Item>
+            <Button
+              htmlType="submit"
+              block
+              size="large"
+              loading={loading}
+              style={{
+                backgroundColor: isAdmin
+                  ? "#fa8c16"
+                  : "#52c41a",
+                borderColor: isAdmin
+                  ? "#fa8c16"
+                  : "#52c41a",
+                color: "white",
+              }}
+            >
+              Sign In
+            </Button>
+          </Form.Item>
+        </Form>
 
-            {error && <p className="error-text">{error}</p>}
-
-            {loginType === "USER" && (
-              <p className="signup-text">
-                If not registered? <Link to="/signup">Sign Up</Link>
-              </p>
-            )}
-
-            <button type="submit">Sign In</button>
-          </form>
-
-
-      </div>
+        {!isAdmin && (
+          <Text style={{ display: "block", textAlign: "center" }}>
+            Not registered? <Link to="/signup">Sign Up</Link>
+          </Text>
+        )}
+      </Card>
     </div>
   );
 }

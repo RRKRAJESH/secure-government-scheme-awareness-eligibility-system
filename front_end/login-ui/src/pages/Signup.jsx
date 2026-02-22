@@ -1,111 +1,159 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Typography,
+  message,
+} from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/signup.css";
 
+const { Title, Text } = Typography;
+
 function Signup() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [successUser, setSuccessUser] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccessUser("");
-  
-    if (password !== confirmPassword) {
-    setError("Password and Confirm Password do not match");
-    return;
-  }
+  const handleRegister = async (values) => {
+    setLoading(true);
 
-
-    // simulate existing user
-    if (username == "admin") {
-      setError("User already exists");
-      return;
-    }
-      try {
-          const response = await fetch("http://localhost:4545/api/v1/backend/auth/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username,
-              password,
-              role: "USER",
-            }),
-          });
-
-          const result = await response.json();
-
-          if (result.error) {
-            setError(result.data.errorMessage);
-            return;
-          }
-
-          // ✅ success
-          if (result.data.acknowledgment) {
-            setSuccessUser(username);
-          }
-
-        } catch (err) {
-          setError("Something went wrong. Please try again.");
+    try {
+      const response = await fetch(
+        "http://localhost:4545/api/v1/backend/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: values.username,
+            password: values.password,
+            role: "USER",
+          }),
         }
-    };
+      );
 
-  return (  
-    
-    <div className="signup-bg">
-      <div className="signup-container">
+      const result = await response.json();
 
-        <h2>Register Yourself</h2>
+      if (!response.ok) {
+        message.error(result?.message || "Registration failed");
+        setLoading(false);
+        return;
+      }
 
-        <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+      message.success("Registration Successful 🎉");
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
 
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+    } catch (err) {
+      message.error("Something went wrong. Please try again.");
+    }
 
-          {error && <p className="error-text">{error}</p>}
+    setLoading(false);
+  };
 
-          <button type="submit">Register</button>
-        </form>
-      </div>
+  return (
+    <div className="signup-container-main">
+      <Card
+        className="signup-card user-card"
+        bordered={false}
+      >
+        <Title level={3} style={{ textAlign: "center" }}>
+          Government Scheme Portal
+        </Title>
 
-      {/* Success Popup */}
-        {successUser && (
-        <div className="popup-overlay">
-            <div className="popup">
-            <h3>Welcome {successUser} 🎉</h3>
-            <p>Registration successful</p>
+        <Title level={4} style={{ textAlign: "center" }}>
+          Create Account
+        </Title>
 
-            <Link to="/" className="popup-link">
-                Sign In to Continue
-            </Link>
-            </div>
-        </div>
-        )}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleRegister}
+        >
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              { required: true, message: "Please enter username" },
+            ]}
+          >
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Enter username"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              { required: true, message: "Please enter password" },
+              { min: 6, message: "Minimum 6 characters required" },
+            ]}
+            hasFeedback
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Enter password"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Confirm Password"
+            name="confirmPassword"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              { required: true, message: "Please confirm password" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("Passwords do not match")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Confirm password"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              htmlType="submit"
+              block
+              size="large"
+              loading={loading}
+              style={{
+                backgroundColor: "#52c41a",
+                borderColor: "#52c41a",
+                color: "white",
+              }}
+            >
+              Register
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <Text style={{ display: "block", textAlign: "center" }}>
+          Already registered? <Link to="/">Sign In</Link>
+        </Text>
+      </Card>
     </div>
   );
 }
