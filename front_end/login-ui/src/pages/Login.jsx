@@ -71,7 +71,7 @@ function Login() {
     <div className="login-container-main">
       <Card
         className={`login-card ${isAdmin ? "admin-card" : "user-card"}`}
-        bordered={false}
+        variant={false}
       >
         <Title level={3} style={{ textAlign: "center" }}>
           Government Scheme Portal

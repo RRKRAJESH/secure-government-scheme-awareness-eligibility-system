@@ -62,7 +62,7 @@ function Signup() {
     <div className="signup-container-main">
       <Card
         className="signup-card user-card"
-        bordered={false}
+        variant={false}
       >
         <Title level={3} style={{ textAlign: "center" }}>
           Government Scheme Portal

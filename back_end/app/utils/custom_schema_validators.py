@@ -24,3 +24,8 @@ def validate_phone(v: str):
     if not re.match(phone_regex, v):
         raise ValueError("Invalid Phone Number")
     return v
+
+def validate_tn_pincode(pincode: int):
+    if not 600001 <= pincode <= 643282:
+        raise ValueError("Invalid Pincode range")
+    return pincode

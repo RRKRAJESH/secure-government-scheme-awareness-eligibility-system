@@ -8,10 +8,10 @@ from typing import Union
 from app.services.error import raise_http_error
 from app.configs.config import settings
 from app.db.mongo import get_collection
-from app.schemas.update_porfile_schema import ProfileUpdateSuccessMessageSchema, ProfileUpdateSchema
+from app.schemas.update_porfile_schema import ProfileUpdateSuccessMessageSchema, ProfileUpdateSchema, ProfileCurrentStatusSchema
 from app.schemas.common_schema import ErrorResponse
 from app.utils.auth import verify_token
-from app.services.update_profile import update_profile_info
+from app.services.update_profile import update_profile_info, get_current_profile_info
 
 router = APIRouter()
 
@@ -30,6 +30,30 @@ async def register_handler(payload: ProfileUpdateSchema, token: str= Depends(ver
             }
         }
             
+    except ValueError as e:
+        raise_http_error(status_code= status.HTTP_400_BAD_REQUEST, 
+                        message= f"{str(e)}"
+                        )
+    
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}"
+        )
+    
+
+@router.get("/current-status", response_model= Union[ProfileCurrentStatusSchema, ErrorResponse], status_code= status.HTTP_202_ACCEPTED)
+async def profile_current_status_handler(token: str = Depends(verify_token)):
+    try:
+
+        current_profile_info = get_current_profile_info(token)
+        return {
+            "error": False,
+            "status_info": current_profile_info
+        }
+
+        return     
+
     except ValueError as e:
         raise_http_error(status_code= status.HTTP_400_BAD_REQUEST, 
                         message= f"{str(e)}"
