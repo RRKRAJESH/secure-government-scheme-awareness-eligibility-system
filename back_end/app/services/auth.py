@@ -99,6 +99,7 @@ def login_user(login_user_info):
         user_info= dict()
         user_info["username"] = user_existing_check["username"]
         user_info["role"] = user_existing_check["role"]
+        user_info["user_id"] = str(user_existing_check["_id"])
 
         token = create_access_token(data= user_info)
 

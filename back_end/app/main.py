@@ -8,6 +8,7 @@ from app.db.mongo import init_client, close_client
 from app.middleware.request_response_middleware import log_request_response
 from app.services.error import _default_status_text
 from app.api.v1.auth import router as auth_router
+from app.api.v1.update_profile import router as profile_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +32,7 @@ app.add_middleware(
 
 app.middleware("http")(log_request_response)
 app.include_router(auth_router, prefix= "/auth", tags= ["Authentication"])
+app.include_router(profile_router, prefix= "/profile", tags= ["Profile Information"])
 
 #Handle HTTPException (from raise_http_error or manual raises)
 @app.exception_handler(HTTPException)
