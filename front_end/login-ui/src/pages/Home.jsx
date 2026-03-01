@@ -119,7 +119,7 @@ function Home() {
                 <Button
                   size="large"
                   icon={<ArrowRightOutlined />}
-                  onClick={() => navigate("/schemes")}
+                  onClick={() => navigate("/dashboard")}
                 >
                   Go to Dashboard
                 </Button>

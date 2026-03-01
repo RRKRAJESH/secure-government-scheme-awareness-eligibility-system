@@ -1,3 +1,5 @@
+UpdateProfile.jsx
+
 import { useState, useEffect } from "react";
 import {
   Layout,
@@ -13,6 +15,9 @@ import {
   message,
   Result,
   Spin,
+  InputNumber,
+  Checkbox,
+  Switch
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -40,12 +45,13 @@ function UpdateProfile() {
 
         setProfileData(data);
         setCurrentStep(0);
-
+        console.log("Beneficiary Info:", data);
         // If everything already completed
         if (
           data.status_info.basic_info !== null &&
           data.status_info.communication_info !== null &&
-          data.status_info.education_info !== null
+          data.status_info.education_info !== null &&
+          data.status_info.beneficiary_info !== null
         ) {
           setIsCompleted(true);
         }
@@ -58,6 +64,14 @@ function UpdateProfile() {
     fetchProfileStatus();
   }, []);
 
+    // Loading
+  if (!profileData) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
   // 🔥 Dynamic Steps
   const steps = [];
 
@@ -200,52 +214,232 @@ function UpdateProfile() {
       ),
     });
   }
+  
+if (profileData?.status_info?.education_info === null) {
+  steps.push({
+    key: "EDUCATION_INFO",
+    title: "Education",
+    content: (
+      <Row gutter={16}>
+        {/* Toggle */}
+        <Col span={12}>
+          <Form.Item
+            name="has_qualified"
+            label="Are You Educated?"
+            valuePropName="checked"
+            initialValue={false}
+          >
+            <Switch />
+          </Form.Item>
+        </Col>
 
-  if (profileData?.status_info?.education_info === null) {
-    steps.push({
-      key: "EDUCATION_INFO",
-      title: "Education",
-      content: (
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="qualification" label="Qualification" rules={[{ required: true }]}>
-                <Select>
-                  <Option value="SSLC">SSLC</Option>
-                  <Option value="HSC">HSC</Option>
-                  <Option value="Diploma">Diploma</Option>
-                  <Option value="UG">Undergraduate</Option>
-                  <Option value="PG">Postgraduate</Option>
-                </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="institution" label="Institution" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="yearOfPassing" label="Year of Passing" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="score" label="Percentage / CGPA" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-      ),
-    });
-  }
+        {/* Dynamic Fields */}
+        <Form.Item
+          noStyle
+          shouldUpdate={(prev, curr) =>
+            prev.has_qualified !== curr.has_qualified
+          }
+        >
+          {({ getFieldValue }) =>
+            getFieldValue("has_qualified") && (
+              <>
+                <Col span={12}>
+                  <Form.Item
+                    name="qualification"
+                    label="Qualification"
+                    rules={[{ required: true, message: "Select qualification" }]}
+                  >
+                    <Select placeholder="Select qualification">
+                      <Option value="SSLC">SSLC</Option>
+                      <Option value="HSC">HSC</Option>
+                      <Option value="DIPLOMA">Diploma</Option>
+                      <Option value="UG">UG</Option>
+                      <Option value="PG">PG</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
 
-  // 🔥 Loading
-  if (!profileData) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+                <Col span={12}>
+                  <Form.Item
+                    name="institution"
+                    label="Institution"
+                    rules={[{ required: true, message: "Enter institution name" }]}
+                  >
+                    <Input placeholder="Enter institution name" />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="year_of_passing"
+                    label="Year of Passing"
+                    rules={[{ required: true, message: "Enter passing year" }]}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      min={1950}
+                      max={new Date().getFullYear()}
+                      placeholder="Enter year"
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="percentage"
+                    label="Percentage / CGPA"
+                    rules={[{ required: true, message: "Enter percentage" }]}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      min={0}
+                      max={100}
+                      placeholder="Enter percentage"
+                    />
+                  </Form.Item>
+                </Col>
+              </>
+            )
+          }
+        </Form.Item>
+      </Row>
+    ),
+  });
+}
+if (profileData?.status_info?.beneficiary_info === null) {
+  steps.push({
+    key: "BENEFICIARY_INFO",
+    title: "Beneficiary",
+    content: (
+      <Row gutter={16}>
+
+        <Col span={12}>
+          <Form.Item
+            name="is_farmer"
+            label="Are You a Farmer?"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </Col>
+
+        {/* Dynamic Section Based On is_farmer */}
+        <Form.Item shouldUpdate={(prev, curr) => prev.is_farmer !== curr.is_farmer}>
+          {({ getFieldValue }) =>
+            getFieldValue("is_farmer") ? (
+              <>
+                <Col span={12}>
+                  <Form.Item
+                    name="farmer_category"
+                    label="Farmer Category"
+                    rules={[{ required: true }]}
+                  >
+                    <Select>
+                      <Option value="MARGINAL">Marginal</Option>
+                      <Option value="SMALL">Small</Option>
+                      <Option value="MEDIUM">Medium</Option>
+                      <Option value="LARGE">Large</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="land_area"
+                    label="Land Holding (Hectare)"
+                    rules={[{ required: true }]}
+                  >
+                    <InputNumber style={{ width: "100%" }} min={0} />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="annual_income"
+                    label="Annual Income"
+                    rules={[{ required: true }]}
+                  >
+                    <InputNumber style={{ width: "100%" }} min={0} />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="social_category"
+                    label="Social Category"
+                    rules={[{ required: true }]}
+                  >
+                    <Select>
+                      <Option value="SC">SC</Option>
+                      <Option value="ST">ST</Option>
+                      <Option value="OBC">OBC</Option>
+                      <Option value="GENERAL">General</Option>
+                      <Option value="EWS">EWS</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="agriculture_type"
+                    label="Agriculture Type"
+                    rules={[{ required: true }]}
+                  >
+                    <Checkbox.Group
+                      options={[
+                        "CROP",
+                        "HORTICULTURE",
+                        "ORGANIC",
+                        "IRRIGATION",
+                        "FISHERIES",
+                        "POULTRY",
+                        "DAIRY"
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    name="primary_activity"
+                    label="Primary Activity"
+                    rules={[{ required: true }]}
+                  >
+                    <Select>
+                      <Option value="CROP">Crop</Option>
+                      <Option value="HORTICULTURE">Horticulture</Option>
+                      <Option value="ORGANIC">Organic</Option>
+                      <Option value="IRRIGATION">Irrigation</Option>
+                      <Option value="FISHERIES">Fisheries</Option>
+                      <Option value="POULTRY">Poultry</Option>
+                      <Option value="DAIRY">Dairy</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col span={24}>
+                  <Form.Item
+                    name="supporting_documents"
+                    label="Supporting Details"
+                  >
+                    <Checkbox.Group
+                      options={[
+                        { label: "Has Aadhaar", value: "HAS_AADHAAR" },
+                        { label: "Has Bank Account", value: "HAS_BANK_ACCOUNT" },
+                        { label: "Has KCC", value: "HAS_KCC" }
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+              </>
+            ) : null
+          }
+        </Form.Item>
+
+      </Row>
+    ),
+  });
+}
 
   // 🔥 Already Completed
   if (isCompleted || steps.length === 0) {
@@ -282,7 +476,7 @@ function UpdateProfile() {
           profile_info_type: "BASIC_INFO",
           update_info: {
             first_name: values.firstName,
-            middle_name: values.middleName,
+            middle_name: values.middleName?.trim() || null,
             last_name: values.lastName,
             date_of_birth: values.dob?.format("YYYY-MM-DD"),
             father_name: values.fatherName,
@@ -296,7 +490,7 @@ function UpdateProfile() {
           profile_info_type: "COMMUNICATION_INFO",
           update_info: {
             phone: values.phone,
-            email: values.email || null,
+            email: values.email?.trim() || null,
             district: values.district,
             state: values.state,
             country: values.country,
@@ -305,6 +499,30 @@ function UpdateProfile() {
         };
       }
 
+      if (currentSection === "EDUCATION_INFO") {
+        payload = {
+          profile_info_type: "EDUCATION_INFO",
+          update_info: {
+            has_qualified: values.has_qualified || false,
+
+            qualification: values.has_qualified
+              ? values.qualification
+              : null,
+
+            institution: values.has_qualified
+              ? values.institution?.trim() || null
+              : null,
+
+            year_of_passing: values.has_qualified
+              ? Number(values.year_of_passing)
+              : null,
+
+            percentage: values.has_qualified
+              ? Number(values.percentage)
+              : null,
+          },
+        };
+      }
       await apiRequest(
         "http://localhost:4545/api/v1/backend/profile/update",
         "POST",
@@ -318,16 +536,47 @@ function UpdateProfile() {
     }
   };
 
-  // 🔥 Submit (Education)
+  
   const handleSubmit = async (values) => {
     try {
-      const payload = {
-        profile_info_type: "EDUCATION_INFO",
+        const docs = values.supporting_documents || [];
+
+        const payload = {
+        profile_info_type: "BENEFICIARY_INFO",
         update_info: {
-          qualification: values.qualification,
-          institution: values.institution,
-          year_of_passing: Number(values.yearOfPassing),
-          percentage: Number(values.score),
+          is_farmer: values.is_farmer || false,
+
+          farmer_category: values.is_farmer
+            ? values.farmer_category
+            : null,
+
+          land_holding: values.is_farmer
+            ?  values.land_area
+            : null,
+
+          annual_income: values.is_farmer
+            ? values.annual_income
+            : null,
+
+          social_category: values.is_farmer
+            ? values.social_category
+            : null,
+
+          agriculture_type: values.is_farmer
+            ? values.agriculture_type || []
+            : [],
+
+          primary_activity: values.is_farmer
+            ? values.primary_activity
+            : null,
+
+          banking_details: {
+            has_bank_account: docs.includes("HAS_BANK_ACCOUNT"),
+            has_kcc: docs.includes("HAS_KCC"),
+          },
+          identity_details: {
+            has_aadhaar: docs.includes("HAS_AADHAAR"),
+          },
         },
       };
 
