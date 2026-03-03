@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/login.css";
+import MainLayout from "./MainLayout";
 
 const { Title, Text } = Typography;
 
@@ -68,6 +69,7 @@ function Login() {
   const isAdmin = loginType === "ADMIN";
 
   return (
+    <MainLayout>
     <div className="login-container-main">
       <Card
         className={`login-card ${isAdmin ? "admin-card" : "user-card"}`}
@@ -147,6 +149,7 @@ function Login() {
         )}
       </Card>
     </div>
+    </MainLayout>
   );
 }
 

@@ -1,0 +1,177 @@
+/* ===== FULL SCREEN TRICOLOR ===== */
+.dashboard-wrapper {
+  min-height: 100vh;
+}
+
+/* Remove ALL antd layout backgrounds */
+.ant-layout,
+.ant-layout-content,
+.ant-layout-sider {
+  background: transparent !important;
+}
+
+/* ===== SIDEBAR ===== */
+.dashboard-sider {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100vh;
+  margin-left: 20px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-logo {
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin: 50px 20px;
+
+  letter-spacing: 3px;
+  text-transform: uppercase;
+
+  padding: 18px 10px;
+  border-radius: 16px;
+
+  /* Warm light beige / cream background */
+  background: rgba(255, 248, 230, 0.85); /* very light beige with some transparency */
+  backdrop-filter: blur(6px); /* soft glass effect */
+
+  /* Soft shadow */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  /* Gradient text */
+  background-image: linear-gradient(90deg, #e65100, rgb(83, 83, 231), #0ae20a); /* dark tricolor */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Add subtle text shadow for visibility */
+  text-shadow:
+    0 1px 3px rgba(0,0,0,0.2),
+    0 0 5px rgba(0,0,0,0.1);
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.logo-text {
+  letter-spacing: 0.5px;
+}
+/* Menu */
+.dashboard-menu {
+  background: transparent !important;
+  border-right: none !important;
+  padding: 0 15px;   /* 🔥 add inner spacing */
+
+}
+
+.dashboard-menu .ant-menu-item {
+  margin: 8px 0;
+  border-radius: 12px;   
+}
+
+.dashboard-menu .ant-menu-item-selected {
+  background-color: #1677FF !important;
+  color: white !important;
+}
+
+.sidebar-top {
+  flex: 1;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 30px;
+
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+/* Make badge center perfectly */
+.sidebar-bottom .ant-badge {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Center avatar properly */
+.sidebar-bottom .ant-avatar {
+  cursor: pointer;
+}
+
+/* ===== CONTENT ===== */
+.dashboard-content {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
+  padding: 20px;
+}
+
+/* Card */
+.dashboard-card {
+  width: 900px;      /* increase width */
+  max-width: 100%;    /* responsive */
+  border-radius: 12px;
+  border-top: 5px solid #52c41a;
+  background: white;
+  padding: 40px;
+}
+
+.dashboard-card {
+  width: 100%;
+  max-width: 1200px;
+  padding: 50px;
+}
+
+/* Center the search section */
+.search-wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Bigger card */
+.search-card {
+  width: 900px;
+  max-width: 95%;
+  text-align: center;
+  padding: 50px;
+}
+
+/* Title */
+.search-title {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.search-subtitle {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Blue Search Button */
+.blue-search .ant-btn-primary {
+  background-color: #1677FF !important;
+  border-color: #1677FF !important;
+}
+
+.blue-search .ant-btn-primary:hover {
+  background-color: #0958D9 !important;
+  border-color: #0958D9 !important;
+}
+.dashboard-container {
+  min-height: 100vh;
+}

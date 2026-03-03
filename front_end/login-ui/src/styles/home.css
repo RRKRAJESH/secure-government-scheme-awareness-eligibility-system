@@ -1,31 +1,29 @@
 .home-layout {
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    #ff9933,
-    #ffffff,
-    #138808
-  );
-  display: flex;
-  align-items: center;
+  background: transparent;
 }
 
 .home-content {
-  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-center-wrapper {
+  width: 90%;
+  max-width: 1100px;
 }
 
 .home-card {
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 30px;
+  width: 100%;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-
-.progress-section {
-  margin: 20px 0;
-}
-
 .home-buttons {
+  margin-top: 30px;
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  width: 100%;
 }

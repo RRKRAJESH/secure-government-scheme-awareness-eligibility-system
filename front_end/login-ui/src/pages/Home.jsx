@@ -16,6 +16,7 @@ import {
 } from "@ant-design/icons";
 import { apiRequest } from "../services/api";
 import "../styles/home.css";
+import MainLayout from "./MainLayout";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -61,13 +62,13 @@ function Home() {
   }, []);
 
   return (
+    <MainLayout>
     <Layout className="home-layout">
       <Content className="home-content">
-        <Row justify="center">
-          <Col xs={24} sm={20} md={16} lg={12}>
+          <div className="home-center-wrapper">
             <Card variant={false} className="home-card">
               <Title level={3}>
-                Welcome to Government Scheme Portal
+                Welcome to Government Schemes Hub
               </Title>
 
               <Text type="secondary">
@@ -125,10 +126,10 @@ function Home() {
                 </Button>
               </div>
             </Card>
-          </Col>
-        </Row>
+          </div>
       </Content>
     </Layout>
+    </MainLayout>
   );
 }
 

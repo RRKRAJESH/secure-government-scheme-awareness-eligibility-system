@@ -20,9 +20,9 @@ import {
   Switch
 } from "antd";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 import { apiRequest } from "../services/api";
 import "../styles/updateProfile.css";
+import MainLayout from "./MainLayout";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -444,6 +444,7 @@ if (profileData?.status_info?.beneficiary_info === null) {
   // 🔥 Already Completed
   if (isCompleted || steps.length === 0) {
     return (
+      <MainLayout>
       <Layout className="profile-layout">
         <Content className="profile-content">
           <Card className="profile-card" variant={false}>
@@ -460,6 +461,7 @@ if (profileData?.status_info?.beneficiary_info === null) {
           </Card>
         </Content>
       </Layout>
+      </MainLayout>
     );
   }
 
@@ -593,6 +595,7 @@ if (profileData?.status_info?.beneficiary_info === null) {
   };
   console.log("Steps Length:", steps.length);
   return (
+    <MainLayout>
     <Layout className="profile-layout">
       <Content className="profile-content">
         <Card className="profile-card" variant={false}>
@@ -636,6 +639,7 @@ if (profileData?.status_info?.beneficiary_info === null) {
         </Card>
       </Content>
     </Layout>
+    </MainLayout>
   );
 }
 

@@ -1,0 +1,14 @@
+.app-bg {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  background: linear-gradient(
+    135deg,
+    #ff9933 0%,
+    #ffb366 25%,
+    #ffffff 50%,
+    #66cc66 75%,
+    #138808 100%
+  );
+}

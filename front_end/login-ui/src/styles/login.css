@@ -1,14 +1,8 @@
 .login-container-main {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(
-    135deg,
-    #ff9933,
-    #ffffff,
-    #138808
-  );
 }
 
 .login-card {
