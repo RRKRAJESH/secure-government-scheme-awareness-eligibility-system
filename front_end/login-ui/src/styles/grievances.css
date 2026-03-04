@@ -1,0 +1,225 @@
+.grievances-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.grievances-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.ant-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ant-tabs-content-holder {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ant-tabs-tabpane {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.grievances-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.write-button-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.write-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 600;
+  padding: 12px 24px !important;
+  height: 40px;
+}
+
+.write-button:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+}
+
+.posts-list {
+  flex: 1;
+  overflow-y: scroll; /* always reserve scrollbar space */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 8px;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* hide default scrollbar track background to avoid white gap */
+.posts-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.posts-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.posts-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.posts-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.posts-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.post-card {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: 1px solid #e8eef5;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  padding: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.post-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #e0e7ff 0%, #b8d4f1 100%);
+}
+
+.post-card h4 {
+  color: #1f1f1f;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 8px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.post-details {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.post-details span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-card p {
+  margin-top: 12px;
+  line-height: 1.8;
+  color: #444;
+  font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.ant-tabs-nav {
+  margin-bottom: 0 !important;
+  border-bottom: 2px solid #ffd666 !important;
+}
+
+.ant-tabs-nav-list {
+  padding: 0 24px;
+}
+
+.ant-tabs-tab {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  padding: 12px 8px !important;
+  color: #8c8c8c !important;
+}
+
+.ant-tabs-tab-active {
+  color: #1890ff !important;
+}
+
+.ant-tabs-ink-bar {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+  height: 3px !important;
+}
+
+.ant-modal-header {
+  border-bottom: 2px solid #ffd666;
+}
+
+.ant-modal-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.ant-modal-body {
+  padding: 20px;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 10px 16px;
+}
+
+.ant-empty {
+  padding: 40px 20px;
+}
+
+@media (max-width: 768px) {
+  .grievances-content {
+    padding: 16px;
+  }
+
+  .post-card {
+    padding: 16px;
+  }
+
+  .post-details {
+    gap: 12px;
+  }
+
+  .write-button {
+    width: 100%;
+  }
+
+  .ant-tabs-nav-list {
+    padding: 0 16px;
+  }
+}

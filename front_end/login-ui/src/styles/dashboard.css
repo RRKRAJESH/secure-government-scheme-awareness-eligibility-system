@@ -1,6 +1,17 @@
 /* ===== FULL SCREEN TRICOLOR ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 .dashboard-wrapper {
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Remove ALL antd layout backgrounds */
@@ -109,27 +120,69 @@
 
 /* ===== CONTENT ===== */
 .dashboard-content {
-  min-height: 100vh;
+  flex: 1;
   display: flex;
-  justify-content: center;   /* horizontal center */
-  align-items: center;       /* vertical center */
+  flex-direction: column;
   padding: 20px;
+  padding-right: 40px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow: hidden;
+  box-sizing: border-box;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Dashboard Header with Greeting */
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 0 16px 0;
+  margin-bottom: 16px;
+}
+
+.greeting-section {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.greeting-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.user-email {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f1f1f;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Content for grievances - takes full height and width */
+.dashboard-content.grievances-view {
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+/* Default center alignment for other content */
+.dashboard-content.default-view {
+  justify-content: center;
+  align-items: center;
 }
 
 /* Card */
 .dashboard-card {
-  width: 900px;      /* increase width */
-  max-width: 100%;    /* responsive */
-  border-radius: 12px;
-  border-top: 5px solid #52c41a;
-  background: white;
-  padding: 40px;
-}
-
-.dashboard-card {
   width: 100%;
   max-width: 1200px;
   padding: 50px;
+  border-radius: 12px;
+  border-top: 5px solid #52c41a;
+  background: white;
 }
 
 /* Center the search section */
@@ -173,5 +226,8 @@
   border-color: #0958D9 !important;
 }
 .dashboard-container {
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 }
