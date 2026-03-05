@@ -143,27 +143,30 @@ function UpdateProfile() {
     setIsSubmitting(true);
 
     try {
-      const docs = values.supporting_documents || [];
+      // Always construct banking_details and identity_details objects when is_farmer is true
+      const isFarmer = values.is_farmer || false;
 
       const payload = {
         profile_info_type: PROFILE_SECTIONS.BENEFICIARY_INFO,
         update_info: {
-          is_farmer: values.is_farmer || false,
-          farmer_category: values.is_farmer ? values.farmer_category : null,
-          land_holding: values.is_farmer ? values.land_area : null,
-          annual_income: values.is_farmer ? values.annual_income : null,
-          social_category: values.is_farmer ? values.social_category : null,
-          agriculture_type: values.is_farmer ? values.agriculture_type || [] : [],
-          primary_activity: values.is_farmer ? values.primary_activity : null,
-          banking_details: {
-            has_bank_account: docs.includes("HAS_BANK_ACCOUNT"),
-            has_kcc: docs.includes("HAS_KCC"),
-          },
-          identity_details: {
-            has_aadhaar: docs.includes("HAS_AADHAAR"),
-          },
+          is_farmer: isFarmer,
+          farmer_category: isFarmer ? values.farmer_category : null,
+          land_holding: isFarmer ? values.land_holding : null,
+          annual_income: isFarmer ? values.annual_income : null,
+          social_category: isFarmer ? values.social_category : null,
+          agriculture_type: isFarmer ? (values.agriculture_type || []) : [],
+          primary_activity: isFarmer ? values.primary_activity : null,
+          banking_details: isFarmer ? {
+            has_bank_account: Boolean(values.banking_details?.has_bank_account),
+            has_kcc: Boolean(values.banking_details?.has_kcc),
+          } : null,
+          identity_details: isFarmer ? {
+            has_aadhaar: Boolean(values.identity_details?.has_aadhaar),
+          } : null,
         },
       };
+
+      console.log("Submitting payload:", JSON.stringify(payload, null, 2));
 
       await apiRequest(
         API_ENDPOINTS.PROFILE_UPDATE,
@@ -229,7 +232,9 @@ function UpdateProfile() {
               initialValues={{ state: "Tamil Nadu", country: "India" }}
               onFinish={handleSubmit}
             >
-              {steps[currentStep]?.content}
+              <div className="profile-step-content">
+                {steps[currentStep]?.content}
+              </div>
 
               <FormButtonGroup
                 currentStep={currentStep}

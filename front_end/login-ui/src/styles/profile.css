@@ -1,0 +1,117 @@
+.profile-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.profile-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.profile-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-content::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.profile-content::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+.profile-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profile-section-card {
+  background: #fafafa !important;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-section-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+.profile-section-card .ant-card-head {
+  padding: 16px !important;
+  background: white !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  flex-shrink: 0;
+}
+
+.profile-section-card .ant-card-body {
+  padding: 16px !important;
+  min-height: 280px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Equal height grid for profile cards */
+.profile-content .ant-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.profile-content .ant-col {
+  display: flex;
+}
+
+.edit-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 16px;
+  }
+
+  .profile-section-card .ant-card-head {
+    padding: 12px !important;
+    flex-direction: column;
+  }
+
+  .edit-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}

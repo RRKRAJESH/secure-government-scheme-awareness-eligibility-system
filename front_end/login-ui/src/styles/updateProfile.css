@@ -16,6 +16,16 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
+.profile-step-content {
+  min-height: auto;
+}
+
+@media (min-width: 992px) {
+  .profile-step-content {
+    min-height: 460px;
+  }
+}
+
 .ant-steps-item-process .ant-steps-item-icon {
   background-color: #52c41a !important;
   border-color: #52c41a !important;

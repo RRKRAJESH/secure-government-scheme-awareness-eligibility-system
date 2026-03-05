@@ -3,6 +3,7 @@ import {
   Layout,
   Menu,
   Card,
+  Badge,
 } from "antd";
 import {
   UserOutlined,
@@ -17,6 +18,8 @@ import "../styles/dashboard.css";
 import MainLayout from "./MainLayout";
 import SearchScheme from "./Search";
 import GrievancesAndThoughts from "./GrievancesAndThoughts";
+import Notifications from "./Notifications";
+import Profile from "./Profile";
 import { useAuth } from "../hooks/useAuth";
 import { ROLE_COLORS, ROUTES } from "../config/constants";
 
@@ -37,20 +40,10 @@ const DashboardContent = React.memo(({ activeTab }) => {
       return <GrievancesAndThoughts />;
 
     case "notifications":
-      return (
-        <Card className="dashboard-card">
-          <h2>Notifications</h2>
-          <p>View all your latest notifications here.</p>
-        </Card>
-      );
+      return <Notifications />;
 
     case "profile":
-      return (
-        <Card className="dashboard-card">
-          <h2>Update Profile</h2>
-          <p>Manage and update your account details here.</p>
-        </Card>
-      );
+      return <Profile />;
 
     default:
       return <SearchScheme />;
@@ -64,6 +57,14 @@ function Dashboard() {
   const { getRole, logout } = useAuth();
   const role = getRole();
   const accentColor = ROLE_COLORS[role] || "#52c41a";
+
+  const [notificationCount, setNotificationCount] = useState(0);
+  React.useEffect(() => {
+    import("./Notifications").then((mod) => {
+      const list = mod.STATIC_NOTIFICATIONS || [];
+      setNotificationCount(list.filter(n => n.unread).length);
+    });
+  }, []);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -107,7 +108,13 @@ function Dashboard() {
               </Menu.Item>
 
               <Menu.Item key="notifications" icon={<BellOutlined />}>
-                <span style={{ fontWeight: "bold" }}>Notifications</span>
+                {notificationCount > 0 ? (
+                  <Badge count={notificationCount} overflowCount={99} offset={[10,0]}>
+                    <span style={{ fontWeight: "bold" }}>Notifications</span>
+                  </Badge>
+                ) : (
+                  <span style={{ fontWeight: "bold" }}>Notifications</span>
+                )}
               </Menu.Item>
 
               <Menu.Item key="profile" icon={<ProfileOutlined />}>

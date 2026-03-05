@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useApi } from "./useApi";
+import useApi from "./useApi";
 import API_ENDPOINTS from "../config/api.config";
 
 /**

@@ -145,87 +145,82 @@ CommunicationInfoSection.displayName = "CommunicationInfoSection";
  * Reusable Education Info Form Section
  */
 export const EducationInfoSection = React.memo(() => (
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item
-        name="has_qualified"
-        label="Are You Educated?"
-        valuePropName="checked"
-        initialValue={false}
-      >
-        <Switch />
-      </Form.Item>
-    </Col>
-
-    <Form.Item
-      noStyle
-      shouldUpdate={(prev, curr) =>
-        prev.has_qualified !== curr.has_qualified
-      }
-    >
-      {({ getFieldValue }) =>
-        getFieldValue("has_qualified") && (
-          <>
-            <Col span={12}>
-              <Form.Item
-                name="qualification"
-                label="Qualification"
-                rules={[{ required: true, message: "Select qualification" }]}
-              >
-                <Select placeholder="Select qualification">
-                  {QUALIFICATIONS.map((qual) => (
-                    <Select.Option key={qual} value={qual}>
-                      {qual}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="institution"
-                label="Institution"
-                rules={[{ required: true, message: "Enter institution name" }]}
-              >
-                <Input placeholder="Enter institution name" />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="year_of_passing"
-                label="Year of Passing"
-                rules={[{ required: true, message: "Enter passing year" }]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  min={1950}
-                  max={new Date().getFullYear()}
-                  placeholder="Enter year"
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="percentage"
-                label="Percentage / CGPA"
-                rules={[{ required: true, message: "Enter percentage" }]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  min={0}
-                  max={100}
-                  placeholder="Enter percentage"
-                />
-              </Form.Item>
-            </Col>
-          </>
-        )
-      }
-    </Form.Item>
-  </Row>
+  <Form.Item
+    noStyle
+    shouldUpdate={(prev, curr) => prev.has_qualified !== curr.has_qualified}
+  >
+    {({ getFieldValue }) => {
+      const isEducated = getFieldValue("has_qualified");
+      return (
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="has_qualified"
+              label="Are You Educated?"
+              valuePropName="checked"
+              initialValue={false}
+            >
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="qualification"
+              label="Qualification"
+              rules={isEducated ? [{ required: true, message: "Select qualification" }] : []}
+            >
+              <Select placeholder="Select qualification" disabled={!isEducated}>
+                {QUALIFICATIONS.map((qual) => (
+                  <Select.Option key={qual} value={qual}>
+                    {qual}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="institution"
+              label="Institution"
+              rules={isEducated ? [{ required: true, message: "Enter institution name" }] : []}
+            >
+              <Input placeholder="Enter institution name" disabled={!isEducated} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="year_of_passing"
+              label="Year of Passing"
+              rules={isEducated ? [{ required: true, message: "Enter passing year" }] : []}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                min={1950}
+                max={new Date().getFullYear()}
+                placeholder="Enter year"
+                disabled={!isEducated}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="percentage"
+              label="Percentage / CGPA"
+              rules={isEducated ? [{ required: true, message: "Enter percentage" }] : []}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                min={0}
+                max={100}
+                placeholder="Enter percentage"
+                disabled={!isEducated}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      );
+    }}
+  </Form.Item>
 ));
 
 EducationInfoSection.displayName = "EducationInfoSection";
@@ -234,122 +229,132 @@ EducationInfoSection.displayName = "EducationInfoSection";
  * Reusable Beneficiary Info Form Section
  */
 export const BeneficiaryInfoSection = React.memo(() => (
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item
-        name="is_farmer"
-        label="Are You a Farmer?"
-        valuePropName="checked"
-        initialValue={false}
-      >
-        <Switch />
-      </Form.Item>
-    </Col>
-
-    <Form.Item
-      shouldUpdate={(prev, curr) => prev.is_farmer !== curr.is_farmer}
-      noStyle
-    >
-      {({ getFieldValue }) =>
-        getFieldValue("is_farmer") && (
-          <>
-            <Col span={12}>
+  <Form.Item
+    shouldUpdate={(prev, curr) => prev.is_farmer !== curr.is_farmer}
+    noStyle
+  >
+    {({ getFieldValue }) => {
+      const isFarmer = getFieldValue("is_farmer");
+      return (
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="is_farmer"
+              label="Are You a Farmer?"
+              valuePropName="checked"
+              initialValue={false}
+            >
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="farmer_category"
+              label="Farmer Category"
+              rules={isFarmer ? [{ required: true, message: "Select farmer category" }] : []}
+            >
+              <Select placeholder="Select category" disabled={!isFarmer}>
+                {FARMER_CATEGORIES.map((cat) => (
+                  <Select.Option key={cat} value={cat}>
+                    {cat}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="land_holding"
+              label="Land Holding (Hectare)"
+              rules={isFarmer ? [{ required: true, message: "Enter land holding" }] : []}
+            >
+              <InputNumber style={{ width: "100%" }} min={0} disabled={!isFarmer} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="annual_income"
+              label="Annual Income"
+              rules={isFarmer ? [{ required: true, message: "Enter annual income" }] : []}
+            >
+              <InputNumber style={{ width: "100%" }} min={0} disabled={!isFarmer} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="social_category"
+              label="Social Category"
+              rules={isFarmer ? [{ required: true, message: "Select social category" }] : []}
+            >
+              <Select placeholder="Select category" disabled={!isFarmer}>
+                {SOCIAL_CATEGORIES.map((cat) => (
+                  <Select.Option key={cat} value={cat}>
+                    {cat}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="agriculture_type"
+              label="Agriculture Type"
+              rules={isFarmer ? [{ required: true, message: "Select agriculture type" }] : []}
+            >
+              <Checkbox.Group options={AGRICULTURE_TYPES} disabled={!isFarmer} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="primary_activity"
+              label="Primary Activity"
+              rules={isFarmer ? [{ required: true, message: "Select primary activity" }] : []}
+            >
+              <Select placeholder="Select activity" disabled={!isFarmer}>
+                {AGRICULTURE_TYPES.map((activity) => (
+                  <Select.Option key={activity} value={activity}>
+                    {activity}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Identity Details">
               <Form.Item
-                name="farmer_category"
-                label="Farmer Category"
-                rules={[{ required: true, message: "Select farmer category" }]}
+                name={["identity_details", "has_aadhaar"]}
+                valuePropName="checked"
+                initialValue={false}
+                noStyle
               >
-                <Select placeholder="Select category">
-                  {FARMER_CATEGORIES.map((cat) => (
-                    <Select.Option key={cat} value={cat}>
-                      {cat}
-                    </Select.Option>
-                  ))}
-                </Select>
+                <Checkbox disabled={!isFarmer}>Has Aadhaar</Checkbox>
               </Form.Item>
-            </Col>
-
-            <Col span={12}>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Banking Details">
               <Form.Item
-                name="land_area"
-                label="Land Holding (Hectare)"
-                rules={[{ required: true, message: "Enter land area" }]}
+                name={["banking_details", "has_bank_account"]}
+                valuePropName="checked"
+                initialValue={false}
+                noStyle
               >
-                <InputNumber style={{ width: "100%" }} min={0} />
+                <Checkbox disabled={!isFarmer} style={{ marginRight: 16 }}>Has Bank Account</Checkbox>
               </Form.Item>
-            </Col>
-
-            <Col span={12}>
               <Form.Item
-                name="annual_income"
-                label="Annual Income"
-                rules={[{ required: true, message: "Enter annual income" }]}
+                name={["banking_details", "has_kcc"]}
+                valuePropName="checked"
+                initialValue={false}
+                noStyle
               >
-                <InputNumber style={{ width: "100%" }} min={0} />
+                <Checkbox disabled={!isFarmer}>Has KCC</Checkbox>
               </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="social_category"
-                label="Social Category"
-                rules={[{ required: true, message: "Select social category" }]}
-              >
-                <Select placeholder="Select category">
-                  {SOCIAL_CATEGORIES.map((cat) => (
-                    <Select.Option key={cat} value={cat}>
-                      {cat}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="agriculture_type"
-                label="Agriculture Type"
-                rules={[{ required: true, message: "Select agriculture type" }]}
-              >
-                <Checkbox.Group options={AGRICULTURE_TYPES} />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="primary_activity"
-                label="Primary Activity"
-                rules={[{ required: true, message: "Select primary activity" }]}
-              >
-                <Select placeholder="Select activity">
-                  {AGRICULTURE_TYPES.map((activity) => (
-                    <Select.Option key={activity} value={activity}>
-                      {activity}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-
-            <Col span={24}>
-              <Form.Item
-                name="supporting_documents"
-                label="Supporting Details"
-              >
-                <Checkbox.Group
-                  options={[
-                    { label: "Has Aadhaar", value: "HAS_AADHAAR" },
-                    { label: "Has Bank Account", value: "HAS_BANK_ACCOUNT" },
-                    { label: "Has KCC", value: "HAS_KCC" },
-                  ]}
-                />
-              </Form.Item>
-            </Col>
-          </>
-        )
-      }
-    </Form.Item>
-  </Row>
+            </Form.Item>
+          </Col>
+        </Row>
+      );
+    }}
+  </Form.Item>
 ));
 
 BeneficiaryInfoSection.displayName = "BeneficiaryInfoSection";

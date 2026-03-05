@@ -103,7 +103,7 @@ class UpdateBeneficiaryInfo(AppBaseModel):
     land_holding: Annotated[int, Field(gt=0)] | None = None
     annual_income: Annotated[int, Field(gt=10000)] | None = None
     social_category: SocialCategories | None = None
-    agriculture_type: List[AgricultureTypes] = Field(default_factory= list)
+    agriculture_type: List[AgricultureTypes] = Field(default_factory= list) 
     primary_activity: AgricultureTypes | None = None
     banking_details: BankDetails | None = None
     identity_details: IdentityDetails | None = None
