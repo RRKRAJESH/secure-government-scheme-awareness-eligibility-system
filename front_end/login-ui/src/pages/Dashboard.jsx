@@ -4,6 +4,7 @@ import {
   Menu,
   Card,
   Badge,
+  Avatar,
 } from "antd";
 import {
   UserOutlined,
@@ -21,6 +22,7 @@ import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
 import { useAuth } from "../hooks/useAuth";
+import useProfileStatus from "../hooks/useProfileStatus";
 import { ROLE_COLORS, ROUTES } from "../config/constants";
 
 const { Sider, Content } = Layout;
@@ -55,8 +57,15 @@ DashboardContent.displayName = "DashboardContent";
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("search");
   const { getRole, logout } = useAuth();
+  const { profileData } = useProfileStatus();
   const role = getRole();
   const accentColor = ROLE_COLORS[role] || "#52c41a";
+
+  // Get username from profile data
+  const basicInfo = profileData?.status_info?.basic_info;
+  const userName = basicInfo?.first_name 
+    ? `${basicInfo.first_name}${basicInfo.last_name ? ' ' + basicInfo.last_name : ''}`
+    : "User";
 
   const [notificationCount, setNotificationCount] = useState(0);
   React.useEffect(() => {
@@ -87,6 +96,18 @@ function Dashboard() {
           <Sider width={300} className="dashboard-sider">
             <div className="dashboard-logo">
               SCHEMES HUB
+            </div>
+
+            <div className="user-info-section">
+              <Avatar 
+                size={48} 
+                icon={<UserOutlined />} 
+                style={{ backgroundColor: accentColor }}
+              />
+              <div className="user-details">
+                <span className="user-name">{userName}</span>
+                <span className="user-role">{role}</span>
+              </div>
             </div>
 
             <Menu
