@@ -62,14 +62,32 @@ export const API_ENDPOINTS = {
   NOTIFICATIONS_MARK_READ: `${API_BASE_URL}/api/v1/backend/notifications/mark-read`,
 
   // ============= SCHEMES ENDPOINTS =============
-  // GET /schemes/search?query=keyword
+  // GET /schemes/list?page=1&limit=10&status=ACTIVE
   // Headers: Authorization: Bearer {token}
-  // Response: { schemes: [{ id, name, description, category, eligibility, benefits }] }
+  // Response: { data: { schemes: [...], pagination: {...} } }
+  SCHEMES_LIST: `${API_BASE_URL}/api/v1/backend/schemes/list`,
+
+  // GET /schemes/search?keyword=...&category=...&governmentLevel=...
+  // Headers: Authorization: Bearer {token}
+  // Response: { data: { schemes: [...], pagination: {...}, appliedFilters: {...} } }
   SCHEMES_SEARCH: `${API_BASE_URL}/api/v1/backend/schemes/search`,
 
-  // GET /schemes/categories
+  // GET /schemes/detail/{scheme_id}
   // Headers: Authorization: Bearer {token}
-  // Response: { categories: [{ id, name, description }] }
+  // Response: { data: { scheme: {...}, subSchemes: [...] } }
+  SCHEMES_DETAIL: `${API_BASE_URL}/api/v1/backend/schemes/detail`,
+
+  // GET /schemes/code/{scheme_code}
+  // Headers: Authorization: Bearer {token}
+  // Response: { data: { scheme: {...}, subSchemes: [...] } }
+  SCHEMES_BY_CODE: `${API_BASE_URL}/api/v1/backend/schemes/code`,
+
+  // GET /schemes/eligible
+  // Headers: Authorization: Bearer {token}
+  // Response: { data: { schemes: [...], pagination: {...} } }
+  SCHEMES_ELIGIBLE: `${API_BASE_URL}/api/v1/backend/schemes/eligible`,
+
+  // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with category filter)
   SCHEMES_CATEGORIES: `${API_BASE_URL}/api/v1/backend/schemes/categories`,
 };
 

@@ -52,8 +52,6 @@ async def profile_current_status_handler(token: str = Depends(verify_token)):
             "status_info": current_profile_info
         }
 
-        return     
-
     except ValueError as e:
         raise_http_error(status_code= status.HTTP_400_BAD_REQUEST, 
                         message= f"{str(e)}"

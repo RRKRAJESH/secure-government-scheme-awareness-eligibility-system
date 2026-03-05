@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Button, Empty, Descriptions, Modal, Form, message, Typography } from "antd";
+import { Card, Row, Col, Button, Empty, Modal, Form, message, Typography } from "antd";
 import { EditOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import useProfileStatus from "../hooks/useProfileStatus";
@@ -48,27 +48,26 @@ const BasicInfoDisplay = React.memo(({ data }) => {
   if (!data)
     return <Empty description="No basic information available" />;
 
+  const rows = [
+    { label: "First Name", value: data.first_name },
+    { label: "Middle Name", value: data.middle_name },
+    { label: "Last Name", value: data.last_name },
+    { label: "Date of Birth", value: data.date_of_birth },
+    { label: "Father Name", value: data.father_name },
+    { label: "Mother Name", value: data.mother_name },
+  ];
+
   return (
-    <Descriptions column={1} size="small">
-      <Descriptions.Item label="First Name">
-        {data.first_name || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Middle Name">
-        {data.middle_name || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Last Name">
-        {data.last_name || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Date of Birth">
-        {data.date_of_birth || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Father Name">
-        {data.father_name || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Mother Name">
-        {data.mother_name || "-"}
-      </Descriptions.Item>
-    </Descriptions>
+    <table className="profile-info-table">
+      <tbody>
+        {rows.map((row, idx) => (
+          <tr key={idx}>
+            <td className="label-cell">{row.label}</td>
+            <td className="value-cell">{row.value || "-"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 });
 
@@ -79,27 +78,26 @@ const CommunicationInfoDisplay = React.memo(({ data }) => {
   if (!data)
     return <Empty description="No communication information available" />;
 
+  const rows = [
+    { label: "Phone", value: data.phone },
+    { label: "Email", value: data.email },
+    { label: "District", value: data.district },
+    { label: "State", value: data.state || "Tamil Nadu" },
+    { label: "Country", value: data.country || "India" },
+    { label: "Pincode", value: data.pincode },
+  ];
+
   return (
-    <Descriptions column={1} size="small">
-      <Descriptions.Item label="Phone">
-        {data.phone || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Email">
-        {data.email || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="District">
-        {data.district || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="State">
-        {data.state || "Tamil Nadu"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Country">
-        {data.country || "India"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Pincode">
-        {data.pincode || "-"}
-      </Descriptions.Item>
-    </Descriptions>
+    <table className="profile-info-table">
+      <tbody>
+        {rows.map((row, idx) => (
+          <tr key={idx}>
+            <td className="label-cell">{row.label}</td>
+            <td className="value-cell">{row.value || "-"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 });
 
@@ -114,21 +112,24 @@ const EducationInfoDisplay = React.memo(({ data }) => {
     return <p>Not educated as per records</p>;
   }
 
+  const rows = [
+    { label: "Qualification", value: data.qualification },
+    { label: "Institution", value: data.institution },
+    { label: "Year of Passing", value: data.year_of_passing },
+    { label: "Percentage / CGPA", value: data.percentage },
+  ];
+
   return (
-    <Descriptions column={1} size="small">
-      <Descriptions.Item label="Qualification">
-        {data.qualification || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Institution">
-        {data.institution || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Year of Passing">
-        {data.year_of_passing || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Percentage / CGPA">
-        {data.percentage || "-"}
-      </Descriptions.Item>
-    </Descriptions>
+    <table className="profile-info-table">
+      <tbody>
+        {rows.map((row, idx) => (
+          <tr key={idx}>
+            <td className="label-cell">{row.label}</td>
+            <td className="value-cell">{row.value || "-"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 });
 
@@ -149,30 +150,27 @@ const BeneficiaryInfoDisplay = React.memo(({ data }) => {
   if (data.banking_details?.has_bank_account) supportingDocs.push("Bank Account");
   if (data.banking_details?.has_kcc) supportingDocs.push("KCC");
 
+  const rows = [
+    { label: "Farmer Category", value: data.farmer_category },
+    { label: "Land Holding (Hectares)", value: data.land_holding },
+    { label: "Annual Income", value: data.annual_income },
+    { label: "Social Category", value: data.social_category },
+    { label: "Agriculture Type", value: data.agriculture_type?.join(", ") },
+    { label: "Primary Activity", value: data.primary_activity },
+    { label: "Supporting Documents", value: supportingDocs.length > 0 ? supportingDocs.join(", ") : null },
+  ];
+
   return (
-    <Descriptions column={1} size="small">
-      <Descriptions.Item label="Farmer Category">
-        {data.farmer_category || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Land Holding (Hectares)">
-        {data.land_holding || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Annual Income">
-        {data.annual_income || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Social Category">
-        {data.social_category || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Agriculture Type">
-        {data.agriculture_type?.join(", ") || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Primary Activity">
-        {data.primary_activity || "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Supporting Documents">
-        {supportingDocs.length > 0 ? supportingDocs.join(", ") : "-"}
-      </Descriptions.Item>
-    </Descriptions>
+    <table className="profile-info-table">
+      <tbody>
+        {rows.map((row, idx) => (
+          <tr key={idx}>
+            <td className="label-cell">{row.label}</td>
+            <td className="value-cell">{row.value || "-"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 });
 

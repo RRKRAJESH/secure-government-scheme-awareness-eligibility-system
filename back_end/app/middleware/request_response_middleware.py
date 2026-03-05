@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from starlette.concurrency import run_in_threadpool
 import socket
 import json
+import re
 
 from app.db.mongo import get_collection
 from app.configs.config import settings
@@ -18,6 +19,32 @@ SENSITIVE_FIELDS = {
     "secret",
     "api_key"
 }
+
+# Activity mapping: (HTTP_METHOD, path_pattern) -> activity_name
+ACTIVITY_MAPPING = [
+    # Auth routes
+    ("POST", r"^/api/v1/backend/auth/register$", "REGISTER_USER"),
+    ("POST", r"^/api/v1/backend/auth/login$", "LOGIN_USER"),
+    
+    # Profile routes
+    ("POST", r"^/api/v1/backend/profile/update$", "UPDATE_USER_PROFILE"),
+    ("GET", r"^/api/v1/backend/profile/current-status$", "GET_USER_PROFILE_INFO"),
+    
+    # Scheme routes
+    ("GET", r"^/api/v1/backend/schemes/list$", "LIST_SCHEMES"),
+    ("GET", r"^/api/v1/backend/schemes/search$", "SEARCH_SCHEMES"),
+    ("GET", r"^/api/v1/backend/schemes/eligible$", "GET_ELIGIBLE_SCHEMES"),
+    ("GET", r"^/api/v1/backend/schemes/detail/[^/]+$", "GET_SCHEME_DETAILS"),
+    ("GET", r"^/api/v1/backend/schemes/code/[^/]+$", "GET_SCHEME_BY_CODE"),
+]
+
+
+def get_activity_name(method: str, path: str) -> str:
+    """Get activity name based on HTTP method and path"""
+    for http_method, pattern, activity in ACTIVITY_MAPPING:
+        if method == http_method and re.match(pattern, path):
+            return activity
+    return "UNKNOWN_ACTIVITY"
 
 def mask_sensitive_data(data):
     try:
@@ -77,6 +104,7 @@ async def log_request_response(request: Request, call_next):
 
     log_entry = {
         "timestamp_utc": datetime.now(timezone.utc),
+        "activity": get_activity_name(request.method, request.url.path),
         "method": request.method,
         "url": str(request.url),
         "path": request.url.path,
