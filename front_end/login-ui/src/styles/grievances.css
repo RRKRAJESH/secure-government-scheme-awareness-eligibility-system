@@ -192,25 +192,95 @@
 }
 
 .ant-modal-header {
-  border-bottom: 2px solid #ffd666;
+  border-bottom: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 18px 24px;
+  border-radius: 16px 16px 0 0;
 }
 
 .ant-modal-title {
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 17px;
+  color: #fff !important;
 }
 
 .ant-modal-body {
-  padding: 20px;
+  padding: 28px 24px;
 }
 
 .ant-modal-footer {
   border-top: 1px solid #f0f0f0;
-  padding: 10px 16px;
+  padding: 16px 24px;
+  background: #fafafa;
+}
+
+/* Modal Close Button */
+.ant-modal-close {
+  color: rgba(255,255,255,0.85);
+}
+
+.ant-modal-close:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
 }
 
 .ant-empty {
   padding: 40px 20px;
+}
+
+/* Grievance Form Styling */
+.grievances-wrapper .ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.grievances-wrapper .ant-modal .ant-input,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.grievances-wrapper .ant-modal .ant-input {
+  height: 44px !important;
+}
+
+.grievances-wrapper .ant-modal .ant-input-textarea textarea {
+  min-height: 120px;
+}
+
+.grievances-wrapper .ant-modal .ant-input:hover,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea:hover {
+  border-color: #667eea !important;
+}
+
+.grievances-wrapper .ant-modal .ant-input:focus,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Modal Buttons */
+.grievances-wrapper .ant-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  height: 42px !important;
+  padding: 0 24px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.grievances-wrapper .ant-modal .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+.grievances-wrapper .ant-modal .ant-btn-default {
+  height: 42px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
 
 @media (max-width: 768px) {

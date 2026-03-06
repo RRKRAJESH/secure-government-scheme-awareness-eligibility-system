@@ -51,7 +51,7 @@ function Login() {
       if (loginType === ROLES.ADMIN) {
         navigate(ROUTES.ADMIN);
       } else {
-        navigate(ROUTES.HOME);
+        navigate(ROUTES.DASHBOARD);
       }
     } catch (err) {
       message.error("Server error. Please try again.");

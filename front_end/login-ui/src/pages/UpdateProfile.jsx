@@ -175,7 +175,7 @@ function UpdateProfile() {
       );
 
       message.success("Profile Completed Successfully!");
-      navigate(ROUTES.HOME);
+      navigate(ROUTES.DASHBOARD);
     } catch (error) {
       message.error(error.message || "Failed to submit profile");
     } finally {

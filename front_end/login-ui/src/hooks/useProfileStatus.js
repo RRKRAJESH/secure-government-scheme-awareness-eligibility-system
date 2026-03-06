@@ -24,13 +24,14 @@ export const useProfileStatus = () => {
 
       setProfileData(data);
 
-      // Calculate completion percentage
+      // Calculate completion percentage (4 sections total)
       let completedSections = 0;
-      const totalSections = 3;
+      const totalSections = 4;
 
       if (data.status_info?.basic_info) completedSections++;
       if (data.status_info?.communication_info) completedSections++;
       if (data.status_info?.education_info) completedSections++;
+      if (data.status_info?.beneficiary_info) completedSections++;
 
       const percent = Math.round((completedSections / totalSections) * 100);
       setProfileCompletion(percent);
