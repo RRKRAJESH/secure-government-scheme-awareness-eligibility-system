@@ -268,7 +268,7 @@ const EditSectionModal = React.memo(({
 
 EditSectionModal.displayName = "EditSectionModal";
 
-function Profile({ onProfileUpdate }) {
+function Profile() {
   const { profileData, loading: profileLoading, refetch } = useProfileStatus();
   const { apiRequest } = useApi();
   const [editingSection, setEditingSection] = useState(null);
@@ -345,10 +345,6 @@ function Profile({ onProfileUpdate }) {
       setEditingSection(null);
       // Refetch profile data after successful update
       refetch();
-      // Also notify parent Dashboard to refresh its profile status
-      if (onProfileUpdate) {
-        onProfileUpdate();
-      }
     } catch (error) {
       message.error(error.message || "Failed to update profile");
     } finally {

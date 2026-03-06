@@ -9,6 +9,23 @@ export const useAuth = () => {
 
   const getRole = () => localStorage.getItem(STORAGE_KEYS.ROLE);
 
+  // Decode JWT token to get user info (username, user_id, role)
+  const getTokenPayload = () => {
+    const token = getToken();
+    if (!token) return null;
+    try {
+      const payload = token.split('.')[1];
+      return JSON.parse(atob(payload));
+    } catch {
+      return null;
+    }
+  };
+
+  const getUsername = () => {
+    const payload = getTokenPayload();
+    return payload?.username || null;
+  };
+
   const isAuthenticated = () => !!getToken();
 
   const login = (token, role) => {
@@ -23,6 +40,8 @@ export const useAuth = () => {
   return {
     getToken,
     getRole,
+    getUsername,
+    getTokenPayload,
     isAuthenticated,
     login,
     logout,

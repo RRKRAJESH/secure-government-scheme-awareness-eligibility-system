@@ -5,7 +5,6 @@ import {
   Card,
   Badge,
   Avatar,
-  Progress,
 } from "antd";
 import {
   UserOutlined,
@@ -23,13 +22,12 @@ import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
 import { useAuth } from "../hooks/useAuth";
-import useProfileStatus from "../hooks/useProfileStatus";
 import { ROLE_COLORS, ROUTES } from "../config/constants";
 
 const { Sider, Content } = Layout;
 
 // Memoized content section to prevent unnecessary renders
-const DashboardContent = React.memo(({ activeTab, onProfileUpdate }) => {
+const DashboardContent = React.memo(({ activeTab }) => {
   switch (activeTab) {
     case "categories":
       return (
@@ -46,7 +44,7 @@ const DashboardContent = React.memo(({ activeTab, onProfileUpdate }) => {
       return <Notifications />;
 
     case "profile":
-      return <Profile onProfileUpdate={onProfileUpdate} />;
+      return <Profile />;
 
     default:
       return <SearchScheme />;
@@ -57,21 +55,16 @@ DashboardContent.displayName = "DashboardContent";
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("search");
-  const { getRole, logout } = useAuth();
-  const { profileData, profileCompletion, isProfileComplete, loading: profileLoading, refetch: refetchProfile } = useProfileStatus();
+  const { getRole, logout, getUsername } = useAuth();
   const role = getRole();
   const accentColor = ROLE_COLORS[role] || "#52c41a";
 
-  // Get username from profile data
-  const basicInfo = profileData?.status_info?.basic_info;
-  const userName = basicInfo?.first_name 
-    ? `${basicInfo.first_name}${basicInfo.last_name ? ' ' + basicInfo.last_name : ''}`.toUpperCase()
-    : "USER";
+  // Get username from JWT token
+  const username = getUsername();
+  const userName = username || "User";
   
-  // Get initials for avatar (first letter of first name + first letter of last name)
-  const userInitials = basicInfo?.first_name
-    ? `${basicInfo.first_name.charAt(0)}${basicInfo.last_name ? basicInfo.last_name.charAt(0) : ''}`.toUpperCase()
-    : null;
+  // Get first letter of username for avatar (uppercase)
+  const userInitial = username ? username.charAt(0).toUpperCase() : null;
 
   const [notificationCount, setNotificationCount] = useState(0);
   React.useEffect(() => {
@@ -107,33 +100,15 @@ function Dashboard() {
             <div className="user-info-section">
               <Avatar 
                 size={48} 
-                icon={!userInitials ? <UserOutlined /> : null}
-                style={{ backgroundColor: accentColor, fontSize: 18, fontWeight: 600 }}
+                icon={!userInitial ? <UserOutlined /> : null}
+                style={{ backgroundColor: accentColor, fontSize: 20, fontWeight: 600 }}
               >
-                {userInitials}
+                {userInitial}
               </Avatar>
               <div className="user-details">
                 <span className="user-name">{userName}</span>
                 <span className="user-role">{role}</span>
               </div>
-            </div>
-
-            {/* Profile Completion Status - Circular Progress */}
-            <div className="profile-completion-section circular">
-              {!profileLoading && (
-                <Progress
-                  type="circle"
-                  percent={profileCompletion}
-                  size={70}
-                  status={profileCompletion === 100 ? "success" : "normal"}
-                  strokeColor={profileCompletion === 100 ? "#52c41a" : { '0%': '#667eea', '100%': '#764ba2' }}
-                  strokeWidth={8}
-                  format={(percent) => (
-                    <span className="progress-circle-text">{percent}%</span>
-                  )}
-                />
-              )}
-              <span className="completion-label">Profile</span>
             </div>
 
             <Menu
@@ -178,7 +153,7 @@ function Dashboard() {
             <Content 
               className={`dashboard-content ${activeTab === 'grievances' ? 'grievances-view' : 'default-view'}`}
             >
-              <DashboardContent activeTab={activeTab} onProfileUpdate={refetchProfile} />
+              <DashboardContent activeTab={activeTab} />
             </Content>
           </Layout>
 
