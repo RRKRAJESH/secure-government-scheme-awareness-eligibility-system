@@ -77,7 +77,6 @@ export const ROUTES = {
   SIGNUP: "/signup",
   HOME: "/home",
   DASHBOARD: "/dashboard",
-  UPDATE_PROFILE: "/update-profile",
   ADMIN: "/admin",
 };
 
