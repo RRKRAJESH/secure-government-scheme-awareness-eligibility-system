@@ -87,6 +87,11 @@ export const API_ENDPOINTS = {
   // Response: { data: { schemes: [...], pagination: {...} } }
   SCHEMES_ELIGIBLE: `${API_BASE_URL}/api/v1/backend/schemes/eligible`,
 
+  // GET /schemes/suggestions?keyword=...&limit=10
+  // Headers: Authorization: Bearer {token}
+  // Response: { data: { suggestions: [{ id, name, code, type }] } }
+  SCHEMES_SUGGESTIONS: `${API_BASE_URL}/api/v1/backend/schemes/suggestions`,
+
   // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with category filter)
   SCHEMES_CATEGORIES: `${API_BASE_URL}/api/v1/backend/schemes/categories`,
 };

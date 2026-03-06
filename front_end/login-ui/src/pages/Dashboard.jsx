@@ -10,14 +10,13 @@ import {
   UserOutlined,
   LogoutOutlined,
   ProfileOutlined,
-  AppstoreOutlined,
   NotificationOutlined,
-  SearchOutlined,
   BellOutlined,
+  BankOutlined,
 } from "@ant-design/icons";
 import "../styles/dashboard.css";
 import MainLayout from "./MainLayout";
-import SearchScheme from "./Search";
+import Schemes from "./Schemes";
 import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
@@ -31,14 +30,6 @@ const { Sider, Content } = Layout;
 // Memoized content section to prevent unnecessary renders
 const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
   switch (activeTab) {
-    case "categories":
-      return (
-        <Card className="dashboard-card">
-          <h2>Scheme Categories</h2>
-          <p>List of available agriculture scheme categories.</p>
-        </Card>
-      );
-
     case "grievances":
       return <GrievancesAndThoughts />;
 
@@ -49,14 +40,14 @@ const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
       return <Profile openFormDirectly={openProfileForm} />;
 
     default:
-      return <SearchScheme />;
+      return <Schemes />;
   }
 });
 
 DashboardContent.displayName = "DashboardContent";
 
 function Dashboard() {
-  const [activeTab, setActiveTab] = useState("search");
+  const [activeTab, setActiveTab] = useState("schemes");
   const { getRole, logout, getUsername } = useAuth();
   const { isProfileComplete, loading: profileLoading } = useProfileStatus();
   const role = getRole();
@@ -152,12 +143,8 @@ function Dashboard() {
               onClick={handleMenuClick}
               className="dashboard-menu"
             >
-              <Menu.Item key="search" icon={<SearchOutlined />}>
-                <span style={{ fontWeight: "bold" }}>Search Schemes</span>
-              </Menu.Item>
-
-              <Menu.Item key="categories" icon={<AppstoreOutlined />}>
-                <span style={{ fontWeight: "bold" }}>Scheme Categories</span>
+              <Menu.Item key="schemes" icon={<BankOutlined />}>
+                <span style={{ fontWeight: "bold" }}>Schemes</span>
               </Menu.Item>
 
               <Menu.Item key="grievances" icon={<NotificationOutlined />}>

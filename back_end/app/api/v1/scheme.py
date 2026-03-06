@@ -78,7 +78,7 @@ async def search_schemes_handler(
     incomeLimit: Optional[float] = Query(None, ge=0, description="Annual income"),
     casteCategory: Optional[str] = Query(None, description="Caste category (SC/ST/OBC/GENERAL/EWS/ANY)"),
     state: Optional[str] = Query(None, description="State name"),
-    directUse: Optional[bool] = Query(True, description="Only directly applicable schemes"),
+    directUse: Optional[bool] = Query(None, description="Filter by directly applicable schemes"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=50, description="Items per page"),
     token: str = Depends(verify_token)
@@ -250,6 +250,63 @@ async def get_eligible_schemes_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
             message=f"{str(e)}"
         )
+
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}"
+        )
+
+
+@router.get(
+    "/suggestions",
+    status_code=status.HTTP_200_OK
+)
+async def get_scheme_suggestions_handler(
+    keyword: str = Query(..., min_length=1, description="Search keyword"),
+    limit: int = Query(10, ge=1, le=20, description="Max suggestions"),
+    token: str = Depends(verify_token)
+):
+    """Get scheme name suggestions for autocomplete"""
+    try:
+        from app.db.mongo import get_collection
+        from app.configs.config import settings
+        import re
+
+        schemes_collection = get_collection(
+            db_name=settings.PRODUCTION_DATABASE_NAME,
+            collection_name=settings.SCHEMES_COLLECTION_NAME
+        )
+
+        # Search by scheme name with regex (case-insensitive)
+        regex_pattern = re.compile(keyword, re.IGNORECASE)
+        
+        suggestions = schemes_collection.find(
+            {
+                "$or": [
+                    {"schemeName": {"$regex": regex_pattern}},
+                    {"schemeCode": {"$regex": regex_pattern}},
+                ],
+                "status": "ACTIVE"
+            },
+            {"schemeName": 1, "schemeCode": 1, "schemeType": 1}
+        ).limit(limit)
+
+        result = []
+        for scheme in suggestions:
+            result.append({
+                "id": str(scheme["_id"]),
+                "name": scheme["schemeName"],
+                "code": scheme.get("schemeCode", ""),
+                "type": scheme.get("schemeType", "")
+            })
+
+        return {
+            "error": False,
+            "data": {
+                "suggestions": result
+            }
+        }
 
     except Exception as e:
         raise_http_error(
