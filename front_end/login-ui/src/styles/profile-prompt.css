@@ -1,0 +1,285 @@
+/* Profile Update Prompt Modal Styles */
+.profile-prompt-modal .ant-modal-content {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.profile-prompt-modal .ant-modal-body {
+  padding: 0;
+}
+
+.profile-prompt-content {
+  padding: 40px 32px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Gradient Overlay */
+.profile-prompt-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+/* Icon Section */
+.profile-prompt-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.profile-prompt-icon-bg {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-ring 2s ease-in-out infinite;
+  box-shadow: 
+    0 10px 40px rgba(102, 126, 234, 0.4),
+    0 0 0 8px rgba(102, 126, 234, 0.1);
+}
+
+.profile-prompt-icon-inner {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.3);
+}
+
+.profile-prompt-icon {
+  font-size: 36px;
+  color: #fff;
+}
+
+/* Sparkle Animations */
+.profile-prompt-sparkle {
+  position: absolute;
+  font-size: 18px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.sparkle-1 {
+  top: -5px;
+  right: -10px;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 10px;
+  left: -15px;
+  animation-delay: 0.5s;
+}
+
+.sparkle-3 {
+  bottom: 0;
+  right: -5px;
+  animation-delay: 1s;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2) rotate(15deg);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    box-shadow: 
+      0 10px 40px rgba(102, 126, 234, 0.4),
+      0 0 0 8px rgba(102, 126, 234, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 10px 40px rgba(102, 126, 234, 0.6),
+      0 0 0 16px rgba(102, 126, 234, 0.05);
+  }
+}
+
+/* Text Styles */
+.profile-prompt-text {
+  margin-bottom: 24px;
+}
+
+.profile-prompt-title {
+  margin: 0 0 8px 0 !important;
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 26px !important;
+}
+
+.profile-prompt-subtitle {
+  display: block;
+  font-size: 16px;
+  color: #4b5563;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.profile-prompt-description {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+/* Benefits Section */
+.profile-prompt-benefits {
+  background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.benefit-item:not(:last-child) {
+  border-bottom: 1px dashed rgba(102, 126, 234, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+.benefit-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.benefit-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Action Buttons */
+.profile-prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-prompt-update-btn {
+  width: 100%;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35) !important;
+  transition: all 0.3s ease !important;
+}
+
+.profile-prompt-update-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45) !important;
+}
+
+.profile-prompt-update-btn:active {
+  transform: translateY(0);
+}
+
+.profile-prompt-later-btn {
+  color: #9ca3af !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+.profile-prompt-later-btn:hover {
+  color: #6b7280 !important;
+}
+
+/* Decorative Elements */
+.profile-prompt-decoration {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  opacity: 0.08;
+}
+
+.decoration-icon {
+  font-size: 80px;
+  color: #667eea;
+  transform: rotate(-15deg);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .profile-prompt-content {
+    padding: 32px 24px 24px;
+  }
+
+  .profile-prompt-icon-bg {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-prompt-icon-inner {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-prompt-icon {
+    font-size: 28px;
+  }
+
+  .profile-prompt-title {
+    font-size: 22px !important;
+  }
+
+  .profile-prompt-benefits {
+    padding: 16px;
+  }
+
+  .benefit-text {
+    font-size: 13px;
+  }
+}
+
+/* Animation on Modal Enter */
+.profile-prompt-modal .ant-modal-content {
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

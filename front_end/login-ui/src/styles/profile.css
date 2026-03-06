@@ -8,6 +8,48 @@
   box-sizing: border-box;
 }
 
+/* Profile Header */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  margin: 0 24px 24px 24px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.profile-header h2 {
+  color: #fff !important;
+  margin: 0 !important;
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-status .ant-tag {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+/* Profile Empty State */
+.profile-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  margin: 0 24px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+}
+
 .profile-container {
   flex: 1;
   display: flex;
@@ -97,38 +139,55 @@
   width: 100%;
 }
 
-/* Profile Info Table Styling */
-.profile-info-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
+/* Profile List Styling - Vertical Format */
+.profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.profile-info-table tr {
+.profile-list-item {
+  padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.profile-info-table tr:last-child {
+.profile-list-item:last-child {
   border-bottom: none;
 }
 
-.profile-info-table td {
-  padding: 10px 12px;
-  vertical-align: middle;
-}
-
-.profile-info-table .label-cell {
-  width: 45%;
-  background: #f8f9fa;
+.profile-item-label {
+  font-size: 12px;
   font-weight: 500;
-  color: #555;
-  border-right: 1px solid #f0f0f0;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
-.profile-info-table .value-cell {
-  width: 55%;
-  background: #ffffff;
+.profile-item-value {
+  font-size: 15px;
   color: #333;
+  font-weight: 500;
+}
+
+/* Incomplete profile button styling */
+.profile-incomplete-btn {
+  background: linear-gradient(135deg, #f5222d 0%, #fa541c 100%) !important;
+  border: none !important;
+  animation: pulse-incomplete 2s infinite;
+}
+
+.profile-incomplete-btn:hover {
+  background: linear-gradient(135deg, #cf1322 0%, #d4380d 100%) !important;
+}
+
+@keyframes pulse-incomplete {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(245, 34, 45, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(245, 34, 45, 0.5);
+  }
 }
 
 .edit-button {
@@ -187,12 +246,18 @@
 }
 
 .ant-modal .ant-modal-close {
-  color: rgba(255,255,255,0.85);
+  color: #ff4d4f !important;
+  background: rgba(255, 77, 79, 0.1) !important;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  top: 12px;
+  right: 12px;
 }
 
 .ant-modal .ant-modal-close:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.15);
+  color: #fff !important;
+  background: #ff4d4f !important;
 }
 
 .ant-modal .ant-modal-body {
@@ -237,6 +302,55 @@
 .ant-modal .ant-input-number-focused {
   border-color: #667eea !important;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Form Sections in Edit Modal */
+.edit-profile-modal .form-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-profile-modal .form-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.edit-profile-modal .form-section h5 {
+  margin-bottom: 16px !important;
+  color: #667eea;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-profile-modal .form-section h5::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+.edit-profile-modal .ant-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.edit-profile-modal .ant-switch-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Update min-height for new layout */
+.profile-section-card {
+  min-height: auto;
+}
+
+.profile-section-card .ant-card-body {
+  min-height: auto;
 }
 
 .ant-modal .ant-select-selection-item,

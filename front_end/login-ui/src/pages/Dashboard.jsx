@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Layout,
   Menu,
@@ -21,13 +21,15 @@ import SearchScheme from "./Search";
 import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
+import ProfileUpdatePrompt from "../components/ProfileUpdatePrompt";
 import { useAuth } from "../hooks/useAuth";
+import useProfileStatus from "../hooks/useProfileStatus";
 import { ROLE_COLORS, ROUTES } from "../config/constants";
 
 const { Sider, Content } = Layout;
 
 // Memoized content section to prevent unnecessary renders
-const DashboardContent = React.memo(({ activeTab }) => {
+const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
   switch (activeTab) {
     case "categories":
       return (
@@ -44,7 +46,7 @@ const DashboardContent = React.memo(({ activeTab }) => {
       return <Notifications />;
 
     case "profile":
-      return <Profile />;
+      return <Profile openFormDirectly={openProfileForm} />;
 
     default:
       return <SearchScheme />;
@@ -56,6 +58,7 @@ DashboardContent.displayName = "DashboardContent";
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("search");
   const { getRole, logout, getUsername } = useAuth();
+  const { isProfileComplete, loading: profileLoading } = useProfileStatus();
   const role = getRole();
   const accentColor = ROLE_COLORS[role] || "#52c41a";
 
@@ -65,6 +68,34 @@ function Dashboard() {
   
   // Get first letter of username for avatar (uppercase)
   const userInitial = username ? username.charAt(0).toUpperCase() : null;
+
+  // State for profile update prompt
+  const [showProfilePrompt, setShowProfilePrompt] = useState(false);
+  const [hasShownPrompt, setHasShownPrompt] = useState(false);
+  const [openProfileForm, setOpenProfileForm] = useState(false);
+
+  // Show profile prompt if profile is incomplete and hasn't been shown yet
+  useEffect(() => {
+    if (!profileLoading && !isProfileComplete && !hasShownPrompt) {
+      // Check if user has dismissed the prompt in this session
+      const dismissed = sessionStorage.getItem("profilePromptDismissed");
+      if (!dismissed) {
+        setShowProfilePrompt(true);
+        setHasShownPrompt(true);
+      }
+    }
+  }, [profileLoading, isProfileComplete, hasShownPrompt]);
+
+  const handleProfilePromptUpdate = useCallback(() => {
+    setShowProfilePrompt(false);
+    setOpenProfileForm(true);
+    setActiveTab("profile");
+  }, []);
+
+  const handleProfilePromptDismiss = useCallback(() => {
+    setShowProfilePrompt(false);
+    sessionStorage.setItem("profilePromptDismissed", "true");
+  }, []);
 
   const [notificationCount, setNotificationCount] = useState(0);
   React.useEffect(() => {
@@ -83,6 +114,10 @@ function Dashboard() {
     if (e.key === "logout") {
       handleLogout();
     } else {
+      // Reset openProfileForm when switching tabs
+      if (e.key !== "profile") {
+        setOpenProfileForm(false);
+      }
       setActiveTab(e.key);
     }
   }, [handleLogout]);
@@ -153,12 +188,19 @@ function Dashboard() {
             <Content 
               className={`dashboard-content ${activeTab === 'grievances' ? 'grievances-view' : 'default-view'}`}
             >
-              <DashboardContent activeTab={activeTab} />
+              <DashboardContent activeTab={activeTab} openProfileForm={openProfileForm} />
             </Content>
           </Layout>
 
         </Layout>
       </div>
+
+      {/* Profile Update Prompt Modal */}
+      <ProfileUpdatePrompt
+        visible={showProfilePrompt}
+        onUpdateProfile={handleProfilePromptUpdate}
+        onDismiss={handleProfilePromptDismiss}
+      />
     </MainLayout>
   );
 }

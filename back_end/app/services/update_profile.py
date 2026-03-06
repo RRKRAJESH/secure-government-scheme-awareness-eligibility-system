@@ -4,55 +4,95 @@ from app.configs.config import settings
 from fastapi import status
 from bson import ObjectId
 from app.utils.mongo_helpers import serialize_enums
+from app.utils.date_time import current_time_utc
+
 
 def update_profile_info(update_payload, token):
+    """Update user profile with flat structure"""
     try:
+        user_profile_collection = get_collection(
+            db_name=settings.PRODUCTION_DATABASE_NAME, 
+            collection_name=settings.USERS_PROFILE_COLLECTION_NAME
+        )
 
-        user_profile_collection = get_collection(db_name= settings.PRODUCTION_DATABASE_NAME, collection_name= settings.USERS_PROFILE_COLLECTION_NAME)
+        users_collection = get_collection(
+            db_name=settings.PRODUCTION_DATABASE_NAME, 
+            collection_name=settings.USERS_COLLECTION_NAME
+        )
 
         user_id = token.get("user_id")
-        profile_info_type = serialize_enums(update_payload.get("profile_info_type"))
 
         user_profile_existing_check = user_profile_collection.find_one({"user_id": ObjectId(user_id)})
         
         if not user_profile_existing_check:
             message = "User not found in the user profiles list"
-            raise_http_error(status_code= status.HTTP_400_BAD_REQUEST, 
-                        message= message
-                        )
-        if profile_info_type == "BASIC_INFO":
-            user_profile_collection.update_one({"user_id": ObjectId(user_id)}, {"$set": {"basic_info": serialize_enums(update_payload.get("update_info"))}})
-        elif profile_info_type == "COMMUNICATION_INFO":
-            user_profile_collection.update_one({"user_id": ObjectId(user_id)}, {"$set": {"communication_info": serialize_enums(update_payload.get("update_info"))}})
-        elif profile_info_type == "EDUCATION_INFO":
-            user_profile_collection.update_one({"user_id": ObjectId(user_id)}, {"$set": {"education_info": serialize_enums(update_payload.get("update_info"))}})
-        elif profile_info_type == "BENEFICIARY_INFO":
-            user_profile_collection.update_one({"user_id": ObjectId(user_id)}, {"$set": {"beneficiary_info": serialize_enums(update_payload.get("update_info"))}})
+            raise_http_error(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                message=message
+            )
+
+        # Serialize enums and update the profile with flat structure
+        profile_data = serialize_enums(update_payload)
+        profile_data["updated_at"] = current_time_utc()
+        
+        user_profile_collection.update_one(
+            {"user_id": ObjectId(user_id)}, 
+            {"$set": profile_data}
+            )
+
+        users_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"user_profile_updated": True}}
+        )
 
     except Exception as e:
-        print(f"Error occured while processing :: update_profile_info() :{str(e)}")
+        print(f"Error occurred while processing :: update_profile_info() :{str(e)}")
         raise
 
 
 def get_current_profile_info(token):
+    """Get current user profile with flat structure"""
     try:
-        user_profile_collection = get_collection(db_name= settings.PRODUCTION_DATABASE_NAME, collection_name= settings.USERS_PROFILE_COLLECTION_NAME)
+        user_profile_collection = get_collection(
+            db_name=settings.PRODUCTION_DATABASE_NAME, 
+            collection_name=settings.USERS_PROFILE_COLLECTION_NAME
+        )
         user_id = token.get("user_id")
-
-        print("token", token)
 
         user_profile_existing_check = user_profile_collection.find_one({"user_id": ObjectId(user_id)})
         
         if not user_profile_existing_check:
             message = "User not found in the user profiles list"
-            raise_http_error(status_code= status.HTTP_400_BAD_REQUEST, 
-                        message= message
-                        )
-            
-        user_profile_status = user_profile_collection.find_one({"user_id": ObjectId(user_id)},{"_id":0, "basic_info":1, "communication_info": 1, "education_info": 1, "beneficiary_info": 1})
-        return user_profile_status
+            raise_http_error(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                message=message
+            )
+        
+        # Get profile data excluding internal fields
+        profile_data = user_profile_collection.find_one(
+            {"user_id": ObjectId(user_id)},
+        )
+        
+        # Remove internal MongoDB fields and convert ObjectId to string
+        if profile_data:
+            # Remove internal fields
+            fields_to_remove = ["_id", "user_id", "created_at", "updated_at"]
+            profile_data = {
+                k: str(v) if isinstance(v, ObjectId) else v 
+                for k, v in profile_data.items() 
+                if k not in fields_to_remove
+            }
+        
+        # Check if profile is complete (has all required fields)
+        required_fields = ["name", "dob", "gender", "phone", "address_line_1", "district", "pincode", "social_category"]
+        is_complete = all(profile_data.get(field) for field in required_fields) if profile_data else False
+        
+        return {
+            "profile_info": profile_data if profile_data else {},
+            "is_profile_complete": is_complete
+        }
     
     except Exception as e:
-        print(f"Error occured while processing :: update_profile_info() :{str(e)}")
+        print(f"Error occurred while processing :: get_current_profile_info() :{str(e)}")
         raise
 
