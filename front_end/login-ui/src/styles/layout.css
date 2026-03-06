@@ -44,3 +44,17 @@
   position: relative;
   z-index: 1;
 }
+
+/* Standard Close button styling used across the app */
+.btn-close {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #fff !important;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #fff !important;
+}

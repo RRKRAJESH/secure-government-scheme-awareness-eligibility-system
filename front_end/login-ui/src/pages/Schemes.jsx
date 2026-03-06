@@ -302,10 +302,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
 
           {/* Footer Actions */}
           <div className="modal-footer-actions">
-            <Button size="large" onClick={onClose}>Close</Button>
-            <Button type="primary" size="large" disabled className="apply-now-btn">
-              Apply Now
-            </Button>
+            <Button size="large" onClick={onClose} className="btn-close">Close</Button>
           </div>
         </div>
       )}
