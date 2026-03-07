@@ -43,13 +43,38 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,
-                "directUse": 1
+                "directUse": 1,
+                "benefits": 1,
+                "createdAt": 1,
             }
         ).skip(skip).limit(limit).sort("schemeName", 1)
 
         schemes = []
         for scheme in schemes_cursor:
             scheme["_id"] = str(scheme["_id"])
+            # Convert createdAt datetime to ISO string for JSON serialization
+            if scheme.get("createdAt"):
+                scheme["createdAt"] = scheme["createdAt"].isoformat() if hasattr(scheme["createdAt"], 'isoformat') else str(scheme["createdAt"])
+
+            # Derive benefitType from nested benefits if present
+            benefit = None
+            if scheme.get("benefitType"):
+                benefit = scheme.get("benefitType")
+            elif scheme.get("benefits") and isinstance(scheme.get("benefits"), dict):
+                benefit = scheme["benefits"].get("benefitType")
+
+            if benefit:
+                scheme["benefitType"] = benefit
+            else:
+                scheme.setdefault("benefitType", None)
+
+            # Remove nested benefits to keep list payload small
+            if "benefits" in scheme:
+                try:
+                    del scheme["benefits"]
+                except Exception:
+                    pass
+
             schemes.append(scheme)
 
         return {
@@ -98,13 +123,17 @@ def get_scheme_by_id(scheme_id: str):
         if scheme.get("parentSchemeId"):
             scheme["parentSchemeId"] = str(scheme["parentSchemeId"])
 
-        # Convert dates to string if present
+        # Normalize and convert date fields to strings if present
+        # Support both old and new field names from Mongo documents
         if scheme.get("launchDate"):
             scheme["launchDate"] = str(scheme["launchDate"])
+
+        # Normalize created/updated timestamps to ISO strings if present
         if scheme.get("createdAt"):
-            del scheme["createdAt"]
+            scheme["createdAt"] = str(scheme["createdAt"])
+
         if scheme.get("updatedAt"):
-            del scheme["updatedAt"]
+            scheme["updatedAt"] = str(scheme["updatedAt"])
 
         # If umbrella scheme, fetch sub-schemes
         sub_schemes = []
@@ -185,6 +214,17 @@ def search_schemes(filters: dict):
         if direct_use is not None:
             query["directUse"] = direct_use
             applied_filters["directUse"] = direct_use
+
+        # Benefit type filter (matches nested benefits.benefitType or top-level benefitType)
+        benefit_type = filters.get("benefitType")
+        if benefit_type:
+            query.setdefault("$and", []).append({
+                "$or": [
+                    {"benefits.benefitType": benefit_type},
+                    {"benefitType": benefit_type}
+                ]
+            })
+            applied_filters["benefitType"] = benefit_type
 
         # State filter
         state = filters.get("state")
@@ -283,13 +323,38 @@ def search_schemes(filters: dict):
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,
-                "directUse": 1
+                "directUse": 1,
+                "benefits": 1,
+                "createdAt": 1,
             }
         ).skip(skip).limit(limit).sort("schemeName", 1)
 
         schemes = []
         for scheme in schemes_cursor:
             scheme["_id"] = str(scheme["_id"])
+            # Convert createdAt datetime to ISO string for JSON serialization
+            if scheme.get("createdAt"):
+                scheme["createdAt"] = scheme["createdAt"].isoformat() if hasattr(scheme["createdAt"], 'isoformat') else str(scheme["createdAt"])
+
+            # Derive benefitType from nested benefits if present
+            benefit = None
+            if scheme.get("benefitType"):
+                benefit = scheme.get("benefitType")
+            elif scheme.get("benefits") and isinstance(scheme.get("benefits"), dict):
+                benefit = scheme["benefits"].get("benefitType")
+
+            if benefit:
+                scheme["benefitType"] = benefit
+            else:
+                scheme.setdefault("benefitType", None)
+
+            # Remove nested benefits to keep list payload small
+            if "benefits" in scheme:
+                try:
+                    del scheme["benefits"]
+                except Exception:
+                    pass
+
             schemes.append(scheme)
 
         return {
@@ -330,8 +395,11 @@ def get_scheme_by_code(scheme_code: str):
         if scheme.get("parentSchemeId"):
             scheme["parentSchemeId"] = str(scheme["parentSchemeId"])
 
+        # Normalize and convert date fields to strings if present
         if scheme.get("launchDate"):
             scheme["launchDate"] = str(scheme["launchDate"])
+
+        # Remove internal timestamp fields if present (support multiple names)
         if scheme.get("createdAt"):
             del scheme["createdAt"]
         if scheme.get("updatedAt"):

@@ -309,6 +309,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .scheme-card-content {
@@ -363,6 +364,15 @@
   padding: 1px 6px;
   border-radius: 3px;
   text-transform: capitalize;
+}
+
+.scheme-added-date {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 /* Pagination */

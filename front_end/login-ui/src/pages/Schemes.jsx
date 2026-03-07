@@ -57,6 +57,18 @@ const GOVERNMENT_LEVELS = [
   { value: "BOTH", label: "Both" },
 ];
 
+const BENEFIT_TYPES = [
+  { value: "INFRASTRUCTURE_SUPPORT", label: "Infrastructure Support" },
+  { value: "SERVICE", label: "Service" },
+  { value: "SUBSIDY", label: "Subsidy" },
+  { value: "PRICE_SUPPORT", label: "Price Support" },
+  { value: "LOAN", label: "Loan" },
+  { value: "CASH_TRANSFER", label: "Cash Transfer" },
+  { value: "TRAINING", label: "Training" },
+  { value: "INSURANCE", label: "Insurance" },
+  { value: "PENSION", label: "Pension" },
+];
+
 const PAGE_SIZE_OPTIONS = [
   { value: 5, label: "5 per page" },
   { value: 10, label: "10 per page" },
@@ -78,6 +90,16 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
     COMPONENT: "green"
   }[type] || "default");
 
+  const getBenefitColor = (b) => ({
+    CASH_TRANSFER: "green",
+    SUBSIDY: "gold",
+    LOAN: "volcano",
+    INSURANCE: "geekblue",
+    TRAINING: "purple",
+    EQUIPMENT: "cyan",
+    MIXED: "default",
+  }[b] || "default");
+
   return (
     <Card 
       className="scheme-card"
@@ -97,11 +119,20 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         <div className="scheme-tags">
           <Tag color={getTypeColor(scheme.schemeType)}>{scheme.schemeType}</Tag>
           <Tag color={getLevelColor(scheme.governmentLevel)}>{scheme.governmentLevel}</Tag>
+          {scheme.benefitType && (
+            <Tag color={getBenefitColor(scheme.benefitType)}>{scheme.benefitType}</Tag>
+          )}
         </div>
         
         <div className="scheme-category-tag">
           <Tag color="green">{scheme.category?.replace("_", " ")}</Tag>
         </div>
+        
+        {scheme.createdAt && (
+          <div className="scheme-added-date">
+            Added on: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+          </div>
+        )}
       </div>
     </Card>
   );
@@ -135,13 +166,21 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
         <div className="scheme-detail-content">
           {/* Hero Header */}
           <div className="scheme-hero-header">
-            <div className="scheme-hero-title">
+              <div className="scheme-hero-title">
               <Title level={3} style={{ color: '#fff', margin: 0 }}>{scheme.schemeName}</Title>
               <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{scheme.schemeCode}</Text>
+              {scheme.createdAt && (
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, display: 'block', marginTop: 6 }}>
+                  Scheme added on: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+                </Text>
+              )}
             </div>
             <div className="scheme-hero-tags">
               <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.schemeType}</Tag>
               <Tag color={getLevelColor(scheme.governmentLevel)} style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.governmentLevel}</Tag>
+              {scheme.benefitType && (
+                <Tag color={getBenefitColor(scheme.benefitType)} style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.benefitType}</Tag>
+              )}
               <Tag color={scheme.status === "ACTIVE" ? "success" : "error"} style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.status}</Tag>
             </div>
           </div>
@@ -360,6 +399,18 @@ const FilterContent = ({ filters, onFilterChange, onClear, activeFiltersCount })
         style={{ width: '100%' }}
       />
     </div>
+
+    <div className="filter-item">
+      <Text type="secondary" className="filter-label">Benefit Type</Text>
+      <Select
+        placeholder="All Benefit Types"
+        value={filters.benefitType}
+        onChange={(v) => onFilterChange("benefitType", v)}
+        options={BENEFIT_TYPES}
+        allowClear
+        style={{ width: '100%' }}
+      />
+    </div>
   </div>
 );
 
@@ -372,6 +423,7 @@ const Schemes = React.memo(() => {
     schemeType: null,
     category: null,
     governmentLevel: null,
+    benefitType: null,
   });
   const [pageSize, setPageSize] = useState(10);
   const [schemes, setSchemes] = useState([]);
@@ -401,6 +453,7 @@ const Schemes = React.memo(() => {
     if (filters.schemeType) params.append("schemeType", filters.schemeType);
     if (filters.category) params.append("category", filters.category);
     if (filters.governmentLevel) params.append("governmentLevel", filters.governmentLevel);
+    if (filters.benefitType) params.append("benefitType", filters.benefitType);
 
     try {
       const response = await apiRequest(
@@ -452,12 +505,12 @@ const Schemes = React.memo(() => {
 
   // Clear filters
   const clearFilters = useCallback(() => {
-    setFilters({ schemeType: null, category: null, governmentLevel: null });
+    setFilters({ schemeType: null, category: null, governmentLevel: null, benefitType: null });
   }, []);
 
   // Clear all (filters + search)
   const clearAll = useCallback(() => {
-    setFilters({ schemeType: null, category: null, governmentLevel: null });
+    setFilters({ schemeType: null, category: null, governmentLevel: null, benefitType: null });
     setSearchKeyword("");
     fetchSchemes(1, "");
   }, [fetchSchemes]);
@@ -575,6 +628,7 @@ const Schemes = React.memo(() => {
             {filters.schemeType && <Tag closable onClose={() => handleFilterChange("schemeType", null)}>{filters.schemeType}</Tag>}
             {filters.category && <Tag closable onClose={() => handleFilterChange("category", null)}>{filters.category.replace("_", " ")}</Tag>}
             {filters.governmentLevel && <Tag closable onClose={() => handleFilterChange("governmentLevel", null)}>{filters.governmentLevel}</Tag>}
+            {filters.benefitType && <Tag closable onClose={() => handleFilterChange("benefitType", null)}>{filters.benefitType}</Tag>}
           </div>
         )}
       </div>

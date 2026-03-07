@@ -383,7 +383,9 @@ function Profile({ openFormDirectly = false }) {
       await apiRequest(API_ENDPOINTS.PROFILE_UPDATE, "POST", values);
       message.success("Profile updated successfully");
       setIsEditing(false);
+      // Refetch local hook and notify other components
       refetch();
+      try { window.dispatchEvent(new Event('profileUpdated')); } catch(e){}
     } catch (error) {
       message.error(error.message || "Failed to update profile");
     } finally {

@@ -22,7 +22,10 @@ export const useProfileStatus = () => {
     setError(null);
 
     try {
-      const data = await apiRequestRef.current(API_ENDPOINTS.PROFILE_STATUS, "GET");
+      const data = await apiRequestRef.current(
+        API_ENDPOINTS.PROFILE_STATUS,
+        "GET"
+      );
 
       setProfileData(data.profile_info);
       setIsProfileComplete(data.is_profile_complete || false);
@@ -38,6 +41,15 @@ export const useProfileStatus = () => {
   useEffect(() => {
     fetchProfileStatus();
   }, [fetchProfileStatus, refreshKey]);
+
+  // Listen for global profile update events so multiple components can refresh
+  useEffect(() => {
+    const handler = () => {
+      fetchProfileStatus();
+    };
+    window.addEventListener("profileUpdated", handler);
+    return () => window.removeEventListener("profileUpdated", handler);
+  }, [fetchProfileStatus]);
 
   // Trigger refetch by incrementing refreshKey
   const refetch = useCallback(() => {

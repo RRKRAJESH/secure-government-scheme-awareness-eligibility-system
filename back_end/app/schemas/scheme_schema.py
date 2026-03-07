@@ -81,7 +81,7 @@ class Ministry(BaseModel):
 
 
 class Description(BaseModel):
-    short: str
+    short: Optional[str] = None
     detailed: Optional[str] = None
 
 
@@ -115,7 +115,7 @@ class DisbursementSchedule(BaseModel):
 
 
 class Benefits(BaseModel):
-    benefitType: Optional[BenefitType] = None
+    benefitType: Optional[str] = None
     financial: Optional[FinancialBenefit] = None
     disbursementSchedule: Optional[List[DisbursementSchedule]] = []
     paymentMode: Optional[PaymentMode] = None
@@ -138,9 +138,11 @@ class SchemeListItem(BaseModel):
     schemeType: SchemeType
     category: SchemeCategory
     governmentLevel: GovernmentLevel
-    description: Description
+    description: Optional[Description] = None
     status: SchemeStatus
     directUse: bool = True
+    benefitType: Optional[str] = None
+    createdAt: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -157,9 +159,10 @@ class SchemeDetail(BaseModel):
     category: SchemeCategory
     governmentLevel: GovernmentLevel
     launchDate: Optional[str] = None
+    createdAt: Optional[str] = None
     ministry: Optional[Ministry] = None
     department: Optional[str] = None
-    description: Description
+    description: Optional[Description] = None
     eligibility: Optional[Eligibility] = None
     benefits: Optional[Benefits] = None
     applicationDetails: Optional[ApplicationDetails] = None
@@ -174,7 +177,7 @@ class SubSchemeItem(BaseModel):
     id: str = Field(alias="_id")
     schemeName: str
     schemeCode: str
-    description: Description
+    description: Optional[Description] = None
     status: SchemeStatus
 
     class Config:

@@ -261,6 +261,7 @@
 .scheme-card .ant-card-body {
   padding: 16px;
   height: 100%;
+  position: relative;
 }
 
 .scheme-card-content {
@@ -308,6 +309,15 @@
   font-size: 11px;
   padding: 2px 8px;
   margin: 0;
+}
+
+.scheme-added-date {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 /* ============ LOADING & EMPTY STATES ============ */
