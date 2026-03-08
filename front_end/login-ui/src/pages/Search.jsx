@@ -26,21 +26,13 @@ import {
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
+import { SECTORS } from "../config/constants";
 import "../styles/search.css";
 
 const { Title, Text, Paragraph } = Typography;
 
-// Filter options
-const CATEGORIES = [
-  { value: "AGRICULTURE", label: "Agriculture" },
-  { value: "HORTICULTURE", label: "Horticulture" },
-  { value: "IRRIGATION", label: "Irrigation" },
-  { value: "FISHERIES", label: "Fisheries" },
-  { value: "DAIRY", label: "Dairy" },
-  { value: "POULTRY", label: "Poultry" },
-  { value: "RURAL_DEVELOPMENT", label: "Rural Development" },
-  { value: "SOCIAL_WELFARE", label: "Social Welfare" },
-];
+// Filter options built from SECTORS constant
+const CATEGORIES = SECTORS.map((s) => ({ value: s, label: s.replace("_", " ") }));
 
 const GOVERNMENT_LEVELS = [
   { value: "CENTRAL", label: "Central" },
@@ -109,7 +101,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         </div>
         
         <div className="scheme-category-tag">
-          <Tag color="green">{scheme.category?.replace("_", " ")}</Tag>
+          <Tag color="green">{scheme.sector?.replace("_", " ")}</Tag>
         </div>
         
         {scheme.createdAt && (
@@ -186,7 +178,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                     <BankOutlined /> {scheme.ministry.name}
                   </div>
                 )}
-                <Tag color="green" style={{ marginTop: 12 }}>{scheme.category?.replace("_", " ")}</Tag>
+                <Tag color="green" style={{ marginTop: 12 }}>{scheme.sector?.replace("_", " ")}</Tag>
               </div>
             </div>
 
@@ -260,7 +252,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                       )}
                       {scheme.eligibility.casteCategory?.length > 0 && (
                         <tr>
-                          <td className="label-cell">Category</td>
+                          <td className="label-cell">Sector</td>
                           <td className="value-cell">{scheme.eligibility.casteCategory.join(", ")}</td>
                         </tr>
                       )}
@@ -344,7 +336,7 @@ const SearchScheme = React.memo(() => {
   
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
-    category: null,
+    sector: null,
     governmentLevel: null,
     benefitType: null,
   });
@@ -365,7 +357,7 @@ const SearchScheme = React.memo(() => {
     params.append("limit", 9);
     
     if (searchKeyword.trim()) params.append("keyword", searchKeyword.trim());
-    if (filters.category) params.append("category", filters.category);
+    if (filters.sector) params.append("sector", filters.sector);
     if (filters.governmentLevel) params.append("governmentLevel", filters.governmentLevel);
     if (filters.benefitType) params.append("benefitType", filters.benefitType);
     params.append("directUse", "true");
@@ -395,7 +387,7 @@ const SearchScheme = React.memo(() => {
   }, []);
 
   const clearAll = useCallback(() => {
-    setFilters({ category: null, governmentLevel: null, benefitType: null });
+    setFilters({ sector: null, governmentLevel: null, benefitType: null });
     setSearchKeyword("");
     setSchemes([]);
     setHasSearched(false);
@@ -555,14 +547,14 @@ const SearchScheme = React.memo(() => {
 
         {showFilters && (
           <div className="filters-container">
-            <Select
-              placeholder="Select Category"
-              value={filters.category}
-              onChange={(v) => handleFilterChange("category", v)}
-              options={CATEGORIES}
-              allowClear
-              style={{ minWidth: 180 }}
-            />
+                    <Select
+                      placeholder="Select Sector"
+                      value={filters.sector}
+                      onChange={(v) => handleFilterChange("sector", v)}
+                      options={CATEGORIES}
+                      allowClear
+                      style={{ minWidth: 180 }}
+                    />
             <Select
               placeholder="Government Level"
               value={filters.governmentLevel}
@@ -592,7 +584,7 @@ const SearchScheme = React.memo(() => {
           <Text type="secondary"><InfoCircleOutlined /> Quick Tips:</Text>
           <ul>
             <li>Try searching "PM Kisan" or "irrigation"</li>
-            <li>Filter by category like Agriculture or Fisheries</li>
+            <li>Filter by sector like Agriculture or Fisheries</li>
             <li>Click on any scheme card to see full details</li>
           </ul>
         </div>

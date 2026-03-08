@@ -6,7 +6,7 @@ import useProfileStatus from "../hooks/useProfileStatus";
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { DISTRICTS, GENDERS, SOCIAL_CATEGORIES, FARMER_CATEGORIES, AGRICULTURE_TYPES, REGEX_PATTERNS } from "../config/constants";
+import { DISTRICTS, GENDERS, SOCIAL_CATEGORIES, FARMER_CATEGORIES, SECTORS, REGEX_PATTERNS } from "../config/constants";
 import "../styles/profile.css";
 
 const { Title } = Typography;
@@ -62,7 +62,7 @@ const EditProfileModal = React.memo(({ visible, data, onCancel, onSubmit, loadin
         annual_income: data.annual_income,
         are_you_farmer: data.are_you_farmer || false,
         farmer_category: data.farmer_category,
-        agriculture_types: data.agriculture_types || [],
+        sector: data.sector || [],
         land_holding: data.land_holding,
       });
     } else if (visible) {
@@ -88,7 +88,7 @@ const EditProfileModal = React.memo(({ visible, data, onCancel, onSubmit, loadin
       // Remove farmer fields if not a farmer
       if (!values.are_you_farmer) {
         payload.farmer_category = null;
-        payload.agriculture_types = [];
+        payload.sector = [];
         payload.land_holding = null;
       }
       
@@ -103,7 +103,7 @@ const EditProfileModal = React.memo(({ visible, data, onCancel, onSubmit, loadin
     if (!checked) {
       form.setFieldsValue({
         farmer_category: null,
-        agriculture_types: [],
+        sector: [],
         land_holding: null,
       });
     }
@@ -327,12 +327,12 @@ const EditProfileModal = React.memo(({ visible, data, onCancel, onSubmit, loadin
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    name="agriculture_types"
-                    label="Agriculture Types"
+                    name="sector"
+                    label="Sector"
                     rules={[{ required: isFarmer, message: "Required for farmers" }]}
                   >
-                    <Select mode="multiple" placeholder="Select agriculture types">
-                      {AGRICULTURE_TYPES.map((t) => (
+                    <Select mode="multiple" placeholder="Select sector">
+                      {SECTORS.map((t) => (
                         <Option key={t} value={t}>{t}</Option>
                       ))}
                     </Select>
@@ -488,8 +488,8 @@ function Profile({ openFormDirectly = false }) {
                         value={profileData.land_holding ? `${profileData.land_holding} Hectares` : null} 
                       />
                       <ProfileItem 
-                        label="Agriculture Types" 
-                        value={profileData.agriculture_types?.join(", ")} 
+                        label="Sector" 
+                        value={profileData.sector?.join(", ")} 
                       />
                     </>
                   )}

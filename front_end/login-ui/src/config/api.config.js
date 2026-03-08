@@ -67,7 +67,7 @@ export const API_ENDPOINTS = {
   // Response: { data: { schemes: [...], pagination: {...} } }
   SCHEMES_LIST: `${API_BASE_URL}/api/v1/backend/schemes/list`,
 
-  // GET /schemes/search?keyword=...&category=...&governmentLevel=...
+  // GET /schemes/search?keyword=...&sector=...&governmentLevel=...
   // Headers: Authorization: Bearer {token}
   // Response: { data: { schemes: [...], pagination: {...}, appliedFilters: {...} } }
   SCHEMES_SEARCH: `${API_BASE_URL}/api/v1/backend/schemes/search`,
@@ -92,7 +92,7 @@ export const API_ENDPOINTS = {
   // Response: { data: { suggestions: [{ id, name, code, type }] } }
   SCHEMES_SUGGESTIONS: `${API_BASE_URL}/api/v1/backend/schemes/suggestions`,
 
-  // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with category filter)
+  // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with sector filter)
   SCHEMES_CATEGORIES: `${API_BASE_URL}/api/v1/backend/schemes/categories`,
 };
 

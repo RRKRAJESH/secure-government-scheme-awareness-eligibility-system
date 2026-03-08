@@ -34,14 +34,12 @@ class FarmerCategories(str, Enum):
     LARGE = "LARGE"
 
 
-class AgricultureTypes(str, Enum):
-    CROP = "CROP"
-    HORTICULTURE = "HORTICULTURE"
-    ORGANIC = "ORGANIC"
-    IRRIGATION = "IRRIGATION"
-    FISHERIES = "FISHERIES"
-    POULTRY = "POULTRY"
+class AgricultureSector(str, Enum):
+    AGRICULTURE = "AGRICULTURE"
     DAIRY = "DAIRY"
+    POULTRY = "POULTRY"
+    FISHERIES = "FISHERIES"
+    HORTICULTURE = "HORTICULTURE"
 
 
 class ProfileUpdateSuccessMessageSchema(AppBaseModel):
@@ -78,7 +76,7 @@ class ProfileUpdateSchema(AppBaseModel):
     # Farmer Info
     are_you_farmer: bool = False
     farmer_category: FarmerCategories | None = None
-    agriculture_types: List[AgricultureTypes] = Field(default_factory=list)
+    sector: List[AgricultureSector] = Field(default_factory=list)
     land_holding: Annotated[float, Field(gt=0)] | None = None
 
     @model_validator(mode="after")
@@ -98,8 +96,8 @@ class ProfileUpdateSchema(AppBaseModel):
                 f"Missing required fields when are_you_farmer=True: {', '.join(missing)}"
             )
 
-        if not self.agriculture_types:
-            raise ValueError("agriculture_types is required when are_you_farmer=True")
+        if not self.sector:
+            raise ValueError("sector is required when are_you_farmer=True")
 
         return self
 
@@ -124,7 +122,7 @@ class ProfileCurrentStatusResponseData(AppBaseModel):
     annual_income: int | None = None
     are_you_farmer: bool | None = None
     farmer_category: str | None = None
-    agriculture_types: List[str] | None = None
+    sector: List[str] | None = None
     land_holding: float | None = None
 
 

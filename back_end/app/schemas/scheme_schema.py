@@ -14,17 +14,12 @@ class SchemeType(str, Enum):
     UMBRELLA = "UMBRELLA"
     COMPONENT = "COMPONENT"
 
-
-class SchemeCategory(str, Enum):
+class AgricultureSector(str, Enum):
     AGRICULTURE = "AGRICULTURE"
-    HORTICULTURE = "HORTICULTURE"
-    IRRIGATION = "IRRIGATION"
-    FISHERIES = "FISHERIES"
     DAIRY = "DAIRY"
     POULTRY = "POULTRY"
-    RURAL_DEVELOPMENT = "RURAL_DEVELOPMENT"
-    SOCIAL_WELFARE = "SOCIAL_WELFARE"
-
+    FISHERIES = "FISHERIES"
+    HORTICULTURE = "HORTICULTURE"
 
 class GovernmentLevel(str, Enum):
     CENTRAL = "CENTRAL"
@@ -136,7 +131,7 @@ class SchemeListItem(BaseModel):
     schemeName: str
     schemeCode: str
     schemeType: SchemeType
-    category: SchemeCategory
+    sector: AgricultureSector
     governmentLevel: GovernmentLevel
     description: Optional[Description] = None
     status: SchemeStatus
@@ -156,7 +151,7 @@ class SchemeDetail(BaseModel):
     schemeType: SchemeType
     directUse: bool = True
     parentSchemeId: Optional[str] = None
-    category: SchemeCategory
+    sector: AgricultureSector
     governmentLevel: GovernmentLevel
     launchDate: Optional[str] = None
     createdAt: Optional[str] = None
@@ -188,7 +183,7 @@ class SubSchemeItem(BaseModel):
 class SchemeSearchFilters(BaseModel):
     """Search filters for schemes"""
     keyword: Optional[str] = None
-    category: Optional[SchemeCategory] = None
+    sector: Optional[AgricultureSector] = None
     governmentLevel: Optional[GovernmentLevel] = None
     schemeType: Optional[SchemeType] = None
     status: Optional[SchemeStatus] = SchemeStatus.ACTIVE

@@ -255,7 +255,7 @@ import {
   QUALIFICATIONS,
   FARMER_CATEGORIES,
   SOCIAL_CATEGORIES,
-  AGRICULTURE_TYPES,
+  SECTORS,
 } from "../config/constants";
 
 // Use in Select components:

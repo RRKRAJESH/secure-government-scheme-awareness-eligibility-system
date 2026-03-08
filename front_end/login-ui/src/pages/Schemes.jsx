@@ -29,6 +29,7 @@ import {
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
+import { SECTORS } from "../config/constants";
 import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
@@ -40,16 +41,7 @@ const SCHEME_TYPES = [
   { value: "COMPONENT", label: "Component" },
 ];
 
-const CATEGORIES = [
-  { value: "AGRICULTURE", label: "Agriculture" },
-  { value: "HORTICULTURE", label: "Horticulture" },
-  { value: "IRRIGATION", label: "Irrigation" },
-  { value: "FISHERIES", label: "Fisheries" },
-  { value: "DAIRY", label: "Dairy" },
-  { value: "POULTRY", label: "Poultry" },
-  { value: "RURAL_DEVELOPMENT", label: "Rural Development" },
-  { value: "SOCIAL_WELFARE", label: "Social Welfare" },
-];
+const CATEGORIES = SECTORS.map((s) => ({ value: s, label: s.replace("_", " ") }));
 
 const GOVERNMENT_LEVELS = [
   { value: "CENTRAL", label: "Central" },
@@ -125,7 +117,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         </div>
         
         <div className="scheme-category-tag">
-          <Tag color="green">{scheme.category?.replace("_", " ")}</Tag>
+          <Tag color="green">{scheme.sector?.replace("_", " ")}</Tag>
         </div>
         
         {scheme.createdAt && (
@@ -202,7 +194,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                     <BankOutlined /> {scheme.ministry.name}
                   </div>
                 )}
-                <Tag color="green" style={{ marginTop: 12 }}>{scheme.category?.replace("_", " ")}</Tag>
+                <Tag color="green" style={{ marginTop: 12 }}>{scheme.sector?.replace("_", " ")}</Tag>
               </div>
             </div>
 
@@ -377,15 +369,15 @@ const FilterContent = ({ filters, onFilterChange, onClear, activeFiltersCount })
     </div>
     
     <div className="filter-item">
-      <Text type="secondary" className="filter-label">Category</Text>
-      <Select
-        placeholder="All Categories"
-        value={filters.category}
-        onChange={(v) => onFilterChange("category", v)}
-        options={CATEGORIES}
-        allowClear
-        style={{ width: '100%' }}
-      />
+        <Text type="secondary" className="filter-label">Sector</Text>
+        <Select
+          placeholder="All Sectors"
+          value={filters.sector}
+          onChange={(v) => onFilterChange("sector", v)}
+          options={CATEGORIES}
+          allowClear
+          style={{ width: '100%' }}
+        />
     </div>
     
     <div className="filter-item">
@@ -421,7 +413,7 @@ const Schemes = React.memo(() => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
     schemeType: null,
-    category: null,
+    sector: null,
     governmentLevel: null,
     benefitType: null,
   });
@@ -451,7 +443,7 @@ const Schemes = React.memo(() => {
     
     if (keyword.trim()) params.append("keyword", keyword.trim());
     if (filters.schemeType) params.append("schemeType", filters.schemeType);
-    if (filters.category) params.append("category", filters.category);
+    if (filters.sector) params.append("sector", filters.sector);
     if (filters.governmentLevel) params.append("governmentLevel", filters.governmentLevel);
     if (filters.benefitType) params.append("benefitType", filters.benefitType);
 
@@ -505,12 +497,12 @@ const Schemes = React.memo(() => {
 
   // Clear filters
   const clearFilters = useCallback(() => {
-    setFilters({ schemeType: null, category: null, governmentLevel: null, benefitType: null });
+    setFilters({ schemeType: null, sector: null, governmentLevel: null, benefitType: null });
   }, []);
 
   // Clear all (filters + search)
   const clearAll = useCallback(() => {
-    setFilters({ schemeType: null, category: null, governmentLevel: null, benefitType: null });
+    setFilters({ schemeType: null, sector: null, governmentLevel: null, benefitType: null });
     setSearchKeyword("");
     fetchSchemes(1, "");
   }, [fetchSchemes]);
@@ -626,7 +618,7 @@ const Schemes = React.memo(() => {
         {activeFiltersCount > 0 && (
           <div className="active-filters">
             {filters.schemeType && <Tag closable onClose={() => handleFilterChange("schemeType", null)}>{filters.schemeType}</Tag>}
-            {filters.category && <Tag closable onClose={() => handleFilterChange("category", null)}>{filters.category.replace("_", " ")}</Tag>}
+            {filters.sector && <Tag closable onClose={() => handleFilterChange("sector", null)}>{filters.sector.replace("_", " ")}</Tag>}
             {filters.governmentLevel && <Tag closable onClose={() => handleFilterChange("governmentLevel", null)}>{filters.governmentLevel}</Tag>}
             {filters.benefitType && <Tag closable onClose={() => handleFilterChange("benefitType", null)}>{filters.benefitType}</Tag>}
           </div>

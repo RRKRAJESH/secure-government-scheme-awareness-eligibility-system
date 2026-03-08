@@ -39,7 +39,7 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
                 "schemeName": 1,
                 "schemeCode": 1,
                 "schemeType": 1,
-                "category": 1,
+                "sector": 1,
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,
@@ -191,11 +191,11 @@ def search_schemes(filters: dict):
             ]
             applied_filters["keyword"] = keyword
 
-        # Category filter
-        category = filters.get("category")
-        if category:
-            query["category"] = category
-            applied_filters["category"] = category
+        # Sector filter
+        sector = filters.get("sector")
+        if sector:
+            query["sector"] = sector
+            applied_filters["sector"] = sector
 
         # Government level filter
         government_level = filters.get("governmentLevel")
@@ -319,7 +319,7 @@ def search_schemes(filters: dict):
                 "schemeName": 1,
                 "schemeCode": 1,
                 "schemeType": 1,
-                "category": 1,
+                "sector": 1,
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,
@@ -481,7 +481,7 @@ def get_eligible_schemes_for_user(user_profile: dict):
                 "schemeName": 1,
                 "schemeCode": 1,
                 "schemeType": 1,
-                "category": 1,
+                "sector": 1,
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,

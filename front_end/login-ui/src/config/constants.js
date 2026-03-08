@@ -59,14 +59,12 @@ export const SOCIAL_CATEGORIES = ["SC", "ST", "OBC", "OC"];
 
 export const GENDERS = ["Male", "Female", "Other"];
 
-export const AGRICULTURE_TYPES = [
-  "CROP",
-  "HORTICULTURE",
-  "ORGANIC",
-  "IRRIGATION",
-  "FISHERIES",
-  "POULTRY",
+export const SECTORS = [
+  "AGRICULTURE",
   "DAIRY",
+  "POULTRY",
+  "FISHERIES",
+  "HORTICULTURE",
 ];
 
 export const STORAGE_KEYS = {

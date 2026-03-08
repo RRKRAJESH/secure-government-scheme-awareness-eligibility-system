@@ -4,9 +4,9 @@ from typing import Union, Optional
 from app.services.error import raise_http_error
 from app.schemas.scheme_schema import (
     SchemeListResponse,
+    AgricultureSector,
     SchemeDetailResponse,
     SchemeSearchResponse,
-    SchemeCategory,
     GovernmentLevel,
     SchemeType,
     SchemeStatus
@@ -68,7 +68,7 @@ async def list_schemes_handler(
 )
 async def search_schemes_handler(
     keyword: Optional[str] = Query(None, description="Search keyword"),
-    category: Optional[SchemeCategory] = Query(None, description="Filter by category"),
+    sector: Optional[AgricultureSector] = Query(None, description="Filter by sector"),
     governmentLevel: Optional[GovernmentLevel] = Query(None, description="Filter by government level"),
     schemeType: Optional[SchemeType] = Query(None, description="Filter by scheme type"),
     status_filter: Optional[SchemeStatus] = Query(SchemeStatus.ACTIVE, alias="status", description="Filter by status"),
@@ -88,7 +88,7 @@ async def search_schemes_handler(
     try:
         filters = {
             "keyword": keyword,
-            "category": category.value if category else None,
+            "sector": sector.value if sector else None,
             "governmentLevel": governmentLevel.value if governmentLevel else None,
             "schemeType": schemeType.value if schemeType else None,
             "benefitType": benefitType,
