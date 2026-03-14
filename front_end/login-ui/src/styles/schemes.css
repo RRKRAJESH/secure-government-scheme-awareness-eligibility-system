@@ -472,12 +472,33 @@
 .detail-section {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(102,126,234,0.20);
+  padding: 20px 20px 20px 28px;
+  box-shadow: 0 8px 24px rgba(102,126,234,0.06);
   position: relative;
   z-index: 1;
 }
+
+/* Left accent strip for visual differentiation */
+.detail-section::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  bottom: 12px;
+  width: 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 0;
+  background: rgba(99,102,241,0.9); /* default indigo */
+}
+
+/* Section-specific accents */
+.about-section::before { background: #6366F1; }
+.benefits-section::before { background: #10B981; }
+.eligibility-section::before { background: #F59E0B; }
+.apply-section::before { background: #8B5CF6; }
+.subschemes-section::before { background: #06B6D4; }
 
 .about-section {
   grid-area: about;
