@@ -10,6 +10,7 @@ from app.services.error import _default_status_text
 from app.api.v1.auth import router as auth_router
 from app.api.v1.update_profile import router as profile_router
 from app.api.v1.scheme import router as scheme_router
+from app.api.v1.grievances import router as grievances_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,6 +36,7 @@ app.middleware("http")(log_request_response)
 app.include_router(auth_router, prefix= "/auth", tags= ["Authentication"])
 app.include_router(profile_router, prefix= "/profile", tags= ["Profile Information"])
 app.include_router(scheme_router, prefix= "/schemes", tags= ["Schemes"])
+app.include_router(grievances_router, prefix="/grievances", tags=["Grievances & Thoughts"])
 
 #Handle HTTPException (from raise_http_error or manual raises)
 @app.exception_handler(HTTPException)

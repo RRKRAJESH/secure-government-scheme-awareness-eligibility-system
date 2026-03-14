@@ -5,7 +5,6 @@ def current_time_utc():
         return datetime.now(timezone.utc)
     except Exception as e:
         msg =f"Error occured while processing current_time_utc():: {str(e)}"
-        print(msg)
         raise Exception(msg)
     
 def time_taken_in_millis(start_time, end_time):
@@ -17,5 +16,4 @@ def time_taken_in_millis(start_time, end_time):
 
     except Exception as e:
         msg =f"Error occured while processing time_taken_in_millis():: {str(e)}"
-        print(msg)
         raise Exception(msg)

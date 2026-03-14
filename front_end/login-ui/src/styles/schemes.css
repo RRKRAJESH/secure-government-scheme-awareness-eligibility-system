@@ -250,12 +250,34 @@
   border: 1px solid #f0f0f0;
   transition: all 0.3s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .scheme-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
   border-color: #667eea;
+}
+
+/* Blue rectangular outline (appears on hover/focus) */
+.scheme-card::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(102,126,234,0.0);
+  pointer-events: none;
+  transition: border-color 0.18s ease, opacity 0.18s ease;
+  opacity: 0;
+}
+
+.scheme-card:hover::after,
+.scheme-card:focus-within::after {
+  border-color: rgba(102,126,234,0.95);
+  opacity: 1;
 }
 
 .scheme-card .ant-card-body {
@@ -400,13 +422,23 @@
 }
 
 .scheme-hero-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+  display: block;
+}
+
+.scheme-hero-inner {
+  max-width: 1400px;
+  margin: 0 auto 18px auto;
+  width: 100%;
   padding: 32px 40px;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap;
   gap: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(102,126,234,0.08);
 }
 
 .scheme-hero-title h3 {
@@ -423,11 +455,18 @@
   flex: 1;
   padding: 32px 40px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "about about about"
+    "benefits eligibility apply"
+    "sub sub sub";
   gap: 24px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  position: relative;
+  z-index: 0;
 }
 
 .detail-section {
@@ -436,10 +475,12 @@
   border: 1px solid #f0f0f0;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 1;
 }
 
 .about-section {
-  grid-column: span 2;
+  grid-area: about;
 }
 
 .section-header {
@@ -462,6 +503,18 @@
   font-weight: 450;
 }
 
+/* Description list styling inside About section */
+.scheme-desc-list {
+  padding-left: 18px;
+  margin: 0;
+}
+.scheme-desc-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+}
+
 .ministry-badge {
   display: inline-flex;
   align-items: center;
@@ -480,6 +533,26 @@
   background: #f0fdf4;
   border-radius: 8px;
   margin-bottom: 16px;
+}
+
+/* Place sections into named grid areas so they align horizontally */
+.benefits-section { grid-area: benefits; }
+.eligibility-section { grid-area: eligibility; }
+.apply-section { grid-area: apply; }
+.subschemes-section { grid-area: sub; }
+
+/* subtle blue outline around the detail grid */
+.scheme-detail-grid::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 8px;
+  bottom: 8px;
+  border-radius: 14px;
+  border: 2px solid rgba(102,126,234,0.14);
+  pointer-events: none;
+  box-shadow: 0 6px 24px rgba(102,126,234,0.04);
 }
 
 .detail-info-table {
@@ -563,10 +636,17 @@
 @media (max-width: 1200px) {
   .scheme-detail-grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "about"
+      "benefits"
+      "eligibility"
+      "apply"
+      "sub";
+    gap: 20px;
   }
   
   .about-section {
-    grid-column: span 1;
+    grid-area: about;
   }
 }
 

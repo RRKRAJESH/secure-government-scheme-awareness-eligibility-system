@@ -28,6 +28,7 @@ import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
 import { SECTORS } from "../config/constants";
 import "../styles/search.css";
+import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -52,30 +53,31 @@ const BENEFIT_TYPES = [
   { value: "PENSION", label: "Pension" },
 ];
 
+// Shared color helpers
+const getLevelColor = (level) => ({
+  CENTRAL: "orange",
+  STATE: "cyan",
+  BOTH: "magenta"
+}[level] || "default");
+
+const getTypeColor = (type) => ({
+  STANDALONE: "blue",
+  UMBRELLA: "purple",
+  COMPONENT: "green"
+}[type] || "default");
+
+const getBenefitColor = (b) => ({
+  CASH_TRANSFER: "green",
+  SUBSIDY: "gold",
+  LOAN: "volcano",
+  INSURANCE: "geekblue",
+  TRAINING: "purple",
+  EQUIPMENT: "cyan",
+  MIXED: "default",
+}[b] || "default");
+
 // Scheme Card Component - Box format like profile cards
 const SchemeCard = React.memo(({ scheme, onClick }) => {
-  const getLevelColor = (level) => ({
-    CENTRAL: "orange",
-    STATE: "cyan",
-    BOTH: "magenta"
-  }[level] || "default");
-
-  const getTypeColor = (type) => ({
-    STANDALONE: "blue",
-    UMBRELLA: "purple",
-    COMPONENT: "green"
-  }[type] || "default");
-
-  const getBenefitColor = (b) => ({
-    CASH_TRANSFER: "green",
-    SUBSIDY: "gold",
-    LOAN: "volcano",
-    INSURANCE: "geekblue",
-    TRAINING: "purple",
-    EQUIPMENT: "cyan",
-    MIXED: "default",
-  }[b] || "default");
-
   return (
     <Card 
       className="scheme-card"
@@ -89,7 +91,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         <Text type="secondary" className="scheme-code">{scheme.schemeCode}</Text>
         
         <Paragraph ellipsis={{ rows: 2 }} className="scheme-desc">
-          {scheme.description?.short || "No description available"}
+          {typeof scheme.description === 'string' ? scheme.description : (scheme.description?.short || "No description available")}
         </Paragraph>
         
         <div className="scheme-tags">
@@ -106,7 +108,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         
         {scheme.createdAt && (
           <div className="scheme-added-date">
-            Added on: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+            Posted At: {new Date(scheme.createdAt).toISOString().slice(0,10)}
           </div>
         )}
       </div>
@@ -120,11 +122,15 @@ SchemeCard.displayName = "SchemeCard";
 const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, loading }) => {
   if (!scheme) return null;
 
-  const getLevelColor = (level) => ({
-    CENTRAL: "orange",
-    STATE: "cyan",
-    BOTH: "magenta"
-  }[level] || "default");
+  // description -> split into sentence bullets
+  let descriptionText = "";
+  if (typeof scheme.description === 'string') descriptionText = scheme.description;
+  else if (scheme.description) {
+    descriptionText = scheme.description.detailed || scheme.description.short || scheme.description.description || scheme.description.summary || scheme.description.overview || Object.values(scheme.description).filter(Boolean).join(' ');
+  }
+  const descriptionSentences = descriptionText
+    ? (descriptionText.match(/[^.!?]+[.!?]*/g) || [descriptionText]).map(s => s.trim()).filter(Boolean)
+    : [];
 
   return (
     <Modal
@@ -142,16 +148,17 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
         <div className="scheme-detail-content">
           {/* Hero Header */}
           <div className="scheme-hero-header">
+            <div className="scheme-hero-inner">
               <div className="scheme-hero-title">
-              <Title level={3} style={{ color: '#fff', margin: 0 }}>{scheme.schemeName}</Title>
-              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{scheme.schemeCode}</Text>
-              {scheme.createdAt && (
-                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, display: 'block', marginTop: 6 }}>
-                  Scheme added on: {new Date(scheme.createdAt).toISOString().slice(0,10)}
-                </Text>
-              )}
-            </div>
-            <div className="scheme-hero-tags">
+                <Title level={3} style={{ color: '#fff', margin: 0 }}>{scheme.schemeName}</Title>
+                <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{scheme.schemeCode}</Text>
+                {scheme.createdAt && (
+                  <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, display: 'block', marginTop: 6 }}>
+                    Posted At: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+                  </Text>
+                )}
+              </div>
+              <div className="scheme-hero-tags">
                 <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.schemeType}</Tag>
                 <Tag color={getLevelColor(scheme.governmentLevel)} style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.governmentLevel}</Tag>
                 {scheme.benefitType && (
@@ -159,6 +166,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                 )}
                 <Tag color={scheme.status === "ACTIVE" ? "success" : "error"} style={{ fontSize: 12, padding: '4px 12px' }}>{scheme.status}</Tag>
               </div>
+            </div>
           </div>
 
           {/* Content Grid */}
@@ -170,9 +178,17 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                 <span>About This Scheme</span>
               </div>
               <div className="section-content">
-                <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>
-                  {scheme.description?.detailed || scheme.description?.short || "No description available"}
-                </Paragraph>
+                {descriptionSentences.length > 0 ? (
+                  <ul className="scheme-desc-list">
+                    {descriptionSentences.map((s, idx) => (
+                      <li key={idx}>{s}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>
+                    No description available
+                  </Paragraph>
+                )}
                 {scheme.ministry?.name && (
                   <div className="ministry-badge">
                     <BankOutlined /> {scheme.ministry.name}

@@ -50,6 +50,82 @@
   height: 100%;
 }
 
+.professional-card {
+  padding: 12px;
+}
+
+.professional-card .professional-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pc-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pc-title .pc-meta {
+  font-size: 12px;
+}
+
+.pc-body {
+  flex: 1;
+  margin-top: 8px;
+}
+
+.pc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.pc-actions { display:flex; gap:8px; align-items:center }
+
+.post-detail-modal .post-detail-grid { display:flex; flex-direction:column; gap:16px; height: 100%; }
+.post-detail-hero { display:flex; justify-content:space-between; align-items:center; gap:20px }
+.post-hero-left { flex:1 }
+.post-hero-right { width:260px; display:flex; flex-direction:column; gap:12px; align-items:flex-end }
+.author-box { display:flex; align-items:center }
+.post-actions button { margin-left:6px }
+
+.post-detail-body { display:flex; gap:24px; flex: 1 1 auto; overflow: hidden; }
+.post-content { flex: 2; overflow: auto; padding-right: 8px; }
+.post-comments { flex: 1; overflow: auto; padding-left: 8px; }
+
+/* keep comment form visible below scrollable area */
+.post-comment-form {
+  flex-shrink: 0;
+  background: #fff;
+}
+
+/* Make the modal fixed height and ensure internal areas scroll without resizing modal */
+.post-detail-modal .ant-modal-content {
+  height: 80vh;
+  max-height: 80vh;
+}
+.post-detail-modal .ant-modal-body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  height: 100%;
+  overflow: hidden;
+}
+.post-detail-modal .post-detail-grid {
+  height: 100%;
+}
+
+/* ensure comment form stays visible at bottom */
+.post-detail-modal .post-comment-form {
+  margin-top: 12px;
+}
+
+.comment-item { display:flex; gap:12px; margin-bottom:12px }
+.comment-body .comment-meta { margin-bottom:6px }
+.comment-content { color:#333 }
+
 .write-button-section {
   margin-bottom: 20px;
   padding-bottom: 16px;
@@ -79,15 +155,16 @@
 
 .posts-list {
   flex: 1;
-  overflow-y: scroll; /* always reserve scrollbar space */
+  overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns like Schemes */
   gap: 16px;
   padding-right: 8px;
   min-height: 0;
   width: 100%;
   box-sizing: border-box;
+  align-items: start;
 }
 
 /* hide default scrollbar track background to avoid white gap */
@@ -114,21 +191,48 @@
 }
 
 .post-card {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border: 1px solid #e8eef5;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  padding: 20px;
-  flex-shrink: 0;
-  cursor: pointer;
-  box-sizing: border-box;
-  width: 100%;
+  /* legacy hookup kept for backward compatibility; primary layout uses .scheme-card */
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
-.post-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(135deg, #e0e7ff 0%, #b8d4f1 100%);
-  transform: translateX(4px);
+/* Grievance-specific overrides so scheme-card appears as grey square cards */
+.grievances-content .scheme-card {
+  height: 220px;
+  border-radius: 12px;
+  border: 1px solid #eef2f7; /* lighter border */
+  transition: all 0.25s ease;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef3f8 100%); /* more subtle grey */
+  position: relative;
+}
+
+.grievances-content .scheme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08); /* reduced shadow intensity */
+  border-color: #6b78d6; /* slightly tinted on hover */
+}
+
+/* blue rectangular outline for grievance scheme-cards */
+.grievances-content .scheme-card::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(102,126,234,0.0);
+  pointer-events: none;
+  transition: border-color 0.18s ease, opacity 0.18s ease;
+  opacity: 0;
+}
+
+.grievances-content .scheme-card:hover::after,
+.grievances-content .scheme-card:focus-within::after {
+  border-color: rgba(102,126,234,0.95);
+  opacity: 1;
 }
 
 .post-card h4 {
@@ -161,6 +265,21 @@
   font-size: 14px;
   word-break: break-word;
   overflow-wrap: break-word;
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  color: #666;
+  font-size: 13px;
+}
+
+.post-footer .meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 }
 
 .ant-tabs-nav {
