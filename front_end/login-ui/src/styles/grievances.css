@@ -157,14 +157,21 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns like Schemes */
-  gap: 16px;
+  display: block;
   padding-right: 8px;
   min-height: 0;
   width: 100%;
   box-sizing: border-box;
-  align-items: start;
+}
+
+/* when we render Row/Col inside .posts-list, adjust row/col spacing */
+.posts-list > .schemes-grid {
+  margin: 0 -8px;
+}
+.posts-list .ant-col {
+  padding: 0 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
 }
 
 .posts-list .no-results {

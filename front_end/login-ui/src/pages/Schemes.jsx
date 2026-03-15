@@ -102,7 +102,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
 
   return (
     <Card 
-      className="scheme-card"
+      className="scheme-card global-card"
       hoverable
       onClick={() => onClick(scheme)}
     >

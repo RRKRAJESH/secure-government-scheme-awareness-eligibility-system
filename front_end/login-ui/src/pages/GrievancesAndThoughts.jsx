@@ -43,28 +43,24 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
   const initials = (postedBy || "U").split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
 
   return (
-    <Card className="scheme-card professional-card" hoverable onClick={() => onClick(post)}>
-      <div className="professional-card-inner">
-        <div className="pc-header">
-          <Avatar size={40}>{initials}</Avatar>
-          <div className="pc-title">
-            <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
-            <Text type="secondary" className="pc-meta">Posted by {postedBy}</Text>
-          </div>
-        </div>
+    <Card className="scheme-card global-card" hoverable onClick={() => onClick(post)}>
+      <div className="scheme-card-content">
+        <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
+        <Text type="secondary" className="scheme-code">Posted by {postedBy}</Text>
 
-        <div className="pc-body">
-          <Paragraph className="scheme-desc">{truncateChars(post.description, 50)}</Paragraph>
-        </div>
+        <Paragraph ellipsis={{ rows: 2 }} className="scheme-desc">{post.description || ""}</Paragraph>
 
-        <div className="pc-footer">
-          <Text type="secondary">{new Date(post.posted_at || Date.now()).toLocaleDateString()}</Text>
-          <div className="pc-actions">
-            <Text type="secondary">💬 {(post.comments_count || 0)}</Text>
-            <Tooltip title="Add comment">
-              <Button type="text" icon={<CommentOutlined />} onClick={(e)=>{e.stopPropagation(); if(onComment) onComment(post);}}/>
+        <div style={{ flex: 1 }} />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Tooltip title="Comments">
+              <Text type="secondary">💬 {(post.comments_count || 0)}</Text>
             </Tooltip>
           </div>
+          {post.posted_at && (
+            <div className="scheme-added-date">{new Date(post.posted_at).toISOString().slice(0,10)}</div>
+          )}
         </div>
       </div>
     </Card>
@@ -275,14 +271,13 @@ function GrievancesAndThoughts() {
             {loadingList ? (
               <Empty description="Loading..." />
             ) : grievances.length > 0 ? (
-              grievances.map((grievance) => (
-                <PostCard
-                  key={grievance.id}
-                  post={grievance}
-                  onClick={openDetail}
-                  onComment={openDetailWithComment}
-                />
-              ))
+              <Row gutter={[16,16]} className="schemes-grid">
+                {grievances.map((grievance) => (
+                  <Col xs={24} sm={12} lg={8} xl={8} key={grievance.id}>
+                    <PostCard post={grievance} onClick={openDetail} onComment={openDetailWithComment} />
+                  </Col>
+                ))}
+              </Row>
             ) : (
               <div className="no-results">
                 <Empty description={<span>No grievances found</span>} />
@@ -313,9 +308,13 @@ function GrievancesAndThoughts() {
             {loadingList ? (
               <Empty description="Loading..." />
             ) : thoughts.length > 0 ? (
-              thoughts.map((thought) => (
-                <PostCard key={thought.id} post={thought} onClick={openDetail} onComment={openDetailWithComment} />
-              ))
+              <Row gutter={[16,16]} className="schemes-grid">
+                {thoughts.map((thought) => (
+                  <Col xs={24} sm={12} lg={8} xl={8} key={thought.id}>
+                    <PostCard post={thought} onClick={openDetail} onComment={openDetailWithComment} />
+                  </Col>
+                ))}
+              </Row>
             ) : (
               <div className="no-results">
                 <Empty description={<span>No thoughts found</span>} />

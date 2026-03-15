@@ -244,7 +244,9 @@
 }
 
 /* ============ SCHEME CARD ============ */
-.scheme-card {
+
+.scheme-card,
+.global-card {
   height: 220px;
   border-radius: 12px;
   border: 1px solid #f0f0f0;
@@ -253,14 +255,16 @@
   position: relative;
 }
 
-.scheme-card:hover {
+.scheme-card:hover,
+.global-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
   border-color: #667eea;
 }
 
 /* Blue rectangular outline (appears on hover/focus) */
-.scheme-card::after {
+.scheme-card::after,
+.global-card::after {
   content: '';
   position: absolute;
   left: 6px;
@@ -280,16 +284,32 @@
   opacity: 1;
 }
 
-.scheme-card .ant-card-body {
+.scheme-card .ant-card-body,
+.global-card .ant-card-body {
   padding: 16px;
   height: 100%;
   position: relative;
 }
 
-.scheme-card-content {
+.scheme-card-content,
+.global-card-content {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+/* Ensure cards inside Ant Col keep fixed height */
+.schemes-grid .ant-col .scheme-card,
+.schemes-grid .ant-col .global-card {
+  height: 220px;
+}
+.schemes-grid .ant-col .scheme-card .ant-card-body,
+.schemes-grid .ant-col .global-card .ant-card-body {
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .scheme-name {
