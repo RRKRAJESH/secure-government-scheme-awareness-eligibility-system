@@ -1,4 +1,5 @@
 from typing import Optional
+import math
 from bson import ObjectId
 from datetime import datetime
 
@@ -30,7 +31,7 @@ def get_users_collection():
     )
 
 
-def get_user_posts(user_id: str, post_type: Optional[str] = None):
+def get_user_posts(user_id: str, post_type: Optional[str] = None, page: int = 1, page_size: int = 20):
     try:
         coll = get_grievances_collection()
         comments_coll = get_comments_collection()
@@ -39,6 +40,28 @@ def get_user_posts(user_id: str, post_type: Optional[str] = None):
         query = {}
         if post_type:
             query["post_type"] = post_type
+
+        # validate pagination
+        try:
+            page = int(page)
+            page_size = int(page_size)
+        except Exception:
+            page = 1
+            page_size = 20
+        if page < 1:
+            page = 1
+        if page_size < 1:
+            page_size = 1
+        if page_size > 100:
+            page_size = 100
+
+        total = 0
+        try:
+            total = coll.count_documents(query)
+        except Exception:
+            total = 0
+
+        skip = (page - 1) * page_size
 
         cursor = coll.find(query, {
             "_id": 1,
@@ -49,7 +72,7 @@ def get_user_posts(user_id: str, post_type: Optional[str] = None):
             "posted_at": 1,
             "comments_count": 1,
             "created_at": 1,
-        }).sort("posted_at", -1)
+        }).sort("posted_at", -1).skip(skip).limit(page_size)
 
         posts_raw = list(cursor)
 
@@ -89,7 +112,19 @@ def get_user_posts(user_id: str, post_type: Optional[str] = None):
 
             posts.append(p)
 
-        return posts
+        total_pages = 0
+        try:
+            total_pages = math.ceil(total / page_size) if page_size else 0
+        except Exception:
+            total_pages = 0
+
+        return {
+            "posts": posts,
+            "total": int(total),
+            "page": int(page),
+            "page_size": int(page_size),
+            "total_pages": int(total_pages),
+        }
 
     except HTTPException:
         raise

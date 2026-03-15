@@ -14,6 +14,8 @@ import {
   Tag,
   Avatar,
   Tooltip,
+  Pagination,
+  Select,
 } from "antd";
 import { PlusOutlined, CommentOutlined, FileTextOutlined } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
@@ -24,6 +26,13 @@ import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+
+const PAGE_SIZE_OPTIONS = [
+  { value: 5, label: "5 per page" },
+  { value: 10, label: "10 per page" },
+  { value: 15, label: "15 per page" },
+  { value: 20, label: "20 per page" },
+];
 
 // API-backed posts
 
@@ -141,6 +150,12 @@ function GrievancesAndThoughts() {
   const [activeTab, setActiveTab] = useState("grievances");
   const [grievances, setGrievances] = useState([]);
   const [thoughts, setThoughts] = useState([]);
+  const [grievancesPage, setGrievancesPage] = useState(1);
+  const [grievancesPageSize, setGrievancesPageSize] = useState(10);
+  const [grievancesTotal, setGrievancesTotal] = useState(0);
+  const [thoughtsPage, setThoughtsPage] = useState(1);
+  const [thoughtsPageSize, setThoughtsPageSize] = useState(10);
+  const [thoughtsTotal, setThoughtsTotal] = useState(0);
   const [writeModalVisible, setWriteModalVisible] = useState(false);
   const [loadingList, setLoadingList] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -203,45 +218,51 @@ function GrievancesAndThoughts() {
       .finally(() => setCreating(false));
   }, [activeTab]);
 
-  useEffect(() => {
+  const fetchPosts = useCallback(async (postType, page, pageSize) => {
     const token = localStorage.getItem("access_token");
-    const load = async () => {
-      setLoadingList(true);
-      try {
-        const gRes = await fetch(`${API_ENDPOINTS.GRIEVANCES_LIST}?postType=GRIEVANCE`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        });
-        const gData = normalizeApiTimestampsToIST(await gRes.json());
-        if (!gData || gData.error) setGrievances([]);
-        else
-          setGrievances(
-            (gData.data.posts || []).map((p) => ({ ...p, id: p.id || p._id }))
-          );
-
-        const tRes = await fetch(`${API_ENDPOINTS.GRIEVANCES_LIST}?postType=THOUGHT`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        });
-        const tData = normalizeApiTimestampsToIST(await tRes.json());
-        if (!tData || tData.error) setThoughts([]);
-        else
-          setThoughts(
-            (tData.data.posts || []).map((p) => ({ ...p, id: p.id || p._id }))
-          );
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoadingList(false);
+    try {
+      if (postType === "GRIEVANCE") setLoadingList(true);
+      const url = `${API_ENDPOINTS.GRIEVANCES_LIST}?postType=${postType}&page=${page}&pageSize=${pageSize}`;
+      const res = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = normalizeApiTimestampsToIST(await res.json());
+      if (!data || data.error) {
+        if (postType === "GRIEVANCE") {
+          setGrievances([]);
+          setGrievancesTotal(0);
+        } else {
+          setThoughts([]);
+          setThoughtsTotal(0);
+        }
+      } else {
+        const posts = (data.data.posts || []).map((p) => ({ ...p, id: p.id || p._id }));
+        if (postType === "GRIEVANCE") {
+          setGrievances(posts);
+          setGrievancesTotal(data.data.total || 0);
+          setGrievancesPage(data.data.page || page);
+          setGrievancesPageSize(data.data.page_size || pageSize);
+        } else {
+          setThoughts(posts);
+          setThoughtsTotal(data.data.total || 0);
+          setThoughtsPage(data.data.page || page);
+          setThoughtsPageSize(data.data.page_size || pageSize);
+        }
       }
-    };
-
-    load();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      if (postType === "GRIEVANCE") setLoadingList(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchPosts("GRIEVANCE", grievancesPage, grievancesPageSize);
+    fetchPosts("THOUGHT", thoughtsPage, thoughtsPageSize);
+  }, [fetchPosts, grievancesPage, grievancesPageSize, thoughtsPage, thoughtsPageSize]);
 
   const openDetail = useCallback((post) => {
     const token = localStorage.getItem("access_token");
@@ -275,29 +296,52 @@ function GrievancesAndThoughts() {
       label: "Grievances",
       children: (
         <div className="grievances-content">
-          <div className="write-button-section">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              size="large"
-              onClick={() => setWriteModalVisible(true)}
-              className="write-button"
-            >
-              Write Grievance
-            </Button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div className="write-button-section">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                size="large"
+                onClick={() => setWriteModalVisible(true)}
+                className="write-button"
+              >
+                Write Grievance
+              </Button>
+            </div>
+
+            <div>
+              <Select
+                value={grievancesPageSize}
+                onChange={(v) => { setGrievancesPage(1); setGrievancesPageSize(v); }}
+                options={PAGE_SIZE_OPTIONS}
+                size="middle"
+                style={{ minWidth: 120 }}
+              />
+            </div>
           </div>
 
           <div className="posts-list">
             {loadingList ? (
               <Empty description="Loading..." />
             ) : grievances.length > 0 ? (
-              <Row gutter={[16,16]} className="schemes-grid">
-                {grievances.map((grievance) => (
-                  <Col xs={24} sm={12} lg={8} xl={8} key={grievance.id}>
-                    <PostCard post={grievance} onClick={openDetail} onComment={openDetailWithComment} />
-                  </Col>
-                ))}
-              </Row>
+              <>
+                <Row gutter={[16,16]} className="schemes-grid">
+                  {grievances.map((grievance) => (
+                    <Col xs={24} sm={12} lg={8} xl={8} key={grievance.id}>
+                      <PostCard post={grievance} onClick={openDetail} onComment={openDetailWithComment} />
+                    </Col>
+                  ))}
+                </Row>
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+                  <Pagination
+                    current={grievancesPage}
+                    pageSize={grievancesPageSize}
+                    total={grievancesTotal}
+                    showSizeChanger={false}
+                    onChange={(p) => { setGrievancesPage(p); }}
+                  />
+                </div>
+              </>
             ) : (
               <div className="no-results">
                 <Empty description={<span>No grievances found</span>} />
@@ -312,29 +356,52 @@ function GrievancesAndThoughts() {
       label: "Thoughts",
       children: (
         <div className="grievances-content">
-          <div className="write-button-section">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              size="large"
-              onClick={() => setWriteModalVisible(true)}
-              className="write-button"
-            >
-              Write Thought
-            </Button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div className="write-button-section">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                size="large"
+                onClick={() => setWriteModalVisible(true)}
+                className="write-button"
+              >
+                Write Thought
+              </Button>
+            </div>
+
+            <div>
+              <Select
+                value={thoughtsPageSize}
+                onChange={(v) => { setThoughtsPage(1); setThoughtsPageSize(v); }}
+                options={PAGE_SIZE_OPTIONS}
+                size="middle"
+                style={{ minWidth: 120 }}
+              />
+            </div>
           </div>
 
           <div className="posts-list">
             {loadingList ? (
               <Empty description="Loading..." />
             ) : thoughts.length > 0 ? (
-              <Row gutter={[16,16]} className="schemes-grid">
-                {thoughts.map((thought) => (
-                  <Col xs={24} sm={12} lg={8} xl={8} key={thought.id}>
-                    <PostCard post={thought} onClick={openDetail} onComment={openDetailWithComment} />
-                  </Col>
-                ))}
-              </Row>
+              <>
+                <Row gutter={[16,16]} className="schemes-grid">
+                  {thoughts.map((thought) => (
+                    <Col xs={24} sm={12} lg={8} xl={8} key={thought.id}>
+                      <PostCard post={thought} onClick={openDetail} onComment={openDetailWithComment} />
+                    </Col>
+                  ))}
+                </Row>
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+                  <Pagination
+                    current={thoughtsPage}
+                    pageSize={thoughtsPageSize}
+                    total={thoughtsTotal}
+                    showSizeChanger={false}
+                    onChange={(p) => { setThoughtsPage(p); }}
+                  />
+                </div>
+              </>
             ) : (
               <div className="no-results">
                 <Empty description={<span>No thoughts found</span>} />

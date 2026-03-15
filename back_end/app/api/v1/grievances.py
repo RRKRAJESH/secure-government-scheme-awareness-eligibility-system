@@ -22,11 +22,16 @@ router = APIRouter()
 
 
 @router.get("/list", response_model=Union[PostsListResponse, ErrorResponse], status_code=status.HTTP_200_OK)
-async def list_grievances_handler(postType: Optional[PostType] = Query(None, alias="postType"), token: dict = Depends(verify_token)):
+async def list_grievances_handler(
+    postType: Optional[PostType] = Query(None, alias="postType"),
+    page: int = Query(1, ge=1),
+    pageSize: int = Query(20, alias="pageSize", ge=1, le=100),
+    token: dict = Depends(verify_token),
+):
     try:
         user_id = token.get("user_id")
-        posts = get_user_posts(user_id, post_type=postType.value if postType else None)
-        return {"error": False, "data": {"posts": posts}}
+        posts_data = get_user_posts(user_id, post_type=postType.value if postType else None, page=page, page_size=pageSize)
+        return {"error": False, "data": posts_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
