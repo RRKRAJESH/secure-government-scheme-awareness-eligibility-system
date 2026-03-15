@@ -474,6 +474,7 @@
 .scheme-detail-grid {
   flex: 1;
   padding: 32px 40px;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto 1fr auto;

@@ -122,9 +122,43 @@
   margin-top: 12px;
 }
 
-.comment-item { display:flex; gap:12px; margin-bottom:12px }
-.comment-body .comment-meta { margin-bottom:6px }
-.comment-content { color:#333 }
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.comment-author {
+  line-height: 1.2;
+}
+
+.comment-time {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.comment-content {
+  color: #333;
+  margin-top: 2px;
+}
 
 .write-button-section {
   margin-bottom: 20px;
@@ -214,25 +248,28 @@
   padding: 0;
 }
 
-/* Grievance-specific overrides so scheme-card appears as grey square cards */
-.grievances-content .scheme-card {
+/* Use the shared .global-card/.scheme-card styles for visual parity with Schemes */
+.grievances-content .scheme-card,
+.grievances-content .global-card {
+  /* keep same sizing and outline as schemes */
   height: 220px;
   border-radius: 12px;
-  border: 1px solid #eef2f7; /* lighter border */
-  transition: all 0.25s ease;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
   overflow: hidden;
-  background: linear-gradient(135deg, #f8fafc 0%, #eef3f8 100%); /* more subtle grey */
+  background: #fff;
   position: relative;
 }
 
-.grievances-content .scheme-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08); /* reduced shadow intensity */
-  border-color: #6b78d6; /* slightly tinted on hover */
+.grievances-content .scheme-card:hover,
+.grievances-content .global-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  border-color: #667eea;
 }
 
-/* blue rectangular outline for grievance scheme-cards */
-.grievances-content .scheme-card::after {
+.grievances-content .scheme-card::after,
+.grievances-content .global-card::after {
   content: '';
   position: absolute;
   left: 6px;
@@ -247,7 +284,9 @@
 }
 
 .grievances-content .scheme-card:hover::after,
-.grievances-content .scheme-card:focus-within::after {
+.grievances-content .scheme-card:focus-within::after,
+.grievances-content .global-card:hover::after,
+.grievances-content .global-card:focus-within::after {
   border-color: rgba(102,126,234,0.95);
   opacity: 1;
 }
@@ -419,6 +458,61 @@
   font-weight: 500 !important;
 }
 
+/* Single-column detail layout for posts */
+.grievance-detail-modal .scheme-hero-inner {
+  max-width: 1400px !important;
+}
+
+.post-detail-column {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 40px 0 40px;
+  box-sizing: border-box;
+}
+
+.comments-section .section-content {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.comment-inline-form {
+  margin: 0;
+}
+
+.comment-below-list-form {
+  margin-top: 0;
+}
+
+.comment-inline-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.comment-input-item {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.comment-input-item .ant-input-textarea textarea {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.comment-submit-item {
+  margin-bottom: 0 !important;
+}
+
+.comment-submit-item .ant-btn {
+  height: 100% !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
 @media (max-width: 768px) {
   .grievances-content {
     padding: 16px;
@@ -438,5 +532,24 @@
 
   .ant-tabs-nav-list {
     padding: 0 16px;
+  }
+
+  .post-detail-column {
+    padding: 0 16px 0 16px;
+  }
+
+  .comment-inline-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comment-input-item .ant-input-textarea textarea {
+    border-radius: 8px !important;
+  }
+
+  .comment-submit-item .ant-btn {
+    width: 100%;
+    border-radius: 8px !important;
+    height: 42px !important;
   }
 }

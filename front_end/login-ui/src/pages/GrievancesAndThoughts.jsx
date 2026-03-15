@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Card,
   Tabs,
@@ -15,7 +15,7 @@ import {
   Avatar,
   Tooltip,
 } from "antd";
-import { PlusOutlined, CommentOutlined, EditOutlined, DeleteOutlined, FlagOutlined, FileTextOutlined } from "@ant-design/icons";
+import { PlusOutlined, CommentOutlined, FileTextOutlined } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/grievances.css";
@@ -45,8 +45,13 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
   return (
     <Card className="scheme-card global-card" hoverable onClick={() => onClick(post)}>
       <div className="scheme-card-content">
-        <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
-        <Text type="secondary" className="scheme-code">Posted by {postedBy}</Text>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Avatar size={40}>{initials}</Avatar>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
+            <Text type="secondary" className="scheme-code">Posted by {postedBy}</Text>
+          </div>
+        </div>
 
         <Paragraph ellipsis={{ rows: 2 }} className="scheme-desc">{post.description || ""}</Paragraph>
 
@@ -143,6 +148,19 @@ function GrievancesAndThoughts() {
   const [creating, setCreating] = useState(false);
   const [focusComment, setFocusComment] = useState(false);
   const [commentForm] = Form.useForm();
+  const commentInputRef = useRef(null);
+
+  // focus comment input when requested
+  useEffect(() => {
+    if (selectedPost && focusComment) {
+      setTimeout(() => {
+        try {
+          if (commentInputRef.current && commentInputRef.current.focus) commentInputRef.current.focus();
+        } catch (e) {}
+        setFocusComment(false);
+      }, 120);
+    }
+  }, [selectedPost, focusComment]);
 
   // Handle write submission (calls backend create)
   const handleWriteSubmit = useCallback((values) => {
@@ -356,108 +374,115 @@ function GrievancesAndThoughts() {
         onCancel={() => { setDetailVisible(false); setFocusComment(false); }}
         footer={null}
         width="100vw"
-        className="scheme-detail-modal fullscreen-modal"
+        className="scheme-detail-modal fullscreen-modal grievance-detail-modal"
         centered
         style={{ top: 0, padding: 0, maxWidth: '100vw' }}
       >
         {selectedPost ? (
           <div className="scheme-detail-content">
             <div className="scheme-hero-header">
-              <div className="scheme-hero-title">
-                <Title level={3} style={{ color: '#fff', margin: 0 }}>{selectedPost.post.title}</Title>
-                <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{selectedPost.post.post_type}</Text>
-                {selectedPost.post.posted_at && (
-                  <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, display: 'block', marginTop: 6 }}>
-                    Posted At: {new Date(selectedPost.post.posted_at).toISOString().slice(0,10)}
-                  </Text>
-                )}
-              </div>
-              <div className="scheme-hero-tags">
-                <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>{selectedPost.post.post_type}</Tag>
-                <Tag color="green" style={{ fontSize: 12, padding: '4px 12px' }}>{(selectedPost.post.comments_count || 0) + ' comments'}</Tag>
+              <div className="scheme-hero-inner">
+                <div className="scheme-hero-title">
+                  <Title level={3} style={{ color: '#fff', margin: 0 }}>
+                    {selectedPost.post.title || selectedPost.post.schemeName || selectedPost.post.heading || 'Untitled Post'}
+                  </Title>
+                  <div style={{ marginTop: 8 }}>
+                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, display: 'block' }} strong>{selectedPost.post.username || selectedPost.post.user_id || 'User'}</Text>
+                    {selectedPost.post.posted_at && (
+                      <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
+                        Posted: {new Date(selectedPost.post.posted_at).toLocaleString()}
+                      </Text>
+                    )}
+                    <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>
+                        {selectedPost.post.post_type || 'GRIEVANCE'}
+                      </Tag>
+                      <Tag color="green" style={{ fontSize: 12, padding: '4px 12px' }}>
+                        Comments: {selectedPost.post.comments_count || 0}
+                      </Tag>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="scheme-detail-grid">
+            <div className="post-detail-column">
               <div className="detail-section about-section">
-                <div className="section-header">
-                  <FileTextOutlined className="section-icon" />
-                  <span>About This Post</span>
-                </div>
                 <div className="section-content">
                   <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>{selectedPost.post.description}</Paragraph>
                 </div>
               </div>
 
-              <div className="detail-section">
+              <div className="detail-section comments-section">
                 <div className="section-header">
                   <CommentOutlined className="section-icon" />
-                  <span>Comments</span>
+                  <span>Comments ({(selectedPost.comments || []).length})</span>
                 </div>
-                <div className="section-content" style={{ maxHeight: '50vh', overflow: 'auto' }}>
+
+                <Form form={commentForm} layout="vertical" className="comment-inline-form" onFinish={async (values) => {
+                  if (!selectedPost || !selectedPost.post) return;
+                  const token = localStorage.getItem("access_token");
+                  const endpoint = API_ENDPOINTS.GRIEVANCES_COMMENT.replace("{post_id}", selectedPost.post.id || selectedPost.post._id);
+                  try {
+                    const res = await fetch(endpoint, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                      body: JSON.stringify({ commented_content: values.commented_content }),
+                    });
+                    const data = await res.json();
+                    if (!data || data.error) throw new Error(data?.data?.errorMessage || "Comment create failed");
+                    const created = data.data.comment;
+                    setSelectedPost((prev) => ({ ...prev, comments: prev.comments ? [created, ...prev.comments] : [created], post: { ...prev.post, comments_count: (prev.post.comments_count || 0) + 1 } }));
+                    setGrievances((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
+                    setThoughts((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
+                    try { commentForm.resetFields(); } catch (e) {}
+                  } catch (err) { console.error(err); }
+                }}>
+                  <div className="comment-inline-row">
+                    <Form.Item className="comment-input-item" name="commented_content" rules={[{ required: true, message: 'Please enter a comment' }]}>
+                      <TextArea ref={commentInputRef} rows={3} placeholder="Add a comment..." />
+                    </Form.Item>
+                    <Form.Item className="comment-submit-item">
+                      <Button type="primary" htmlType="submit">Add Comment</Button>
+                    </Form.Item>
+                  </div>
+                </Form>
+
+                <div
+                  className="section-content comments-list"
+                  style={
+                    (selectedPost.comments || []).length >= 6
+                      ? { maxHeight: '50vh', overflow: 'auto' }
+                      : { maxHeight: 'none', overflow: 'visible' }
+                  }
+                >
                   {selectedPost.comments && selectedPost.comments.length > 0 ? (
-                    selectedPost.comments.map((c) => (
-                      <div key={c._id} className="comment-item">
-                        <Avatar size={36}>{(c.user_id||'U').toString().slice(0,2).toUpperCase()}</Avatar>
-                        <div className="comment-body">
-                          <div className="comment-meta"><Text strong>{c.username || c.user_id || 'User'}</Text> <Text type="secondary"> • {new Date(c.commented_at).toLocaleString()}</Text></div>
-                          <div className="comment-content">{c.commented_content}</div>
+                    selectedPost.comments.map((c) => {
+                      const commenterName = c.username || c.user_id || 'User';
+                      const avatarInitial = commenterName.toString().trim().charAt(0).toUpperCase() || 'U';
+
+                      return (
+                        <div key={c._id} className="comment-item">
+                          <Avatar size={36}>{avatarInitial}</Avatar>
+                          <div className="comment-body">
+                            <div className="comment-meta">
+                              <Text strong className="comment-author">{commenterName}</Text>
+                              <Text type="secondary" className="comment-time">{new Date(c.commented_at).toLocaleString()}</Text>
+                            </div>
+                            <div className="comment-content">{c.commented_content}</div>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <Empty description="No comments yet" />
                   )}
-                </div>
-              </div>
-
-              <div className="detail-section">
-                <div className="section-header">
-                  <Avatar size={40}>{(selectedPost.post.user_id||'U').toString().slice(0,2).toUpperCase()}</Avatar>
-                  <span style={{ marginLeft: 12 }}>Author</span>
-                </div>
-                <div className="section-content">
-                  <Text strong>{selectedPost.post.user_id || selectedPost.post.username || 'User'}</Text>
-                  <div style={{ marginTop: 8 }}>
-                    <Text type="secondary">Member since {selectedPost.post.member_since ? new Date(selectedPost.post.member_since).toISOString().slice(0,10) : 'N/A'}</Text>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         ) : (
           <Empty description="Loading..." />
-        )}
-        {/* comment form outside the fullscreen content so it stays visible */}
-        {selectedPost && (
-          <div style={{ padding: '12px 24px', borderTop: '1px solid #f0f0f0', background: '#fff' }}>
-            <Form form={commentForm} layout="vertical" onFinish={async (values) => {
-              if (!selectedPost || !selectedPost.post) return;
-              const token = localStorage.getItem("access_token");
-              const endpoint = API_ENDPOINTS.GRIEVANCES_COMMENT.replace("{post_id}", selectedPost.post.id || selectedPost.post._id);
-              try {
-                const res = await fetch(endpoint, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-                  body: JSON.stringify({ commented_content: values.commented_content }),
-                });
-                const data = await res.json();
-                if (!data || data.error) throw new Error(data?.data?.errorMessage || "Comment create failed");
-                const created = data.data.comment;
-                setSelectedPost((prev) => ({ ...prev, comments: prev.comments ? [created, ...prev.comments] : [created], post: { ...prev.post, comments_count: (prev.post.comments_count || 0) + 1 } }));
-                setGrievances((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
-                setThoughts((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
-                try { commentForm.resetFields(); } catch (e) {}
-              } catch (err) { console.error(err); }
-            }}>
-              <Form.Item name="commented_content" rules={[{ required: true, message: 'Please enter a comment' }]}>
-                <TextArea rows={3} placeholder="Add a comment..." autoFocus={focusComment} />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">Add Comment</Button>
-              </Form.Item>
-            </Form>
-          </div>
         )}
       </Modal>
     </div>
