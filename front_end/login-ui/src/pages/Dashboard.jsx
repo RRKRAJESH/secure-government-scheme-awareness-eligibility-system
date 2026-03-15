@@ -49,16 +49,17 @@ DashboardContent.displayName = "DashboardContent";
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("schemes");
   const { getRole, logout, getUsername } = useAuth();
-  const { isProfileComplete, loading: profileLoading } = useProfileStatus();
+  const { profileData, isProfileComplete, loading: profileLoading } = useProfileStatus();
   const role = getRole();
   const accentColor = ROLE_COLORS[role] || "#52c41a";
 
   // Get username from JWT token
   const username = getUsername();
-  const userName = username || "User";
+  const profileName = profileData?.name || null;
+  const userName = username || profileName || "User";
   
   // Get first letter of username for avatar (uppercase)
-  const userInitial = username ? username.charAt(0).toUpperCase() : null;
+  const userInitial = userName && userName !== "User" ? userName.charAt(0).toUpperCase() : null;
 
   // State for profile update prompt
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);

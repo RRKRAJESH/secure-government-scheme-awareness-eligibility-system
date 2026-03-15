@@ -23,16 +23,26 @@ def get_comments_collection():
     )
 
 
+def get_users_collection():
+    return get_collection(
+        db_name=settings.PRODUCTION_DATABASE_NAME,
+        collection_name=settings.USERS_COLLECTION_NAME,
+    )
+
+
 def get_user_posts(user_id: str, post_type: Optional[str] = None):
     try:
         coll = get_grievances_collection()
         comments_coll = get_comments_collection()
-        query = {"user_id": ObjectId(user_id)}
+        users_coll = get_users_collection()
+        # Global feed: show all posts from shared master collection.
+        query = {}
         if post_type:
             query["post_type"] = post_type
 
         cursor = coll.find(query, {
             "_id": 1,
+            "user_id": 1,
             "title": 1,
             "description": 1,
             "post_type": 1,
@@ -41,11 +51,33 @@ def get_user_posts(user_id: str, post_type: Optional[str] = None):
             "created_at": 1,
         }).sort("posted_at", -1)
 
+        posts_raw = list(cursor)
+
+        user_ids = []
+        for post in posts_raw:
+            post_user_id = post.get("user_id")
+            if post_user_id is not None:
+                user_ids.append(post_user_id)
+
+        users_map = {}
+        if user_ids:
+            try:
+                for user_doc in users_coll.find({"_id": {"$in": list(set(user_ids))}}, {"username": 1, "name": 1}):
+                    users_map[str(user_doc.get("_id"))] = user_doc.get("username") or user_doc.get("name") or "User"
+            except Exception:
+                users_map = {}
+
         posts = []
-        for p in cursor:
+        for p in posts_raw:
             orig_id = p.get("_id")
             p["_id"] = str(orig_id)
             p["id"] = str(orig_id)
+            if p.get("user_id") is not None:
+                p["user_id"] = str(p.get("user_id"))
+                p["username"] = users_map.get(p["user_id"], "User")
+            else:
+                p["user_id"] = None
+                p["username"] = "User"
             if p.get("posted_at"):
                 p["posted_at"] = serialize_datetime_utc(p["posted_at"])
             # always recompute comments_count from comments collection for accuracy
@@ -197,6 +229,8 @@ def get_post_with_comments(post_id: str):
             if user_obj_id:
                 try:
                     user_doc = users_coll.find_one({"_id": ObjectId(user_obj_id)})
+                    if user_doc and (user_doc.get("username") or user_doc.get("name")):
+                        post["username"] = user_doc.get("username") or user_doc.get("name")
                     if user_doc and user_doc.get("created_at"):
                         try:
                             post["member_since"] = user_doc.get("created_at").isoformat()
@@ -206,6 +240,8 @@ def get_post_with_comments(post_id: str):
                     # if user_obj_id was already a string id
                     try:
                         user_doc = users_coll.find_one({"_id": ObjectId(str(user_obj_id))})
+                        if user_doc and (user_doc.get("username") or user_doc.get("name")):
+                            post["username"] = user_doc.get("username") or user_doc.get("name")
                         if user_doc and user_doc.get("created_at"):
                             try:
                                 post["member_since"] = user_doc.get("created_at").isoformat()

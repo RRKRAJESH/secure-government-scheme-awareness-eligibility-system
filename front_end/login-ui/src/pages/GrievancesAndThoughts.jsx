@@ -39,7 +39,7 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
     return text.slice(0, count) + "...";
   };
 
-  const postedBy = post.user_id || post.username || username;
+  const postedBy = post.username || post.user_id || username;
   const initials = (postedBy || "U").split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
 
   return (

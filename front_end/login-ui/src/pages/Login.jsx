@@ -45,7 +45,7 @@ function Login() {
       }
 
       const token = result.data.access_token;
-      login(token, loginType);
+      login(token, loginType, values.username);
       message.success("Login Successful");
 
       if (loginType === ROLES.ADMIN) {

@@ -70,6 +70,7 @@ export const SECTORS = [
 export const STORAGE_KEYS = {
   ACCESS_TOKEN: "access_token",
   ROLE: "role",
+  USERNAME: "username",
 };
 
 export const ROUTES = {

@@ -16,6 +16,8 @@ class CreatePostSchema(BaseModel):
 
 class PostItemSchema(BaseModel):
     id: str = Field(...)
+    user_id: Optional[str] = None
+    username: Optional[str] = None
     title: str
     description: str
     post_type: Optional[str] = None
