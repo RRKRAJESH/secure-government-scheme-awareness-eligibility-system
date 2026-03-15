@@ -167,6 +167,16 @@
   align-items: start;
 }
 
+.posts-list .no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* hide default scrollbar track background to avoid white gap */
 .posts-list::-webkit-scrollbar-track {
   background: transparent;

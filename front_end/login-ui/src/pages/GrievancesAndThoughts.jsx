@@ -284,7 +284,9 @@ function GrievancesAndThoughts() {
                 />
               ))
             ) : (
-              <Empty description="No grievances yet" />
+              <div className="no-results">
+                <Empty description={<span>No grievances found</span>} />
+              </div>
             )}
           </div>
         </div>
@@ -315,7 +317,9 @@ function GrievancesAndThoughts() {
                 <PostCard key={thought.id} post={thought} onClick={openDetail} onComment={openDetailWithComment} />
               ))
             ) : (
-              <Empty description="No thoughts yet" />
+              <div className="no-results">
+                <Empty description={<span>No thoughts found</span>} />
+              </div>
             )}
           </div>
         </div>
