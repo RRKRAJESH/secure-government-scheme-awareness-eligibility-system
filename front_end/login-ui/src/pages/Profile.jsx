@@ -7,6 +7,7 @@ import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { DISTRICTS, GENDERS, SOCIAL_CATEGORIES, FARMER_CATEGORIES, SECTORS, REGEX_PATTERNS } from "../config/constants";
+import { formatDateIST } from "../utils/dateFormat";
 import "../styles/profile.css";
 
 const { Title } = Typography;
@@ -140,7 +141,7 @@ const EditProfileModal = React.memo(({ visible, data, onCancel, onSubmit, loadin
                 label="Date of Birth"
                 rules={[{ required: true, message: "DOB is required" }]}
               >
-                <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
+                <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -427,7 +428,7 @@ function Profile({ openFormDirectly = false }) {
               <Col xs={24} md={12}>
                 <ProfileSection title="Personal Information">
                   <ProfileItem label="Full Name" value={profileData.name} />
-                  <ProfileItem label="Date of Birth" value={profileData.dob} />
+                  <ProfileItem label="Date of Birth" value={profileData.dob ? formatDateIST(profileData.dob) : null} />
                   <ProfileItem label="Gender" value={profileData.gender} isTag tagColor="purple" />
                 </ProfileSection>
               </Col>

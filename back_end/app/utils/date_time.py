@@ -6,6 +6,26 @@ def current_time_utc():
     except Exception as e:
         msg =f"Error occured while processing current_time_utc():: {str(e)}"
         raise Exception(msg)
+
+
+def serialize_datetime_utc(value):
+    try:
+        if value is None:
+            return None
+
+        if isinstance(value, datetime):
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            else:
+                value = value.astimezone(timezone.utc)
+
+            return value.isoformat()
+
+        return str(value)
+
+    except Exception as e:
+        msg = f"Error occured while processing serialize_datetime_utc():: {str(e)}"
+        raise Exception(msg)
     
 def time_taken_in_millis(start_time, end_time):
     try:

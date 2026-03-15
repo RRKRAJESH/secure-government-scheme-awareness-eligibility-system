@@ -6,6 +6,7 @@ from app.db.mongo import get_collection
 from app.configs.config import settings
 from app.services.error import raise_http_error
 from fastapi import status, HTTPException
+from app.utils.date_time import serialize_datetime_utc
 
 
 def get_grievances_collection():
@@ -46,10 +47,7 @@ def get_user_posts(user_id: str, post_type: Optional[str] = None):
             p["_id"] = str(orig_id)
             p["id"] = str(orig_id)
             if p.get("posted_at"):
-                try:
-                    p["posted_at"] = p["posted_at"].isoformat()
-                except Exception:
-                    p["posted_at"] = str(p["posted_at"])
+                p["posted_at"] = serialize_datetime_utc(p["posted_at"])
             # always recompute comments_count from comments collection for accuracy
             try:
                 cnt = comments_coll.count_documents({"post_id": orig_id})
@@ -82,7 +80,7 @@ def create_post(user_id: str, title: str, description: str, post_type: str):
             "updated_at": now,
         }
         res = coll.insert_one(doc)
-        return {"id": str(res.inserted_id), "_id": str(res.inserted_id), "posted_at": now.isoformat()}
+        return {"id": str(res.inserted_id), "_id": str(res.inserted_id), "posted_at": serialize_datetime_utc(now)}
     except Exception as e:
         raise Exception(f"Error in create_post: {e}")
 
@@ -124,10 +122,7 @@ def create_comment(user_id: str, username: Optional[str], post_id: str, content:
 
         for dt_field in ("commented_at", "created_at", "updated_at"):
             if doc.get(dt_field):
-                try:
-                    doc[dt_field] = doc[dt_field].isoformat()
-                except Exception:
-                    doc[dt_field] = str(doc.get(dt_field))
+                doc[dt_field] = serialize_datetime_utc(doc[dt_field])
 
         return doc
     except HTTPException:
@@ -160,16 +155,10 @@ def get_post_with_comments(post_id: str):
             user_obj_id = None
 
         if post.get("posted_at"):
-            try:
-                post["posted_at"] = post["posted_at"].isoformat()
-            except Exception:
-                post["posted_at"] = str(post["posted_at"])
+            post["posted_at"] = serialize_datetime_utc(post["posted_at"])
         for dt in ("created_at", "updated_at"):
             if post.get(dt):
-                try:
-                    post[dt] = post[dt].isoformat()
-                except Exception:
-                    post[dt] = str(post.get(dt))
+                post[dt] = serialize_datetime_utc(post[dt])
 
         # fetch comments
         comments_cursor = comments_coll.find({"post_id": ObjectId(post_id)}).sort("commented_at", 1)
@@ -190,16 +179,10 @@ def get_post_with_comments(post_id: str):
                 pass
 
             if c.get("commented_at"):
-                try:
-                    c["commented_at"] = c["commented_at"].isoformat()
-                except Exception:
-                    c["commented_at"] = str(c["commented_at"])
+                c["commented_at"] = serialize_datetime_utc(c["commented_at"])
             for dt in ("created_at", "updated_at"):
                 if c.get(dt):
-                    try:
-                        c[dt] = c[dt].isoformat()
-                    except Exception:
-                        c[dt] = str(c.get(dt))
+                    c[dt] = serialize_datetime_utc(c[dt])
             comments.append(c)
 
         # ensure post comments_count reflects actual comments

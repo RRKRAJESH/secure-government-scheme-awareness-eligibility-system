@@ -30,6 +30,7 @@ import {
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
 import { SECTORS } from "../config/constants";
+import { formatDateTimeIST } from "../utils/dateFormat";
 import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
@@ -130,7 +131,7 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
         
         {scheme.createdAt && (
           <div className="scheme-added-date">
-            Posted At: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+            Posted At: {formatDateTimeIST(scheme.createdAt)}
           </div>
         )}
       </div>
@@ -179,7 +180,7 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                 <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{scheme.schemeCode}</Text>
                 {scheme.createdAt && (
                   <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, display: 'block', marginTop: 6 }}>
-                    Posted At: {new Date(scheme.createdAt).toISOString().slice(0,10)}
+                    Posted At: {formatDateTimeIST(scheme.createdAt)}
                   </Text>
                 )}
               </div>

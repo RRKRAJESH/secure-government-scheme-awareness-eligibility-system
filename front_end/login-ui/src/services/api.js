@@ -1,3 +1,5 @@
+import { normalizeApiTimestampsToIST } from "../utils/dateFormat";
+
 /**
  * Deprecated: Use useApi() hook instead
  * This function is kept for backward compatibility
@@ -16,7 +18,7 @@ export const apiRequest = async (url, method, body) => {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const data = await response.json();
+  const data = normalizeApiTimestampsToIST(await response.json());
 
   if (!response.ok) {
     console.error("API Error:", data);

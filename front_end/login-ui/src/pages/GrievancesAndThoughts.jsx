@@ -18,6 +18,7 @@ import {
 import { PlusOutlined, CommentOutlined, FileTextOutlined } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
+import { formatDateTimeIST, normalizeApiTimestampsToIST } from "../utils/dateFormat";
 import "../styles/grievances.css";
 import "../styles/schemes.css";
 
@@ -39,7 +40,6 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
   };
 
   const postedBy = post.user_id || post.username || username;
-  const postedAt = post.posted_at ? new Date(post.posted_at).toLocaleString() : "";
   const initials = (postedBy || "U").split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
 
   return (
@@ -64,7 +64,7 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
             </Tooltip>
           </div>
           {post.posted_at && (
-            <div className="scheme-added-date">{new Date(post.posted_at).toISOString().slice(0,10)}</div>
+            <div className="scheme-added-date">Posted At: {formatDateTimeIST(post.posted_at)}</div>
           )}
         </div>
       </div>
@@ -182,6 +182,7 @@ function GrievancesAndThoughts() {
       body: JSON.stringify(payload),
     })
       .then((res) => res.json())
+      .then((data) => normalizeApiTimestampsToIST(data))
       .then((data) => {
         if (!data || data.error) throw new Error(data?.data?.errorMessage || "Create failed");
         const created = data.data || {};
@@ -213,7 +214,7 @@ function GrievancesAndThoughts() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
-        const gData = await gRes.json();
+        const gData = normalizeApiTimestampsToIST(await gRes.json());
         if (!gData || gData.error) setGrievances([]);
         else
           setGrievances(
@@ -226,7 +227,7 @@ function GrievancesAndThoughts() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
-        const tData = await tRes.json();
+        const tData = normalizeApiTimestampsToIST(await tRes.json());
         if (!tData || tData.error) setThoughts([]);
         else
           setThoughts(
@@ -253,6 +254,7 @@ function GrievancesAndThoughts() {
       },
     })
       .then((res) => res.json())
+      .then((data) => normalizeApiTimestampsToIST(data))
       .then((data) => {
         if (!data || data.error) throw new Error("Failed to load details");
         setSelectedPost(data.data || null);
@@ -390,7 +392,7 @@ function GrievancesAndThoughts() {
                     <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, display: 'block' }} strong>{selectedPost.post.username || selectedPost.post.user_id || 'User'}</Text>
                     {selectedPost.post.posted_at && (
                       <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
-                        Posted: {new Date(selectedPost.post.posted_at).toLocaleString()}
+                        Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
                       </Text>
                     )}
                     <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -429,7 +431,7 @@ function GrievancesAndThoughts() {
                       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                       body: JSON.stringify({ commented_content: values.commented_content }),
                     });
-                    const data = await res.json();
+                        const data = normalizeApiTimestampsToIST(await res.json());
                     if (!data || data.error) throw new Error(data?.data?.errorMessage || "Comment create failed");
                     const created = data.data.comment;
                     setSelectedPost((prev) => ({ ...prev, comments: prev.comments ? [created, ...prev.comments] : [created], post: { ...prev.post, comments_count: (prev.post.comments_count || 0) + 1 } }));
@@ -467,7 +469,7 @@ function GrievancesAndThoughts() {
                           <div className="comment-body">
                             <div className="comment-meta">
                               <Text strong className="comment-author">{commenterName}</Text>
-                              <Text type="secondary" className="comment-time">{new Date(c.commented_at).toLocaleString()}</Text>
+                              <Text type="secondary" className="comment-time">{formatDateTimeIST(c.commented_at)}</Text>
                             </div>
                             <div className="comment-content">{c.commented_content}</div>
                           </div>

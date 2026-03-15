@@ -7,6 +7,7 @@ from app.services.error import raise_http_error
 from app.configs.config import settings
 from app.db.mongo import get_collection
 from app.utils.mongo_helpers import serialize_enums
+from app.utils.date_time import serialize_datetime_utc
 
 
 def get_schemes_collection():
@@ -54,7 +55,7 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
             scheme["_id"] = str(scheme["_id"])
             # Convert createdAt datetime to ISO string for JSON serialization
             if scheme.get("createdAt"):
-                scheme["createdAt"] = scheme["createdAt"].isoformat() if hasattr(scheme["createdAt"], 'isoformat') else str(scheme["createdAt"])
+                scheme["createdAt"] = serialize_datetime_utc(scheme["createdAt"])
 
             # Derive benefitType from nested benefits if present
             benefit = None
@@ -130,10 +131,10 @@ def get_scheme_by_id(scheme_id: str):
 
         # Normalize created/updated timestamps to ISO strings if present
         if scheme.get("createdAt"):
-            scheme["createdAt"] = str(scheme["createdAt"])
+            scheme["createdAt"] = serialize_datetime_utc(scheme["createdAt"])
 
         if scheme.get("updatedAt"):
-            scheme["updatedAt"] = str(scheme["updatedAt"])
+            scheme["updatedAt"] = serialize_datetime_utc(scheme["updatedAt"])
 
         # If umbrella scheme, fetch sub-schemes
         sub_schemes = []
@@ -334,7 +335,7 @@ def search_schemes(filters: dict):
             scheme["_id"] = str(scheme["_id"])
             # Convert createdAt datetime to ISO string for JSON serialization
             if scheme.get("createdAt"):
-                scheme["createdAt"] = scheme["createdAt"].isoformat() if hasattr(scheme["createdAt"], 'isoformat') else str(scheme["createdAt"])
+                scheme["createdAt"] = serialize_datetime_utc(scheme["createdAt"])
 
             # Derive benefitType from nested benefits if present
             benefit = None

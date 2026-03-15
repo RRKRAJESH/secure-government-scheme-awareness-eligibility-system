@@ -1,4 +1,5 @@
 import { useAuth } from "./useAuth";
+import { normalizeApiTimestampsToIST } from "../utils/dateFormat";
 
 /**
  * Custom hook for API requests with automatic token handling
@@ -24,7 +25,7 @@ export const useApi = () => {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+      const data = normalizeApiTimestampsToIST(await response.json());
 
       if (!response.ok) {
         throw new Error(data.detail || data.message || "Something went wrong");

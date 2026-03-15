@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Card, Row, Col, Empty, Typography } from "antd";
 import { BellOutlined } from "@ant-design/icons";
+import { formatDateTimeIST } from "../utils/dateFormat";
 import "../styles/notifications.css";
 
 const { Title, Text } = Typography;
@@ -80,10 +81,7 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
 
       <div className="notification-details">
         <Text type="secondary">
-          📅 {new Date(notification.posted_at).toLocaleDateString("en-IN")}
-        </Text>
-        <Text type="secondary" style={{ marginLeft: 16 }}>
-          🕐 {new Date(notification.posted_at).toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit' })}
+          🕐 {formatDateTimeIST(notification.posted_at)}
         </Text>
       </div>
 
