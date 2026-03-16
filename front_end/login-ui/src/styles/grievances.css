@@ -501,6 +501,20 @@
 .comment-input-item .ant-input-textarea textarea {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
+  /* vertically center single-line placeholder/caret by setting padding around the text
+     font-size is set so padding can be computed: (height - font-size)/2 */
+  box-sizing: border-box !important;
+  height: 48px !important;
+  font-size: 14px !important;
+  padding: 17px 12px !important; /* (48 - 14) / 2 = 17 */
+  line-height: normal !important;
+  min-height: 48px !important;
+  resize: none !important;
+}
+
+.comment-input-item .ant-input-textarea textarea::placeholder {
+  line-height: 48px !important;
+  color: #9aa4d6 !important;
 }
 
 .comment-submit-item {
@@ -508,7 +522,7 @@
 }
 
 .comment-submit-item .ant-btn {
-  height: 100% !important;
+  height: 48px !important;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -544,7 +558,15 @@
   }
 
   .comment-input-item .ant-input-textarea textarea {
-    border-radius: 8px !important;
+    border-radius: 100px !important;
+    height: 42px !important;
+    font-size: 14px !important;
+    padding: 14px 12px !important; /* (42 - 14) / 2 = 14 */
+    line-height: normal !important;
+  }
+
+  .comment-input-item .ant-input-textarea textarea::placeholder {
+    line-height: 42px !important;
   }
 
   .comment-submit-item .ant-btn {

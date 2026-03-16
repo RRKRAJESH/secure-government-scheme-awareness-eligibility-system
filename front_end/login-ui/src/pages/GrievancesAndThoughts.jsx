@@ -39,8 +39,10 @@ const PAGE_SIZE_OPTIONS = [
 // Post Card Component
 
 const PostCard = React.memo(({ post, onClick, onComment }) => {
-  const { getUsername } = useAuth();
+  const { getUsername, getTokenPayload } = useAuth();
   const username = getUsername() || "User";
+  const tokenPayload = getTokenPayload?.() || {};
+  const currentUserId = tokenPayload?.user_id || tokenPayload?.id || tokenPayload?.sub || null;
 
   const truncateChars = (text = "", count = 50) => {
     if (!text) return "";
@@ -48,8 +50,11 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
     return text.slice(0, count) + "...";
   };
 
-  const postedBy = post.username || post.user_id || username;
-  const initials = (postedBy || "U").split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
+  const postedByRaw = post.username || post.user_id || username;
+  const normalize = (v) => (v === null || v === undefined ? "" : String(v).toString().trim().toLowerCase());
+  const isMine = (post.username && username && normalize(post.username) === normalize(username)) || (post.user_id && currentUserId && normalize(post.user_id) === normalize(currentUserId));
+  const postedBy = isMine ? "You" : postedByRaw;
+  const initials = (isMine ? (username || "You") : (postedByRaw || "U")).toString().split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
 
   return (
     <Card className="scheme-card global-card" hoverable onClick={() => onClick(post)}>
@@ -164,6 +169,27 @@ function GrievancesAndThoughts() {
   const [focusComment, setFocusComment] = useState(false);
   const [commentForm] = Form.useForm();
   const commentInputRef = useRef(null);
+
+  const { getUsername, getTokenPayload } = useAuth();
+  const currentUsername = getUsername();
+  const tokenPayload = getTokenPayload?.() || {};
+  const currentUserId = tokenPayload?.user_id || tokenPayload?.id || tokenPayload?.sub || null;
+
+  const displayNameForPost = (post) => {
+    if (!post) return 'User';
+    const normalize = (v) => (v === null || v === undefined ? "" : String(v).toString().trim().toLowerCase());
+    const raw = post.username || post.user_id || currentUsername || 'User';
+    const mine = (post.username && currentUsername && normalize(post.username) === normalize(currentUsername)) || (post.user_id && currentUserId && normalize(post.user_id) === normalize(currentUserId));
+    return mine ? 'You' : raw;
+  };
+
+  const displayNameForComment = (c) => {
+    if (!c) return 'User';
+    const normalize = (v) => (v === null || v === undefined ? "" : String(v).toString().trim().toLowerCase());
+    const raw = c.username || c.user_id || 'User';
+    const mine = (c.username && currentUsername && normalize(c.username) === normalize(currentUsername)) || (c.user_id && currentUserId && normalize(c.user_id) === normalize(currentUserId)) || (c.user_id && currentUsername && normalize(c.user_id) === normalize(currentUsername));
+    return mine ? 'You' : raw;
+  };
 
   // focus comment input when requested
   useEffect(() => {
@@ -456,7 +482,7 @@ function GrievancesAndThoughts() {
                     {selectedPost.post.title || selectedPost.post.schemeName || selectedPost.post.heading || 'Untitled Post'}
                   </Title>
                   <div style={{ marginTop: 8 }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, display: 'block' }} strong>{selectedPost.post.username || selectedPost.post.user_id || 'User'}</Text>
+                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, display: 'block' }} strong>{displayNameForPost(selectedPost.post)}</Text>
                     {selectedPost.post.posted_at && (
                       <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
                         Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
@@ -527,7 +553,7 @@ function GrievancesAndThoughts() {
                 >
                   {selectedPost.comments && selectedPost.comments.length > 0 ? (
                     selectedPost.comments.map((c) => {
-                      const commenterName = c.username || c.user_id || 'User';
+                      const commenterName = displayNameForComment(c);
                       const avatarInitial = commenterName.toString().trim().charAt(0).toUpperCase() || 'U';
 
                       return (
