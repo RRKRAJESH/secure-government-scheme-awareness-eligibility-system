@@ -20,6 +20,7 @@ import {
 import { PlusOutlined, CommentOutlined, FileTextOutlined } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { formatDateTimeIST, normalizeApiTimestampsToIST } from "../utils/dateFormat";
 import "../styles/grievances.css";
 import "../styles/schemes.css";
@@ -350,7 +351,7 @@ function GrievancesAndThoughts() {
 
           <div className="posts-list">
             {loadingList ? (
-              <Empty description="Loading..." />
+              <LoadingSpinner message="Loading grievances..." />
             ) : grievances.length > 0 ? (
               <>
                 <Row gutter={[16,16]} className="schemes-grid">
@@ -410,7 +411,7 @@ function GrievancesAndThoughts() {
 
           <div className="posts-list">
             {loadingList ? (
-              <Empty description="Loading..." />
+              <LoadingSpinner message="Loading thoughts..." />
             ) : thoughts.length > 0 ? (
               <>
                 <Row gutter={[16,16]} className="schemes-grid">
@@ -579,7 +580,7 @@ function GrievancesAndThoughts() {
             </div>
           </div>
         ) : (
-          <Empty description="Loading..." />
+          <LoadingSpinner message="Loading post..." />
         )}
       </Modal>
     </div>
