@@ -20,7 +20,7 @@ def get_grievances_collection():
 def get_comments_collection():
     return get_collection(
         db_name=settings.PRODUCTION_DATABASE_NAME,
-        collection_name="commewnts"
+        collection_name="comments"
     )
 
 
@@ -179,6 +179,7 @@ def create_comment(user_id: str, username: Optional[str], post_id: str, content:
 
         # prepare response
         doc["_id"] = str(res.inserted_id)
+        doc["id"] = doc["_id"]
         # normalize id and datetime fields to strings for JSON/Pydantic
         doc["post_id"] = str(post_id)
         # prefer returning username for frontend; fallback to string user id
@@ -233,6 +234,12 @@ def get_post_with_comments(post_id: str):
         for c in comments_cursor:
             try:
                 c["_id"] = str(c["_id"])
+            except Exception:
+                pass
+            try:
+                # ensure an `id` field exists alongside `_id` for frontend convenience
+                if c.get("_id"):
+                    c["id"] = c["_id"]
             except Exception:
                 pass
             try:
@@ -293,6 +300,59 @@ def get_post_with_comments(post_id: str):
         raise
     except Exception as e:
         raise Exception(f"Error in get_post_with_comments: {e}")
+
+
+def update_comment(user_id: str, comment_id: str, new_content: str):
+    try:
+        comments_coll = get_comments_collection()
+        posts_coll = get_grievances_collection()
+
+        if not ObjectId.is_valid(comment_id):
+            raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message="Invalid comment id")
+
+        orig = comments_coll.find_one({"_id": ObjectId(comment_id)})
+        if not orig:
+            raise_http_error(status_code=status.HTTP_404_NOT_FOUND, message="Comment not found")
+
+        # verify ownership: stored user_id is ObjectId
+        try:
+            stored_user = orig.get("user_id")
+            if stored_user is not None and str(stored_user) != str(user_id):
+                raise_http_error(status_code=status.HTTP_403_FORBIDDEN, message="Not authorized to edit this comment")
+        except Exception:
+            pass
+
+        update_fields = {"commented_content": new_content, "updated_at": datetime.utcnow()}
+        comments_coll.update_one({"_id": ObjectId(comment_id)}, {"$set": update_fields})
+
+        updated = comments_coll.find_one({"_id": ObjectId(comment_id)})
+        if not updated:
+            raise_http_error(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to fetch updated comment")
+
+        # normalize response
+        try:
+            updated["_id"] = str(updated["_id"])
+        except Exception:
+            pass
+        try:
+            updated["post_id"] = str(updated["post_id"]) if updated.get("post_id") else None
+        except Exception:
+            pass
+        try:
+            # prefer username for frontend convenience
+            updated["user_id"] = updated.get("username") or (str(updated.get("user_id")) if updated.get("user_id") is not None else None)
+        except Exception:
+            pass
+
+        for dt_field in ("commented_at", "created_at", "updated_at"):
+            if updated.get(dt_field):
+                updated[dt_field] = serialize_datetime_utc(updated[dt_field])
+
+        return updated
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise Exception(f"Error in update_comment: {e}")
 
 
 def update_post(user_id: str, post_id: str, title: Optional[str] = None, description: Optional[str] = None):

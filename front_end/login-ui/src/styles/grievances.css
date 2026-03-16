@@ -194,6 +194,7 @@
   gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
+  position: relative;
 }
 
 .comment-item:last-child {
@@ -203,6 +204,7 @@
 .comment-body {
   flex: 1;
   min-width: 0;
+  padding-right: 0;
 }
 
 .comment-meta {
@@ -225,6 +227,15 @@
 .comment-content {
   color: #333;
   margin-top: 2px;
+}
+
+/* Preserve user-entered newlines and spacing for descriptions and comments */
+.scheme-desc,
+.comment-content,
+.detail-section .section-content .ant-typography,
+.detail-section .section-content p {
+  white-space: pre-wrap; /* keep newlines and wrap long lines */
+  word-break: break-word;
 }
 
 .write-button-section {
@@ -286,26 +297,46 @@
 }
 
 /* hide default scrollbar track background to avoid white gap */
-.posts-list::-webkit-scrollbar-track {
-  background: transparent;
+/* unify scrollbar style with other pages (profile/notifications) */
+.posts-list,
+.comments-list,
+.comments-section .section-content,
+.post-detail-modal .post-detail-grid,
+.scheme-grid-scroll {
+  /* ensure scrollable areas use the same look */
 }
 
-.posts-list::-webkit-scrollbar {
+.posts-list::-webkit-scrollbar,
+.comments-list::-webkit-scrollbar,
+.comments-section .section-content::-webkit-scrollbar,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar,
+.scheme-grid-scroll::-webkit-scrollbar {
   width: 6px;
 }
 
-.posts-list::-webkit-scrollbar-track {
+.posts-list::-webkit-scrollbar-thumb,
+.comments-list::-webkit-scrollbar-thumb,
+.comments-section .section-content::-webkit-scrollbar-thumb,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-thumb,
+.scheme-grid-scroll::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.posts-list::-webkit-scrollbar-thumb:hover,
+.comments-list::-webkit-scrollbar-thumb:hover,
+.comments-section .section-content::-webkit-scrollbar-thumb:hover,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-thumb:hover,
+.scheme-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+.posts-list::-webkit-scrollbar-track,
+.comments-list::-webkit-scrollbar-track,
+.comments-section .section-content::-webkit-scrollbar-track,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-track,
+.scheme-grid-scroll::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 10px;
-}
-
-.posts-list::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.posts-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
 }
 
 .post-card {
@@ -327,6 +358,7 @@
   border-radius: 12px;
   border: 1px solid #f0f0f0;
   transition: all 0.3s ease;
+  /* keep card content boxed and avoid reflowing page layout */
   overflow: hidden;
   background: #fff;
   position: relative;
@@ -352,6 +384,39 @@
   pointer-events: none;
   transition: border-color 0.18s ease, opacity 0.18s ease;
   opacity: 0;
+}
+
+/* ensure inner content is positioned so absolute controls can anchor to it */
+.scheme-card-content {
+  position: relative;
+  padding-top: 12px;
+  padding-right: 56px; /* reserve space for top-right edit button */
+}
+
+/* Truncate long descriptions in card view to keep cards compact */
+.scheme-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the small edit button inside cards is positioned top-right and doesn't shift layout */
+.grievances-content .scheme-card .grievance-edit-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 50 !important;
+}
+
+/* In the full-detail modal, show the edit button inline beside the tags (Comments) */
+.grievance-detail-modal .grievance-edit-btn {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  margin-left: 8px !important;
+  z-index: 6 !important;
 }
 
 .grievances-content .scheme-card:hover::after,
@@ -538,31 +603,84 @@
 .post-detail-modal .grievance-edit-btn,
 .post-hero-right .grievance-edit-btn,
 .post-hero-left .grievance-edit-btn {
-  border-color: #91d5ff !important;
-  color: #096dd9 !important;
-  background: #e6f7ff !important;
-  /* Match Tag vertical padding and horizontal spacing */
-  padding: 4px 12px !important;
-  border-radius: 6px !important;
+  /* Use same gradient as the primary write button */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
   height: auto !important;
-  min-height: 26px !important;
+  min-height: 36px !important;
   min-width: 44px !important;
   font-size: 13px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: none !important;
-  border-width: 1px !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25) !important;
   line-height: 1 !important;
+  /* pin edit button to top-right of the card/modal so it remains visible */
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}
+
+/* Small icon-only edit button used for inline comment edits
+   Keep it subtle but visible and align color with primary gradient. */
+.comment-edit-btn {
+  color: #667eea !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 4px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  margin-left: 8px !important;
+}
+.comment-edit-btn:hover {
+  color: #4b63d6 !important;
+  background: rgba(102,126,234,0.06) !important;
+  border-radius: 6px;
+}
+
+/* Ensure Ant icon inside the button is visible and uses the button color */
+.comment-edit-btn .anticon {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  color: inherit !important;
+}
+.comment-edit-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: currentColor !important;
+}
+
+/* Fallback: make the button slightly larger if the icon is still not visible */
+.comment-edit-btn.visible-debug {
+  padding: 6px !important;
+  height: 32px !important;
+  min-width: 32px !important;
 }
 
 /* Target Ant button variants carrying our class to ensure no
    Ant default (ghost/default) style bleeds through in modals */
 .post-detail-modal .ant-btn.grievance-edit-btn,
 .ant-modal .ant-btn.grievance-edit-btn {
-  background: #e6f7ff !important;
-  color: #096dd9 !important;
-  border-color: #91d5ff !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.grievance-edit-btn:hover,
+.post-detail-modal .ant-btn.grievance-edit-btn:hover,
+.ant-modal .ant-btn.grievance-edit-btn:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
 }
 
 /* Author username tag used in cards and detail view */

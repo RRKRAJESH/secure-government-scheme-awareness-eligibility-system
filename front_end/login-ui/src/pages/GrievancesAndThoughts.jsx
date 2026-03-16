@@ -36,6 +36,29 @@ const PAGE_SIZE_OPTIONS = [
   { value: 20, label: "20 per page" },
 ];
 
+const linkify = (text) => {
+  if (text === null || text === undefined) return null;
+  const str = String(text);
+  const urlRegex = /((https?:\/\/|www\.)[^\s]+)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = urlRegex.exec(str)) !== null) {
+    const idx = match.index;
+    if (idx > lastIndex) parts.push(str.slice(lastIndex, idx));
+    let url = match[0];
+    if (url.startsWith('www.')) url = 'http://' + url;
+    parts.push(
+      <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
+        {match[0]}
+      </a>
+    );
+    lastIndex = idx + match[0].length;
+  }
+  if (lastIndex < str.length) parts.push(str.slice(lastIndex));
+  return parts.map((p, i) => (typeof p === 'string' ? <span key={i}>{p}</span> : p));
+};
+
 // API-backed posts
 
 // Post Card Component
@@ -62,17 +85,12 @@ const PostCard = React.memo(({ post, onClick, onComment, onEdit }) => {
     <Card className="scheme-card global-card" hoverable onClick={() => onClick(post)}>
       <div className="scheme-card-content">
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Avatar size={40}>{initials}</Avatar>
           <div style={{ flex: 1, minWidth: 0 }}>
             <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Text type="secondary" className="scheme-code">Posted by</Text>
-              <Tag className="author-tag">{postedBy}</Tag>
-            </div>
           </div>
         </div>
 
-        <Paragraph className="scheme-desc">{post.description || ""}</Paragraph>
+            <Paragraph className="scheme-desc">{linkify(post.description || "")}</Paragraph>
 
         <div style={{ flex: 1 }} />
 
@@ -206,6 +224,41 @@ function GrievancesAndThoughts() {
   const [focusComment, setFocusComment] = useState(false);
   const [commentForm] = Form.useForm();
   const commentInputRef = useRef(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentValue, setEditingCommentValue] = useState("");
+  const [updatingComment, setUpdatingComment] = useState(false);
+  const [editingCommentIndex, setEditingCommentIndex] = useState(null);
+  const getCommentId = (c) => {
+    if (!c) return null;
+    try {
+      // common shapes
+      if (typeof c._id === 'string' && c._id) return c._id;
+      if (c._id && typeof c._id === 'object' && c._id.$oid) return c._id.$oid;
+      if (typeof c.id === 'string' && c.id) return c.id;
+      if (c.id && typeof c.id === 'object' && c.id.$oid) return c.id.$oid;
+      if (typeof c.comment_id === 'string' && c.comment_id) return c.comment_id;
+      if (c.comment_id && typeof c.comment_id === 'object' && c.comment_id.$oid) return c.comment_id.$oid;
+      if (typeof c.commentId === 'string' && c.commentId) return c.commentId;
+      if (c.commentId && typeof c.commentId === 'object' && c.commentId.$oid) return c.commentId.$oid;
+
+      // fallback: scan values for a 24-hex ObjectId-like string or nested $oid
+      const oidRegex = /^[a-fA-F0-9]{24}$/;
+      for (const key of Object.keys(c)) {
+        const val = c[key];
+        if (typeof val === 'string' && oidRegex.test(val)) return val;
+        if (val && typeof val === 'object') {
+          if (typeof val.$oid === 'string' && oidRegex.test(val.$oid)) return val.$oid;
+          for (const subKey of Object.keys(val)) {
+            const subVal = val[subKey];
+            if (typeof subVal === 'string' && oidRegex.test(subVal)) return subVal;
+          }
+        }
+      }
+    } catch (e) {
+      console.debug('getCommentId error', e, c);
+    }
+    return null;
+  };
 
   const { getUsername, getTokenPayload } = useAuth();
   const currentUsername = getUsername();
@@ -610,12 +663,12 @@ function GrievancesAndThoughts() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Tag className="author-tag">{displayNameForPost(selectedPost.post)}</Tag>
+                        {selectedPost.post.posted_at && (
+                          <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 12, display: 'block' }}>
+                            Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
+                          </Text>
+                        )}
                       </div>
-                      {selectedPost.post.posted_at && (
-                        <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
-                          Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
-                        </Text>
-                      )}
                       <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                         <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>
                           {selectedPost.post.post_type || 'GRIEVANCE'}
@@ -647,7 +700,7 @@ function GrievancesAndThoughts() {
                   <div style={{ fontWeight: 600, fontSize: 14, color: '#333' }}>About</div>
                 </div>
                 <div className="section-content">
-                  <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>{selectedPost.post.description}</Paragraph>
+                  <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>{linkify(selectedPost.post.description)}</Paragraph>
                 </div>
               </div>
 
@@ -667,10 +720,23 @@ function GrievancesAndThoughts() {
                       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                       body: JSON.stringify({ commented_content: values.commented_content }),
                     });
-                        const data = normalizeApiTimestampsToIST(await res.json());
+                    const data = normalizeApiTimestampsToIST(await res.json());
                     if (!data || data.error) throw new Error(data?.data?.errorMessage || "Comment create failed");
                     const created = data.data.comment;
                     setSelectedPost((prev) => ({ ...prev, comments: prev.comments ? [created, ...prev.comments] : [created], post: { ...prev.post, comments_count: (prev.post.comments_count || 0) + 1 } }));
+                    // If server didn't include an id for the created comment, refresh the detail to obtain server-assigned ids
+                    if (!getCommentId(created)) {
+                      try {
+                        const detailUrl = API_ENDPOINTS.GRIEVANCES_LIST.replace("/list", "/detail") + "/" + (selectedPost.post.id || selectedPost.post._id);
+                        const r = await fetch(detailUrl, { headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
+                        const refreshed = normalizeApiTimestampsToIST(await r.json());
+                        if (!refreshed || refreshed.error) throw new Error(refreshed?.data?.errorMessage || "Failed to refresh post details");
+                        const refreshedComments = (refreshed.data && refreshed.data.comments) || [];
+                        setSelectedPost((prev) => ({ ...prev, comments: refreshedComments, post: { ...prev.post, comments_count: refreshed.data.post.comments_count || (prev.post.comments_count || 0) } }));
+                      } catch (err) {
+                        console.error("Failed to refresh comments after create", err);
+                      }
+                    }
                     setGrievances((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
                     setThoughts((s) => s.map((p) => (p.id === selectedPost.post.id ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p)));
                     try { commentForm.resetFields(); } catch (e) {}
@@ -695,19 +761,106 @@ function GrievancesAndThoughts() {
                   }
                 >
                   {selectedPost.comments && selectedPost.comments.length > 0 ? (
-                    selectedPost.comments.map((c) => {
+                    selectedPost.comments.map((c, idx) => {
                       const commenterName = displayNameForComment(c);
                       const avatarInitial = commenterName.toString().trim().charAt(0).toUpperCase() || 'U';
 
+                      const cid = getCommentId(c);
+
                       return (
-                        <div key={c._id} className="comment-item">
+                        <div key={cid || `new-${idx}`} className="comment-item">
                           <Avatar size={36}>{avatarInitial}</Avatar>
                           <div className="comment-body">
                             <div className="comment-meta">
-                              <Text strong className="comment-author">{commenterName}</Text>
-                              <Text type="secondary" className="comment-time">{formatDateTimeIST(c.commented_at)}</Text>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <Text strong className="comment-author">{commenterName}</Text>
+                                <Text type="secondary" className="comment-time">{formatDateTimeIST(c.commented_at)}</Text>
+                                        {displayNameForComment(c) === 'You' && (
+                                          <Tooltip title="Edit comment">
+                                            <Button className="comment-edit-btn" type="text" size="small" onClick={(e) => {
+                                              e.stopPropagation();
+                                              // open editor immediately using index so UI is responsive
+                                              setEditingCommentIndex(idx);
+                                              setEditingCommentValue(c.commented_content || "");
+                                            }} aria-label="Edit comment">
+                                              <EditOutlined />
+                                            </Button>
+                                          </Tooltip>
+                                        )}
+                              </div>
                             </div>
-                            <div className="comment-content">{c.commented_content}</div>
+                            <div className="comment-content">
+                              {editingCommentIndex === idx ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                  <TextArea value={editingCommentValue} onChange={(e) => setEditingCommentValue(e.target.value)} rows={3} />
+                                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                                    <Button onClick={() => { setEditingCommentIndex(null); setEditingCommentValue(""); }}>Cancel</Button>
+                                    <Button type="primary" loading={updatingComment} onClick={async () => {
+                                      try {
+                                        const token = localStorage.getItem("access_token");
+                                        const targetComment = (selectedPost && selectedPost.comments && selectedPost.comments[editingCommentIndex]) || c;
+                                        let commentId = getCommentId(targetComment);
+                                        if (!commentId) {
+                                          // try to refresh post detail to resolve newly-created comment ids
+                                          try {
+                                            const token = localStorage.getItem("access_token");
+                                            const detailUrl = API_ENDPOINTS.GRIEVANCES_LIST.replace("/list", "/detail") + "/" + (selectedPost.post.id || selectedPost.post._id);
+                                            const r = await fetch(detailUrl, { headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
+                                            const refreshed = normalizeApiTimestampsToIST(await r.json());
+                                            if (!refreshed || refreshed.error) throw new Error(refreshed?.data?.errorMessage || "Failed to refresh post details");
+                                            const refreshedComments = (refreshed.data && refreshed.data.comments) || [];
+                                            // try to find exact match by content or timestamp or by username+prefix
+                                            const match = refreshedComments.find((cm) => {
+                                              try {
+                                                if (!cm) return false;
+                                                if (cm.commented_content && targetComment.commented_content && cm.commented_content === targetComment.commented_content) return true;
+                                                if (cm.commented_at && targetComment.commented_at && cm.commented_at === targetComment.commented_at) return true;
+                                                const prefix = (targetComment.commented_content || "").slice(0, 30);
+                                                if (prefix && cm.commented_content && cm.commented_content.startsWith(prefix) && (cm.user_id === (currentUsername || cm.user_id))) return true;
+                                              } catch (e) {}
+                                              return false;
+                                            });
+                                            if (match) {
+                                              commentId = getCommentId(match);
+                                              // replace local comments with refreshed ones for consistency
+                                              setSelectedPost((prev) => ({ ...prev, comments: refreshedComments }));
+                                            }
+                                          } catch (err) {
+                                            console.error("Failed to refresh comments to resolve id", err, targetComment);
+                                          }
+                                        }
+                                        if (!commentId) {
+                                          console.error("Missing comment id for comment", targetComment);
+                                          message.error("Unable to determine comment id — try again after a moment");
+                                          return;
+                                        }
+                                        const endpoint = API_ENDPOINTS.GRIEVANCES_COMMENT_UPDATE.replace("{post_id}", selectedPost.post.id || selectedPost.post._id).replace("{comment_id}", commentId);
+                                        setUpdatingComment(true);
+                                        const res = await fetch(endpoint, {
+                                          method: "PUT",
+                                          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                                          body: JSON.stringify({ commented_content: editingCommentValue }),
+                                        });
+                                        const data = normalizeApiTimestampsToIST(await res.json());
+                                        if (!data || data.error) throw new Error(data?.data?.errorMessage || "Comment update failed");
+                                        const updated = data.data.comment;
+                                        setSelectedPost((prev) => ({ ...prev, comments: prev.comments ? prev.comments.map((cm) => ((cm._id === commentId || cm.id === commentId) ? updated : cm)) : [updated] }));
+                                        setEditingCommentIndex(null);
+                                        setEditingCommentValue("");
+                                        message.success("Comment updated");
+                                      } catch (err) {
+                                        console.error(err);
+                                        message.error(err.message || "Failed to update comment");
+                                      } finally {
+                                        setUpdatingComment(false);
+                                      }
+                                    }}>Save</Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                linkify(c.commented_content)
+                              )}
+                            </div>
                           </div>
                         </div>
                       );

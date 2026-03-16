@@ -41,6 +41,11 @@ export const API_ENDPOINTS = {
   // Request: { commented_content }
   // Response: { comment }
   GRIEVANCES_COMMENT: `${API_BASE_URL}/api/v1/backend/grievances/{post_id}/comment`,
+  // PUT /grievances/{post_id}/comment/{comment_id}
+  // Headers: Authorization: Bearer {token}
+  // Request: { commented_content }
+  // Response: { comment }
+  GRIEVANCES_COMMENT_UPDATE: `${API_BASE_URL}/api/v1/backend/grievances/{post_id}/comment/{comment_id}`,
   // PUT /grievances/{post_id}/update
   // Headers: Authorization: Bearer {token}
   // Request: { title?, description? }

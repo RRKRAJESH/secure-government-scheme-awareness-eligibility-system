@@ -7,6 +7,7 @@ from app.services.grievances import (
     create_post,
     get_post_with_comments,
     create_comment,
+    update_comment,
     update_post,
 )
 from app.schemas.grievances_schema import (
@@ -19,6 +20,7 @@ from app.schemas.grievances_schema import (
     UpdateResponse,
 )
 from app.schemas.grievances_schema import CreateCommentSchema, CreateCommentResponse
+from app.schemas.grievances_schema import UpdateCommentSchema, UpdateCommentResponse
 from app.schemas.common_schema import ErrorResponse
 
 router = APIRouter()
@@ -87,6 +89,20 @@ async def update_post_handler(post_id: str, payload: UpdatePostSchema, token: di
         description = input_data.get("description")
         updated = update_post(user_id=user_id, post_id=post_id, title=title, description=description)
         return {"error": False, "data": {"post": updated}}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/{post_id}/comment/{comment_id}", response_model=Union[UpdateCommentResponse, ErrorResponse], status_code=status.HTTP_200_OK)
+async def update_comment_handler(post_id: str, comment_id: str, payload: UpdateCommentSchema, token: dict = Depends(verify_token)):
+    try:
+        user_id = token.get("user_id")
+        input_data = payload.model_dump()
+        new_content = input_data.get("commented_content")
+        updated = update_comment(user_id=user_id, comment_id=comment_id, new_content=new_content)
+        return {"error": False, "data": {"comment": updated}}
     except HTTPException:
         raise
     except Exception as e:

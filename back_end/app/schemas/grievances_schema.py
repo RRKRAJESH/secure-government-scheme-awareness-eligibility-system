@@ -43,6 +43,7 @@ class CommentItemSchema(BaseModel):
     user_id: Optional[str] = None
     commented_content: Optional[str] = None
     commented_at: Optional[str] = None
+    id: Optional[str] = None
 
 
 class CreateCommentSchema(BaseModel):
@@ -56,6 +57,19 @@ class CreateCommentResponseData(BaseModel):
 class CreateCommentResponse(BaseModel):
     error: bool = False
     data: CreateCommentResponseData
+
+
+class UpdateCommentSchema(BaseModel):
+    commented_content: constr(min_length=1, max_length=1000)
+
+
+class UpdateCommentResponseData(BaseModel):
+    comment: CommentItemSchema
+
+
+class UpdateCommentResponse(BaseModel):
+    error: bool = False
+    data: UpdateCommentResponseData
 
 
 class PostDetailData(BaseModel):
