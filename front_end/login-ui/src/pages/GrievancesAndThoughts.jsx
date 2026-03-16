@@ -67,7 +67,7 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
           </div>
         </div>
 
-        <Paragraph ellipsis={{ rows: 2 }} className="scheme-desc">{post.description || ""}</Paragraph>
+        <Paragraph className="scheme-desc">{post.description || ""}</Paragraph>
 
         <div style={{ flex: 1 }} />
 
@@ -111,7 +111,8 @@ const WriteModal = React.memo(({
       onCancel={onCancel}
       onOk={handleSubmit}
       confirmLoading={loading}
-      width={600}
+      width={760}
+      className="write-modal"
     >
       <Form form={form} layout="vertical" autoComplete="off">
         <Form.Item
@@ -122,7 +123,7 @@ const WriteModal = React.memo(({
             { min: 5, message: "Title must be at least 5 characters" },
           ]}
         >
-          <Input placeholder="Enter title" />
+          <Input placeholder="Enter title" style={{ height: 48, fontSize: 16 }} />
         </Form.Item>
 
         <Form.Item
@@ -134,15 +135,16 @@ const WriteModal = React.memo(({
           ]}
         >
           <TextArea
-            rows={4}
-            placeholder="Enter your details here"
-            maxLength={500}
+            placeholder="Describe your grievance or thought in detail"
+            maxLength={1000}
             showCount
+            autoSize={{ minRows: 15, maxRows: 18 }}
+            style={{ fontSize: 15, minHeight: 220 }}
           />
         </Form.Item>
 
         <div style={{ color: "#999", fontSize: 12, marginTop: 8 }}>
-          Note: API integration pending. This is for testing purposes.
+          Tip: Provide clear details and add examples if possible. Max 1000 characters.
         </div>
       </Form>
     </Modal>

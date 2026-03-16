@@ -8,6 +8,73 @@
   box-sizing: border-box;
 }
 
+/* Write modal overrides */
+.write-modal .ant-modal-body {
+  padding: 24px 32px !important;
+}
+.write-modal .ant-input-textarea textarea {
+  min-height: 220px !important;
+  font-size: 15px !important;
+}
+
+/* Ensure only one rounded border appears around the write modal textarea
+   by styling the textarea wrapper and removing the inner textarea border. */
+.write-modal .ant-input-textarea {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.write-modal .ant-input-textarea textarea {
+  border: 1.5px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  padding: 14px !important;
+  min-height: 220px !important;
+  box-sizing: border-box !important;
+  resize: none !important;
+  outline: none !important;
+}
+
+/* Remove any outer wrapper border/outline so only the textarea border is visible */
+.write-modal .ant-form-item-control,
+.write-modal .ant-form-item-control-input,
+.write-modal .ant-form-item-control-input-content,
+.write-modal .ant-form-item-control-wrapper,
+.write-modal .ant-input-textarea {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Keep focus state only on the textarea itself (no outer blue ring) */
+.write-modal .ant-input-textarea textarea:focus {
+  border-color: #7aa0ff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Extra deep overrides to remove any residual outer outlines from Ant wrappers */
+.write-modal .ant-modal-content,
+.write-modal .ant-modal-body,
+.write-modal .ant-form-item,
+.write-modal .ant-form-item-control,
+.write-modal .ant-form-item-control-input,
+.write-modal .ant-form-item-control-input-content,
+.write-modal .ant-input-affix-wrapper,
+.write-modal .ant-row,
+.write-modal .ant-col {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.write-modal .ant-input-textarea:before,
+.write-modal .ant-input-textarea:after {
+  display: none !important;
+}
+
+
 .grievances-container {
   flex: 1;
   display: flex;
@@ -251,8 +318,8 @@
 /* Use the shared .global-card/.scheme-card styles for visual parity with Schemes */
 .grievances-content .scheme-card,
 .grievances-content .global-card {
-  /* keep same sizing and outline as schemes */
-  height: 220px;
+  /* allow cards to grow with content */
+  min-height: 220px;
   border-radius: 12px;
   border: 1px solid #f0f0f0;
   transition: all 0.3s ease;
@@ -506,8 +573,8 @@
   box-sizing: border-box !important;
   height: 48px !important;
   font-size: 14px !important;
-  padding: 17px 12px !important; /* (48 - 14) / 2 = 17 */
-  line-height: normal !important;
+  padding: 0 12px !important;
+  line-height: 48px !important;
   min-height: 48px !important;
   resize: none !important;
 }
@@ -561,8 +628,8 @@
     border-radius: 100px !important;
     height: 42px !important;
     font-size: 14px !important;
-    padding: 14px 12px !important; /* (42 - 14) / 2 = 14 */
-    line-height: normal !important;
+    padding: 0 12px !important;
+    line-height: 42px !important;
   }
 
   .comment-input-item .ant-input-textarea textarea::placeholder {
