@@ -20,7 +20,7 @@ def get_grievances_collection():
 def get_comments_collection():
     return get_collection(
         db_name=settings.PRODUCTION_DATABASE_NAME,
-        collection_name="comments"
+        collection_name="commewnts"
     )
 
 
@@ -293,3 +293,112 @@ def get_post_with_comments(post_id: str):
         raise
     except Exception as e:
         raise Exception(f"Error in get_post_with_comments: {e}")
+
+
+def update_post(user_id: str, post_id: str, title: Optional[str] = None, description: Optional[str] = None):
+    try:
+        posts_coll = get_grievances_collection()
+
+        if not ObjectId.is_valid(post_id):
+            raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message="Invalid post id")
+
+        # fetch the post to verify ownership
+        orig = posts_coll.find_one({"_id": ObjectId(post_id)})
+        if not orig:
+            raise_http_error(status_code=status.HTTP_404_NOT_FOUND, message="Post not found")
+
+        # keep original posted_at and author for response preservation
+        orig_posted_at = orig.get("posted_at")
+        orig_user_id = orig.get("user_id")
+        # normalize: stored user_id is ObjectId; user_id param is expected string
+        try:
+            if orig_user_id is not None and str(orig_user_id) != str(user_id):
+                raise_http_error(status_code=status.HTTP_403_FORBIDDEN, message="Not authorized to edit this post")
+        except Exception:
+            pass
+
+        update_fields = {}
+        if title is not None:
+            update_fields["title"] = title
+        if description is not None:
+            update_fields["description"] = description
+        if not update_fields:
+            # nothing to update
+            # return the existing normalized post
+            post = orig
+        else:
+            update_fields["updated_at"] = datetime.utcnow()
+            posts_coll.update_one({"_id": ObjectId(post_id)}, {"$set": update_fields})
+            post = posts_coll.find_one({"_id": ObjectId(post_id)})
+
+        # normalize post for response
+        try:
+            post_id_str = str(post["_id"])
+            post["_id"] = post_id_str
+            post["id"] = post_id_str
+        except Exception:
+            pass
+
+        try:
+            post["user_id"] = str(post["user_id"]) if post.get("user_id") is not None else None
+        except Exception:
+            pass
+
+        # always return the original posted_at (creation time) if available
+        try:
+            if orig_posted_at:
+                post["posted_at"] = serialize_datetime_utc(orig_posted_at)
+            elif post.get("posted_at"):
+                post["posted_at"] = serialize_datetime_utc(post["posted_at"])
+        except Exception:
+            pass
+        for dt in ("created_at", "updated_at"):
+            if post.get(dt):
+                try:
+                    post[dt] = serialize_datetime_utc(post[dt])
+                except Exception:
+                    post[dt] = str(post[dt])
+
+        # attach username if available, prefer stored username (not full name)
+        try:
+            users_coll = get_collection(db_name=settings.PRODUCTION_DATABASE_NAME, collection_name=settings.USERS_COLLECTION_NAME)
+            user_obj_id = orig_user_id
+            resolved_username = None
+            if user_obj_id is not None:
+                # try robust lookups: handle both ObjectId and string id stored
+                try:
+                    user_doc = users_coll.find_one({"_id": ObjectId(user_obj_id)})
+                    if not user_doc:
+                        # try string form
+                        user_doc = users_coll.find_one({"_id": ObjectId(str(user_obj_id))})
+                except Exception:
+                    try:
+                        user_doc = users_coll.find_one({"_id": ObjectId(str(user_obj_id))})
+                    except Exception:
+                        user_doc = None
+
+                if user_doc:
+                    resolved_username = user_doc.get("username") or user_doc.get("name")
+
+            # fallback: if username is not resolved, prefer existing post.username or string user_id
+            post["username"] = resolved_username or post.get("username") or (post.get("user_id") if post.get("user_id") else None)
+        except Exception:
+            # ensure we at least have some username-like value
+            try:
+                post["username"] = post.get("username") or (post.get("user_id") if post.get("user_id") else None)
+            except Exception:
+                pass
+
+        # recompute comments_count
+        try:
+            comments_coll = get_comments_collection()
+            cnt = comments_coll.count_documents({"post_id": ObjectId(post_id)})
+            post["comments_count"] = int(cnt)
+        except Exception:
+            post["comments_count"] = int(post.get("comments_count") or 0)
+
+        return post
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise Exception(f"Error in update_post: {e}")

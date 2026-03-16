@@ -17,9 +17,10 @@ import {
   Pagination,
   Select,
 } from "antd";
-import { PlusOutlined, CommentOutlined, FileTextOutlined } from "@ant-design/icons";
+import { PlusOutlined, CommentOutlined, FileTextOutlined, EditOutlined } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
+import { message } from "antd";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { formatDateTimeIST, normalizeApiTimestampsToIST } from "../utils/dateFormat";
 import "../styles/grievances.css";
@@ -39,7 +40,7 @@ const PAGE_SIZE_OPTIONS = [
 
 // Post Card Component
 
-const PostCard = React.memo(({ post, onClick, onComment }) => {
+const PostCard = React.memo(({ post, onClick, onComment, onEdit }) => {
   const { getUsername, getTokenPayload } = useAuth();
   const username = getUsername() || "User";
   const tokenPayload = getTokenPayload?.() || {};
@@ -64,7 +65,10 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
           <Avatar size={40}>{initials}</Avatar>
           <div style={{ flex: 1, minWidth: 0 }}>
             <Title level={5} className="scheme-name" ellipsis={{ rows: 2 }}>{post.title}</Title>
-            <Text type="secondary" className="scheme-code">Posted by {postedBy}</Text>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Text type="secondary" className="scheme-code">Posted by</Text>
+              <Tag className="author-tag">{postedBy}</Tag>
+            </div>
           </div>
         </div>
 
@@ -77,6 +81,19 @@ const PostCard = React.memo(({ post, onClick, onComment }) => {
             <Tooltip title="Comments">
               <Text type="secondary">💬 {(post.comments_count || 0)}</Text>
             </Tooltip>
+            {isMine && (
+              <Tooltip title="Edit">
+                <Button
+                  size="small"
+                  onClick={(e) => { e.stopPropagation(); if (onEdit) onEdit(post); }}
+                  className="grievance-edit-btn"
+                  style={{ marginLeft: 8 }}
+                  aria-label="Edit post"
+                >
+                  <EditOutlined />
+                </Button>
+              </Tooltip>
+            )}
           </div>
           {post.posted_at && (
             <div className="scheme-added-date">Posted At: {formatDateTimeIST(post.posted_at)}</div>
@@ -95,6 +112,8 @@ const WriteModal = React.memo(({
   onCancel,
   onSubmit,
   loading,
+  initialValues = null,
+  editField = null,
 }) => {
   const [form] = Form.useForm();
 
@@ -105,44 +124,57 @@ const WriteModal = React.memo(({
     });
   }, [form, onSubmit]);
 
+  useEffect(() => {
+    if (initialValues) {
+      try { form.setFieldsValue({ title: initialValues.title, description: initialValues.description }); } catch (e) {}
+    } else {
+      try { form.resetFields(); } catch (e) {}
+    }
+  }, [initialValues, form]);
+
   return (
     <Modal
       title={title}
       open={visible}
-      onCancel={onCancel}
+      onCancel={() => { try { form.resetFields(); } catch (e) {} ; onCancel(); }}
       onOk={handleSubmit}
+      okText={initialValues ? "Update" : undefined}
       confirmLoading={loading}
       width={760}
       className="write-modal"
     >
       <Form form={form} layout="vertical" autoComplete="off">
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[
-            { required: true, message: "Please enter a title" },
-            { min: 5, message: "Title must be at least 5 characters" },
-          ]}
-        >
-          <Input placeholder="Enter title" style={{ height: 48, fontSize: 16 }} />
-        </Form.Item>
+        {editField !== 'description' && (
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[
+              ...(editField === 'title' ? [{ required: true, message: "Please enter a title" }] : [{ required: true, message: "Please enter a title" }]),
+              { min: 5, message: "Title must be at least 5 characters" },
+            ]}
+          >
+            <Input placeholder="Enter title" style={{ height: 48, fontSize: 16 }} />
+          </Form.Item>
+        )}
 
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[
-            { required: true, message: "Please enter a description" },
-            { min: 10, message: "Description must be at least 10 characters" },
-          ]}
-        >
-          <TextArea
-            placeholder="Describe your grievance or thought in detail"
-            maxLength={1000}
-            showCount
-            autoSize={{ minRows: 15, maxRows: 18 }}
-            style={{ fontSize: 15, minHeight: 220 }}
-          />
-        </Form.Item>
+        {editField !== 'title' && (
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[
+              ...(editField === 'description' ? [{ required: true, message: "Please enter a description" }] : [{ required: true, message: "Please enter a description" }]),
+              { min: 10, message: "Description must be at least 10 characters" },
+            ]}
+          >
+            <TextArea
+              placeholder="Describe your grievance or thought in detail"
+              maxLength={1000}
+              showCount
+              autoSize={{ minRows: 15, maxRows: 18 }}
+              style={{ fontSize: 15, minHeight: 220 }}
+            />
+          </Form.Item>
+        )}
 
         <div style={{ color: "#999", fontSize: 12, marginTop: 8 }}>
           Tip: Provide clear details and add examples if possible. Max 1000 characters.
@@ -166,9 +198,11 @@ function GrievancesAndThoughts() {
   const [thoughtsTotal, setThoughtsTotal] = useState(0);
   const [writeModalVisible, setWriteModalVisible] = useState(false);
   const [loadingList, setLoadingList] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [editField, setEditField] = useState(null);
   const [focusComment, setFocusComment] = useState(false);
   const [commentForm] = Form.useForm();
   const commentInputRef = useRef(null);
@@ -208,6 +242,84 @@ function GrievancesAndThoughts() {
 
   // Handle write submission (calls backend create)
   const handleWriteSubmit = useCallback((values) => {
+      // If editing an existing post, call backend update endpoint
+      if (editingPost && (editingPost.id || editingPost._id)) {
+        const postId = editingPost.id || editingPost._id;
+        const token = localStorage.getItem("access_token");
+        const endpoint = API_ENDPOINTS.GRIEVANCES_UPDATE.replace("{post_id}", postId);
+
+        setCreating(true);
+        fetch(endpoint, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ title: values.title, description: values.description }),
+        })
+          .then((res) => res.json())
+          .then((data) => normalizeApiTimestampsToIST(data))
+            .then((data) => {
+            if (!data || data.error) throw new Error(data?.data?.errorMessage || "Update failed");
+            const updated = data.data.post || {};
+            const updatedId = updated.id || updated._id || postId;
+
+            // Merge update into list while preserving authoritative fields (posted_at, username)
+            const mergePost = (existing) => {
+              if (!existing) return existing;
+              return {
+                ...existing,
+                title: updated.title ?? existing.title,
+                description: updated.description ?? existing.description,
+                comments_count: updated.comments_count ?? existing.comments_count,
+                // preserve original posted_at if present on existing, otherwise use updated (if any)
+                posted_at: existing.posted_at ?? updated.posted_at ?? existing.posted_at,
+                // prefer existing username (so 'You' logic continues to work); fall back to updated.username
+                username: existing.username ?? updated.username ?? existing.username,
+              };
+            };
+
+            if (activeTab === "grievances") {
+              setGrievances((s) => s.map((p) => (p.id !== updatedId ? p : mergePost(p))));
+            } else {
+              setThoughts((s) => s.map((p) => (p.id !== updatedId ? p : mergePost(p))));
+            }
+
+            setSelectedPost((prev) => {
+              try {
+                if (!prev || !prev.post) return prev;
+                const prevId = prev.post.id || prev.post._id;
+                if (prevId === updatedId) {
+                  return {
+                    ...prev,
+                    post: {
+                      ...prev.post,
+                      title: updated.title ?? prev.post.title,
+                      description: updated.description ?? prev.post.description,
+                      comments_count: updated.comments_count ?? prev.post.comments_count,
+                      // ensure posted_at and username are preserved in the detail view
+                      posted_at: prev.post.posted_at ?? updated.posted_at ?? prev.post.posted_at,
+                      username: prev.post.username ?? updated.username ?? prev.post.username,
+                    },
+                  };
+                }
+              } catch (e) {}
+              return prev;
+            });
+
+            setWriteModalVisible(false);
+            setEditingPost(null);
+            setEditField(null);
+            message.success("Post updated");
+          })
+          .catch((err) => {
+            console.error(err);
+            message.error(err.message || "Update failed");
+          })
+          .finally(() => setCreating(false));
+
+        return;
+      }
     const token = localStorage.getItem("access_token");
     const endpoint = API_ENDPOINTS.GRIEVANCES_CREATE;
     const payload = {
@@ -227,25 +339,29 @@ function GrievancesAndThoughts() {
     })
       .then((res) => res.json())
       .then((data) => normalizeApiTimestampsToIST(data))
-      .then((data) => {
+        .then((data) => {
         if (!data || data.error) throw new Error(data?.data?.errorMessage || "Create failed");
         const created = data.data || {};
         const post = {
           id: created._id || created.id,
           title: values.title,
           description: values.description,
-          posted_at: created.posted_at || new Date().toISOString(),
+            posted_at: created.posted_at || new Date().toISOString(),
+            // include username and user_id so UI can immediately recognise the post as owned by current user
+            username: currentUsername || created.username || null,
+            user_id: currentUserId || created.user_id || null,
           comments_count: 0,
         };
         if (activeTab === "grievances") setGrievances((s) => [post, ...s]);
         else setThoughts((s) => [post, ...s]);
         setWriteModalVisible(false);
+        setEditField(null);
       })
       .catch((err) => {
         console.error(err);
       })
       .finally(() => setCreating(false));
-  }, [activeTab]);
+  }, [activeTab, editingPost, currentUsername, currentUserId]);
 
   const fetchPosts = useCallback(async (postType, page, pageSize) => {
     const token = localStorage.getItem("access_token");
@@ -331,7 +447,7 @@ function GrievancesAndThoughts() {
                 type="primary"
                 icon={<PlusOutlined />}
                 size="large"
-                onClick={() => setWriteModalVisible(true)}
+                onClick={() => { setEditingPost(null); setEditField(null); setWriteModalVisible(true); }}
                 className="write-button"
               >
                 Write Grievance
@@ -355,9 +471,9 @@ function GrievancesAndThoughts() {
             ) : grievances.length > 0 ? (
               <>
                 <Row gutter={[16,16]} className="schemes-grid">
-                  {grievances.map((grievance) => (
+                      {grievances.map((grievance) => (
                     <Col xs={24} sm={12} lg={8} xl={8} key={grievance.id}>
-                      <PostCard post={grievance} onClick={openDetail} onComment={openDetailWithComment} />
+                      <PostCard post={grievance} onClick={openDetail} onComment={openDetailWithComment} onEdit={(p) => { setEditingPost(p); setEditField(null); setWriteModalVisible(true); }} />
                     </Col>
                   ))}
                 </Row>
@@ -391,7 +507,7 @@ function GrievancesAndThoughts() {
                 type="primary"
                 icon={<PlusOutlined />}
                 size="large"
-                onClick={() => setWriteModalVisible(true)}
+                onClick={() => { setEditingPost(null); setWriteModalVisible(true); }}
                 className="write-button"
               >
                 Write Thought
@@ -417,7 +533,7 @@ function GrievancesAndThoughts() {
                 <Row gutter={[16,16]} className="schemes-grid">
                   {thoughts.map((thought) => (
                     <Col xs={24} sm={12} lg={8} xl={8} key={thought.id}>
-                      <PostCard post={thought} onClick={openDetail} onComment={openDetailWithComment} />
+                      <PostCard post={thought} onClick={openDetail} onComment={openDetailWithComment} onEdit={(p) => { setEditingPost(p); setWriteModalVisible(true); }} />
                     </Col>
                   ))}
                 </Row>
@@ -460,11 +576,15 @@ function GrievancesAndThoughts() {
       <WriteModal
         visible={writeModalVisible}
         title={
-          activeTab === "grievances" ? "Write a Grievance" : "Write a Thought"
+          editingPost
+            ? (editField ? (editField === 'title' ? 'Edit Title' : 'Edit Description') : (activeTab === "grievances" ? "Edit Grievance" : "Edit Thought"))
+            : (activeTab === "grievances" ? "Write a Grievance" : "Write a Thought")
         }
-        onCancel={() => setWriteModalVisible(false)}
-        onSubmit={handleWriteSubmit}
-        loading={creating}
+          onCancel={() => { setWriteModalVisible(false); setEditingPost(null); setEditField(null); }}
+          onSubmit={handleWriteSubmit}
+          loading={creating}
+          initialValues={editingPost}
+          editField={editField}
       />
 
       <Modal
@@ -478,34 +598,54 @@ function GrievancesAndThoughts() {
       >
         {selectedPost ? (
           <div className="scheme-detail-content">
-            <div className="scheme-hero-header">
-              <div className="scheme-hero-inner">
-                <div className="scheme-hero-title">
+            <div className="scheme-hero-header" style={{ position: 'relative' }}>
+              <div className="scheme-hero-inner" style={{ position: 'relative' }}>
+                <div className="scheme-hero-title" style={{ position: 'relative' }}>
+                  {/* Top title (keep this) */}
                   <Title level={3} style={{ color: '#fff', margin: 0 }}>
                     {selectedPost.post.title || selectedPost.post.schemeName || selectedPost.post.heading || 'Untitled Post'}
                   </Title>
-                  <div style={{ marginTop: 8 }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, display: 'block' }} strong>{displayNameForPost(selectedPost.post)}</Text>
-                    {selectedPost.post.posted_at && (
-                      <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
-                        Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
-                      </Text>
-                    )}
-                    <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>
-                        {selectedPost.post.post_type || 'GRIEVANCE'}
-                      </Tag>
-                      <Tag color="green" style={{ fontSize: 12, padding: '4px 12px' }}>
-                        Comments: {selectedPost.post.comments_count || 0}
-                      </Tag>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginTop: 8 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Tag className="author-tag">{displayNameForPost(selectedPost.post)}</Tag>
+                      </div>
+                      {selectedPost.post.posted_at && (
+                        <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, display: 'block', marginTop: 4 }}>
+                          Posted At: {formatDateTimeIST(selectedPost.post.posted_at)}
+                        </Text>
+                      )}
+                      <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Tag color="blue" style={{ fontSize: 12, padding: '4px 12px' }}>
+                          {selectedPost.post.post_type || 'GRIEVANCE'}
+                        </Tag>
+                        <Tag color="green" style={{ fontSize: 12, padding: '4px 12px' }}>
+                          Comments: {selectedPost.post.comments_count || 0}
+                        </Tag>
+                        {displayNameForPost(selectedPost.post) === 'You' && (
+                          <Tooltip title="Edit post">
+                            <Button size="small" onClick={(e) => { e.stopPropagation(); setEditingPost(selectedPost.post); setEditField(null); setWriteModalVisible(true); }} className="grievance-edit-btn" aria-label="Edit post" style={{ marginLeft: 6 }}>
+                              <EditOutlined />
+                            </Button>
+                          </Tooltip>
+                        )}
+                      </div>
                     </div>
+
+                    
                   </div>
                 </div>
+              
               </div>
+
             </div>
 
             <div className="post-detail-column">
               <div className="detail-section about-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: '#333' }}>About</div>
+                </div>
                 <div className="section-content">
                   <Paragraph style={{ fontSize: 14, lineHeight: 1.8, margin: 0 }}>{selectedPost.post.description}</Paragraph>
                 </div>

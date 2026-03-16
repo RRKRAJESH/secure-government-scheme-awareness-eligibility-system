@@ -7,6 +7,7 @@ from app.services.grievances import (
     create_post,
     get_post_with_comments,
     create_comment,
+    update_post,
 )
 from app.schemas.grievances_schema import (
     CreatePostSchema,
@@ -14,6 +15,8 @@ from app.schemas.grievances_schema import (
     PostDetailResponse,
     CreateResponse,
     PostType,
+    UpdatePostSchema,
+    UpdateResponse,
 )
 from app.schemas.grievances_schema import CreateCommentSchema, CreateCommentResponse
 from app.schemas.common_schema import ErrorResponse
@@ -68,6 +71,22 @@ async def create_comment_handler(post_id: str, payload: CreateCommentSchema, tok
         input_data = payload.model_dump()
         comment = create_comment(user_id=user_id, username=username, post_id=post_id, content=input_data.get("commented_content"))
         return {"error": False, "data": {"comment": comment}}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.put("/{post_id}/update", response_model=Union[UpdateResponse, ErrorResponse], status_code=status.HTTP_200_OK)
+async def update_post_handler(post_id: str, payload: UpdatePostSchema, token: dict = Depends(verify_token)):
+    try:
+        user_id = token.get("user_id")
+        input_data = payload.model_dump()
+        title = input_data.get("title")
+        description = input_data.get("description")
+        updated = update_post(user_id=user_id, post_id=post_id, title=title, description=description)
+        return {"error": False, "data": {"post": updated}}
     except HTTPException:
         raise
     except Exception as e:

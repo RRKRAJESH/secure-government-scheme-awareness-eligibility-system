@@ -75,3 +75,17 @@ class CreateResponseData(BaseModel):
 class CreateResponse(BaseModel):
     error: bool = False
     data: CreateResponseData
+
+
+class UpdatePostSchema(BaseModel):
+    title: Optional[constr(min_length=5, max_length=200)] = None
+    description: Optional[constr(min_length=10, max_length=2000)] = None
+
+
+class UpdateResponseData(BaseModel):
+    post: PostItemSchema
+
+
+class UpdateResponse(BaseModel):
+    error: bool = False
+    data: UpdateResponseData
