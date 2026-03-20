@@ -74,7 +74,6 @@
   display: none !important;
 }
 
-
 .grievances-container {
   flex: 1;
   display: flex;
@@ -149,18 +148,58 @@
   margin-top: 12px;
 }
 
-.pc-actions { display:flex; gap:8px; align-items:center }
+.pc-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 
-.post-detail-modal .post-detail-grid { display:flex; flex-direction:column; gap:16px; height: 100%; }
-.post-detail-hero { display:flex; justify-content:space-between; align-items:center; gap:20px }
-.post-hero-left { flex:1 }
-.post-hero-right { width:260px; display:flex; flex-direction:column; gap:12px; align-items:flex-end }
-.author-box { display:flex; align-items:center }
-.post-actions button { margin-left:6px }
+.post-detail-modal .post-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+.post-detail-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.post-hero-left {
+  flex: 1;
+}
+.post-hero-right {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+.author-box {
+  display: flex;
+  align-items: center;
+}
+.post-actions button {
+  margin-left: 6px;
+}
 
-.post-detail-body { display:flex; gap:24px; flex: 1 1 auto; overflow: hidden; }
-.post-content { flex: 2; overflow: auto; padding-right: 8px; }
-.post-comments { flex: 1; overflow: auto; padding-left: 8px; }
+.post-detail-body {
+  display: flex;
+  gap: 24px;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.post-content {
+  flex: 2;
+  overflow: auto;
+  padding-right: 8px;
+}
+.post-comments {
+  flex: 1;
+  overflow: auto;
+  padding-left: 8px;
+}
 
 /* keep comment form visible below scrollable area */
 .post-comment-form {
@@ -352,7 +391,7 @@
   /* allow cards to grow with content */
   min-height: 220px;
 
-/* Shared edit button used for grievance cards and detail view.
+  /* Shared edit button used for grievance cards and detail view.
    Place as top-level selector and add modal/detail-specific selectors
    so the same appearance is enforced across cards and pages. */
   border-radius: 12px;
@@ -373,16 +412,18 @@
 
 .grievances-content .scheme-card::after,
 .grievances-content .global-card::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 6px;
   right: 6px;
   top: 6px;
   bottom: 6px;
   border-radius: 10px;
-  border: 2px solid rgba(102,126,234,0.0);
+  border: 2px solid rgba(102, 126, 234, 0);
   pointer-events: none;
-  transition: border-color 0.18s ease, opacity 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    opacity 0.18s ease;
   opacity: 0;
 }
 
@@ -393,12 +434,17 @@
   padding-right: 56px; /* reserve space for top-right edit button */
 }
 
-/* Truncate long descriptions in card view to keep cards compact */
+/* Truncate long descriptions in card view to keep cards compact.
+   Use Ant Paragraph ellipsis and ensure stable line-height so last
+   visible line is not partially cut. Preserve newlines but allow
+   wrapping. */
 .scheme-desc {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  line-height: 1.5;
+  max-height: calc(1.5em * 3); /* 3 lines */
   overflow: hidden;
+  display: block;
+  white-space: pre-line; /* preserve newlines, allow wrapping */
+  word-break: break-word;
   text-overflow: ellipsis;
 }
 
@@ -423,7 +469,7 @@
 .grievances-content .scheme-card:focus-within::after,
 .grievances-content .global-card:hover::after,
 .grievances-content .global-card:focus-within::after {
-  border-color: rgba(102,126,234,0.95);
+  border-color: rgba(102, 126, 234, 0.95);
   opacity: 1;
 }
 
@@ -458,20 +504,20 @@
   word-break: break-word;
   overflow-wrap: break-word;
 
-.post-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  color: #666;
-  font-size: 13px;
-}
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    color: #666;
+    font-size: 13px;
+  }
 
-.post-footer .meta {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
+  .post-footer .meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
 }
 
 .ant-tabs-nav {
@@ -527,12 +573,12 @@
 
 /* Modal Close Button */
 .ant-modal-close {
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .ant-modal-close:hover {
   color: #fff;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .ant-empty {
@@ -643,7 +689,7 @@
 }
 .comment-edit-btn:hover {
   color: #4b63d6 !important;
-  background: rgba(102,126,234,0.06) !important;
+  background: rgba(102, 126, 234, 0.06) !important;
   border-radius: 6px;
 }
 
@@ -697,7 +743,7 @@
 
 .post-detail-modal .author-tag {
   /* ensure visibility on hero gradient */
-  background: rgba(230,247,255,0.95) !important;
+  background: rgba(230, 247, 255, 0.95) !important;
 }
 
 /* Single-column detail layout for posts */
