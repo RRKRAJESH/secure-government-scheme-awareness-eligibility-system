@@ -8,6 +8,9 @@ from app.configs.config import settings
 from app.services.error import raise_http_error
 from fastapi import status, HTTPException
 from app.utils.date_time import serialize_datetime_utc
+from app.services.notifications import create_notification, create_bulk_notifications
+import re
+from app.services.notifications import create_bulk_notifications
 
 
 def get_grievances_collection():
@@ -147,7 +150,55 @@ def create_post(user_id: str, title: str, description: str, post_type: str):
             "updated_at": now,
         }
         res = coll.insert_one(doc)
-        return {"id": str(res.inserted_id), "_id": str(res.inserted_id), "posted_at": serialize_datetime_utc(now)}
+        inserted_id = str(res.inserted_id)
+
+        # Notify other users about the new post
+        try:
+            users_coll = get_users_collection()
+            # fetch the author display name if available
+            author_name = None
+            try:
+                author_doc = users_coll.find_one({"_id": ObjectId(user_id)}, {"username": 1, "name": 1})
+                if author_doc:
+                    author_name = author_doc.get("username") or author_doc.get("name")
+            except Exception:
+                author_name = None
+
+            # gather recipient ids (all users except the author)
+            recipient_ids = []
+            try:
+                for u in users_coll.find({}, {"_id": 1}):
+                    try:
+                        uid = u.get("_id")
+                        if uid and str(uid) != str(user_id):
+                            recipient_ids.append(str(uid))
+                    except Exception:
+                        continue
+            except Exception:
+                recipient_ids = []
+
+            if recipient_ids:
+                notifier = {"kind": "user", "id": str(user_id), "name": author_name}
+                # include both the client navigation URL and the backend detail API
+                reference = {
+                    "kind": "post",
+                    "id": inserted_id,
+                    "url": f"/posts/{inserted_id}",
+                    "api_url": f"/api/v1/backend/grievances/detail/{inserted_id}",
+                }
+                message = f"{author_name or 'A user'} added a new post: {title}"
+                meta = {"post_title": title}
+                # bulk create notifications (sync). For large user bases, perform this in background.
+                try:
+                    create_bulk_notifications(recipient_ids, "NEW_POST", notifier, reference, message, meta=meta)
+                except Exception:
+                    # do not block post creation on notification errors
+                    pass
+        except Exception:
+            # swallow notification-related errors
+            pass
+
+        return {"id": inserted_id, "_id": inserted_id, "posted_at": serialize_datetime_utc(now)}
     except Exception as e:
         raise Exception(f"Error in create_post: {e}")
 
@@ -192,6 +243,60 @@ def create_comment(user_id: str, username: Optional[str], post_id: str, content:
             if doc.get(dt_field):
                 doc[dt_field] = serialize_datetime_utc(doc[dt_field])
 
+        # --- Notifications: notify post owner and any mentioned users ---
+        try:
+            users_coll = get_users_collection()
+            # fetch post owner
+            post_owner_id = None
+            post_title = None
+            try:
+                post_doc = posts_coll.find_one({"_id": ObjectId(post_id)}, {"user_id": 1, "title": 1})
+                if post_doc:
+                    post_owner_id = post_doc.get("user_id")
+                    post_title = post_doc.get("title")
+            except Exception:
+                post_owner_id = None
+
+            notifier = {"kind": "user", "id": str(user_id), "name": username}
+            reference = {
+                "kind": "post",
+                "id": str(post_id),
+                "url": f"/posts/{post_id}",
+                "api_url": f"/api/v1/backend/grievances/detail/{post_id}",
+            }
+            meta = {"comment_id": doc.get("_id")}
+
+            # notify post owner if not the commenter
+            try:
+                if post_owner_id and str(post_owner_id) != str(user_id):
+                    message = f"{username or 'Someone'} commented on your post"
+                    create_notification(str(post_owner_id), "NEW_COMMENT", notifier, reference, message, meta=meta)
+            except Exception:
+                pass
+
+            # find @mentions in comment content (e.g., @username)
+            try:
+                mentions = set(re.findall(r"@([\w\.-]+)", content or ""))
+                if mentions:
+                    # resolve mentions to user ids via username field
+                    mentioned_users = users_coll.find({"username": {"$in": list(mentions)}}, {"_id": 1, "username": 1})
+                    recipient_ids = []
+                    for mu in mentioned_users:
+                        try:
+                            mid = mu.get("_id")
+                            if mid and str(mid) != str(user_id) and (not post_owner_id or str(mid) != str(post_owner_id)):
+                                recipient_ids.append(str(mid))
+                        except Exception:
+                            continue
+                    if recipient_ids:
+                        mention_msg = f"{username or 'Someone'} mentioned you in a comment"
+                        create_bulk_notifications(recipient_ids, "NEW_COMMENT", notifier, reference, mention_msg, meta={**meta, "post_title": post_title})
+            except Exception:
+                pass
+        except Exception:
+            # keep comment creation resilient even if notifications fail
+            pass
+
         return doc
     except HTTPException:
         raise
@@ -229,7 +334,8 @@ def get_post_with_comments(post_id: str):
                 post[dt] = serialize_datetime_utc(post[dt])
 
         # fetch comments
-        comments_cursor = comments_coll.find({"post_id": ObjectId(post_id)}).sort("commented_at", 1)
+        # return comments newest-first to match UI expectations (descending by commented_at)
+        comments_cursor = comments_coll.find({"post_id": ObjectId(post_id)}).sort("commented_at", -1)
         comments = []
         for c in comments_cursor:
             try:

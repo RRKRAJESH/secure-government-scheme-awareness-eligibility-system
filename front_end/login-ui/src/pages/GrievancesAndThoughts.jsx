@@ -646,6 +646,10 @@ function GrievancesAndThoughts() {
     thoughtsPageSize,
   ]);
 
+  // If another page requested opening a post (e.g., via notifications), handle it
+  // NOTE: this effect is moved after `openDetail` declaration to avoid referencing
+  // the callback before it's defined (which causes a runtime ReferenceError).
+
   const openDetail = useCallback((post) => {
     const token = localStorage.getItem("access_token");
     setSelectedPost(null);
@@ -677,6 +681,19 @@ function GrievancesAndThoughts() {
     },
     [openDetail],
   );
+
+  // If another page requested opening a post (e.g., via notifications), handle it
+  useEffect(() => {
+    try {
+      const openPostId = sessionStorage.getItem("open_post_id");
+      if (openPostId) {
+        // clear it to avoid repeated opens
+        sessionStorage.removeItem("open_post_id");
+        // open detail using existing helper which accepts a post object with `id`
+        openDetail({ id: openPostId });
+      }
+    } catch (e) {}
+  }, [openDetail]);
 
   const items = [
     {
