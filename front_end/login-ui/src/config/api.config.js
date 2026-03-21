@@ -120,6 +120,10 @@ export const API_ENDPOINTS = {
 
   // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with sector filter)
   SCHEMES_CATEGORIES: `${API_BASE_URL}/api/v1/backend/schemes/categories`,
+
+  // USERS
+  // GET /users/list
+  USERS_LIST: `${API_BASE_URL}/api/v1/backend/users/list`,
 };
 
 export default API_ENDPOINTS;

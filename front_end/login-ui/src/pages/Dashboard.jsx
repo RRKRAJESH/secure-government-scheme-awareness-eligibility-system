@@ -8,6 +8,7 @@ import {
   NotificationOutlined,
   BellOutlined,
   BankOutlined,
+    TeamOutlined,
 } from "@ant-design/icons";
 import "../styles/dashboard.css";
 import MainLayout from "./MainLayout";
@@ -15,6 +16,7 @@ import Schemes from "./Schemes";
 import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
+import Users from "./Users";
 import ProfileUpdatePrompt from "../components/ProfileUpdatePrompt";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
@@ -24,7 +26,7 @@ import { ROLE_COLORS, ROUTES } from "../config/constants";
 const { Sider, Content } = Layout;
 
 // Memoized content section to prevent unnecessary renders
-const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
+const DashboardContent = React.memo(({ activeTab, openProfileForm, role }) => {
   switch (activeTab) {
     case "grievances":
       return <GrievancesAndThoughts />;
@@ -33,7 +35,12 @@ const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
       return <Notifications />;
 
     case "profile":
+      // Admins shouldn't see profile; fallback to Schemes
+      if (role === "ADMIN") return <Schemes />;
       return <Profile openFormDirectly={openProfileForm} />;
+
+    case "users":
+      return <Users />;
 
     default:
       return <Schemes />;
@@ -69,6 +76,7 @@ function Dashboard() {
 
   // Show profile prompt if profile is incomplete and hasn't been shown yet
   useEffect(() => {
+    if (role === "ADMIN") return; // admins don't need profile
     if (!profileLoading && !isProfileComplete && !hasShownPrompt) {
       // Check if user has dismissed the prompt in this session
       const dismissed = sessionStorage.getItem("profilePromptDismissed");
@@ -77,7 +85,7 @@ function Dashboard() {
         setHasShownPrompt(true);
       }
     }
-  }, [profileLoading, isProfileComplete, hasShownPrompt]);
+  }, [profileLoading, isProfileComplete, hasShownPrompt, role]);
 
   const handleProfilePromptUpdate = useCallback(() => {
     setShowProfilePrompt(false);
@@ -263,9 +271,17 @@ function Dashboard() {
                 </span>
               </Menu.Item>
 
-              <Menu.Item key="profile" icon={<ProfileOutlined />}>
-                <span style={{ fontWeight: "bold" }}>Profile</span>
-              </Menu.Item>
+              {role !== "ADMIN" && (
+                <Menu.Item key="profile" icon={<ProfileOutlined />}>
+                  <span style={{ fontWeight: "bold" }}>Profile</span>
+                </Menu.Item>
+              )}
+
+              {role === "ADMIN" && (
+                <Menu.Item key="users" icon={<TeamOutlined />}>
+                  <span style={{ fontWeight: "bold" }}>Users</span>
+                </Menu.Item>
+              )}
 
               <Menu.Item key="logout" icon={<LogoutOutlined />}>
                 <span style={{ fontWeight: "bold" }}>Logout</span>
@@ -280,6 +296,7 @@ function Dashboard() {
               <DashboardContent
                 activeTab={activeTab}
                 openProfileForm={openProfileForm}
+                role={role}
               />
             </Content>
           </Layout>

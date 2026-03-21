@@ -12,6 +12,7 @@ from app.api.v1.update_profile import router as profile_router
 from app.api.v1.scheme import router as scheme_router
 from app.api.v1.grievances import router as grievances_router
 from app.api.v1.notifications import router as notifications_router
+from app.api.v1.users import router as users_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,6 +40,7 @@ app.include_router(profile_router, prefix= "/profile", tags= ["Profile Informati
 app.include_router(scheme_router, prefix= "/schemes", tags= ["Schemes"])
 app.include_router(grievances_router, prefix="/grievances", tags=["Grievances & Thoughts"])
 app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
 
 #Handle HTTPException (from raise_http_error or manual raises)
 @app.exception_handler(HTTPException)
