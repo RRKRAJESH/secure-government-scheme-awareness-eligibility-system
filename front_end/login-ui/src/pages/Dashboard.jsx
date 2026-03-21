@@ -291,7 +291,7 @@ function Dashboard() {
 
           <Layout>
             <Content
-              className={`dashboard-content ${activeTab === "grievances" ? "grievances-view" : "default-view"}`}
+              className={`dashboard-content ${["grievances", "users", "notifications", "schemes"].includes(activeTab) ? "grievances-view" : "default-view"} tab-${activeTab}`}
             >
               <DashboardContent
                 activeTab={activeTab}

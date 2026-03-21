@@ -124,6 +124,8 @@ export const API_ENDPOINTS = {
   // USERS
   // GET /users/list
   USERS_LIST: `${API_BASE_URL}/api/v1/backend/users/list`,
+  // POST /users/delete
+  USERS_DELETE: `${API_BASE_URL}/api/v1/backend/users/delete`,
 };
 
 export default API_ENDPOINTS;

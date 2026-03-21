@@ -3,6 +3,7 @@ from app.configs.config import settings
 from typing import Dict
 from app.services.error import raise_http_error
 from fastapi import status, HTTPException
+from bson import ObjectId
 import math
 
 
@@ -59,3 +60,25 @@ def list_users(page: int = 1, limit: int = 20) -> Dict:
         raise
     except Exception as e:
         raise Exception(f"Error in list_users: {e}")
+
+
+def delete_user(user_id: str) -> Dict:
+    """Soft-delete a user by setting is_active=False."""
+    try:
+        coll = get_users_collection()
+        if not user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required")
+        try:
+            oid = ObjectId(user_id)
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user_id")
+
+        result = coll.update_one({"_id": oid}, {"$set": {"is_active": False}})
+        if result.matched_count == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+        return {"message": "User removed successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise Exception(f"Error in delete_user: {e}")
