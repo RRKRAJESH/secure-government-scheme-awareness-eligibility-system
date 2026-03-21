@@ -75,6 +75,11 @@ export const API_ENDPOINTS = {
   // Request: { notification_id } or { notification_ids: [...] }
   // Response: { message, updated_count }
   NOTIFICATIONS_MARK_READ: `${API_BASE_URL}/api/v1/backend/notifications/mark-read`,
+  // POST /notifications/mark-all-read
+  // Headers: Authorization: Bearer {token}
+  // Request: none
+  // Response: { message, updated_count }
+  NOTIFICATIONS_MARK_ALL_READ: `${API_BASE_URL}/api/v1/backend/notifications/mark-all-read`,
 
   // ============= SCHEMES ENDPOINTS =============
   // GET /schemes/list?page=1&limit=10&status=ACTIVE

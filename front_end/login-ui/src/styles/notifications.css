@@ -41,6 +41,10 @@
   padding-right: 8px;
 }
 
+.notifications-list {
+  padding-bottom: 24px; /* ensure pagination sits above bottom edge */
+}
+
 .notifications-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -60,11 +64,11 @@
 
 .notification-card {
   border-left: 4px solid #d9d9d9 !important;
-  transition: all 0.3s ease;
+  transition: all 0.22s ease;
   background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-  padding: 16px !important;
+  padding: 12px !important;
   border-radius: 8px !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
 }
 
 .notification-card.unread {
@@ -87,10 +91,10 @@
   display: inline-block;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   min-width: 32px;
   text-align: center;
   flex-shrink: 0;
@@ -109,9 +113,9 @@
 
 .notification-details {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 8px;
 }
 
 .unread-banner {
@@ -123,6 +127,84 @@
   margin-bottom: 20px;
   display: inline-block;
   box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+}
+
+.total-pill {
+  background: rgba(102, 126, 234, 0.12);
+  color: #334155;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(102,126,234,0.18);
+}
+
+.total-pill.total-highlight {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-pill.total-highlight::before {
+  content: '\2728';
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.unread-pill {
+  background: linear-gradient(90deg, #ff4d4f 0%, #ff7a45 100%);
+  box-shadow: 0 6px 18px rgba(255,77,79,0.18);
+}
+
+.view-btn {
+  background: rgba(0,0,0,0.04);
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.view-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.mark-all-btn {
+  box-shadow: none;
+}
+
+.mark-all-btn {
+  height: 36px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.mark-all-btn {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+}
+
+.mark-all-btn:hover {
+  filter: brightness(0.98);
+}
+
+.mark-all-btn:active {
+  transform: translateY(1px);
 }
 
 /* center the empty state similar to grievances page */

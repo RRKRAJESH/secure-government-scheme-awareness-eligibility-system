@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { Card, Row, Col, Empty, Typography, Button } from "antd";
+import React, { useState, useCallback, useEffect } from "react";
+import { Card, Row, Col, Empty, Typography, Button, Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
 import { BellOutlined } from "@ant-design/icons";
 import { formatDateTimeIST } from "../utils/dateFormat";
@@ -30,10 +30,10 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
         <Col span={20}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span className="notification-number">#{index + 1}</span>
-            <Title level={4} style={{ margin: 0 }}>
-              {msg}
-            </Title>
-            {unread && <span className="unread-badge">New</span>}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+              <Text strong style={{ fontSize: 16, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg}</Text>
+              {unread && <span className="unread-badge">New</span>}
+            </div>
           </div>
         </Col>
       </Row>
@@ -44,10 +44,32 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
           <Text style={{ marginLeft: 12 }} type="secondary">
             • <Button
               type="link"
+              size="small"
+              className="view-btn"
               onClick={() => {
                 const postId = notification?.reference?.id || null;
+                const notifId = notification?.id || null;
                 if (postId) {
                   try {
+                    // mark this notification as read on the backend, then navigate
+                    const token = localStorage.getItem("access_token");
+                    if (notifId) {
+                      fetch(API_ENDPOINTS.NOTIFICATIONS_MARK_READ, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                        body: JSON.stringify({ notification_ids: [notifId] }),
+                      })
+                        .then((r) => r.json())
+                        .then(() => {
+                          try {
+                            window.dispatchEvent(new Event("notifications:updated"));
+                          } catch (e) {}
+                        })
+                        .catch(() => {});
+                    }
                     // prefer passing state so Dashboard responds even when already mounted
                     sessionStorage.setItem("open_post_id", String(postId));
                     sessionStorage.setItem("open_tab", "grievances");
@@ -64,13 +86,9 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
         )}
       </div>
 
-      {notification.meta?.comment_id ? (
-        <p style={{ marginTop: 12, color: "#666", lineHeight: 1.6 }}>
-          {notification.meta?.comment_preview || msg}
-        </p>
-      ) : (
-        <p style={{ marginTop: 12, color: "#666", lineHeight: 1.6 }}>{msg}</p>
-      )}
+      {notification.meta?.comment_preview ? (
+        <p style={{ marginTop: 12, color: "#666", lineHeight: 1.6 }}>{notification.meta.comment_preview}</p>
+      ) : null}
     </Card>
   );
 });
@@ -81,42 +99,64 @@ function Notifications() {
   const { getTokenPayload, getToken } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10); // fixed 10 per page as requested
+  const [total, setTotal] = useState(0);
+  const [markingAll, setMarkingAll] = useState(false);
 
-  React.useEffect(() => {
-    // Avoid using the unstable function reference from useAuth in deps
-    // Read token directly from localStorage so effect is stable
+  const fetchList = useCallback(async (p = page, ps = pageSize) => {
     const token = localStorage.getItem("access_token");
     let cancelled = false;
     setLoading(true);
-    fetch(API_ENDPOINTS.NOTIFICATIONS_LIST, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        // backend returns: { error: false, data: { notifications: [...] } }
-        let list = [];
-        if (data) {
-          if (Array.isArray(data.notifications)) list = data.notifications;
-          else if (data.data && Array.isArray(data.data.notifications)) list = data.data.notifications;
-          else if (Array.isArray(data.data)) list = data.data;
-        }
-        setNotifications(list || []);
-      })
-      .catch((err) => {
-        if (!cancelled) console.debug("Failed to fetch notifications", err);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+    try {
+      const url = `${API_ENDPOINTS.NOTIFICATIONS_LIST}?page=${p}&pageSize=${ps}`;
+      const res = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
-
+      const data = await res.json();
+      if (cancelled) return;
+      // normalize supported response shapes into an array
+      let list = [];
+      let totalCount = 0;
+      if (data) {
+        if (Array.isArray(data.notifications)) {
+          list = data.notifications;
+          totalCount = data.total || list.length;
+        } else if (data.data) {
+          if (Array.isArray(data.data.notifications)) {
+            list = data.data.notifications;
+            totalCount = data.data.total || list.length;
+          } else if (Array.isArray(data.data)) {
+            list = data.data;
+            totalCount = data.total || list.length;
+          }
+        }
+      }
+      setNotifications(list || []);
+      setTotal(totalCount || 0);
+    } catch (err) {
+      console.debug("Failed to fetch notifications", err);
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [page, pageSize]);
+
+  useEffect(() => {
+    fetchList(page, pageSize);
+  }, [fetchList, page, pageSize]);
+
+  // re-fetch when other parts of the app mark notifications updated
+  useEffect(() => {
+    const handler = () => fetchList(page, pageSize);
+    window.addEventListener("notifications:updated", handler);
+    return () => window.removeEventListener("notifications:updated", handler);
+  }, [fetchList, page, pageSize]);
 
   // counting unread
   const unreadCount = notifications.filter((n) => n.is_seen === false || n.unread === true).length;
@@ -131,22 +171,68 @@ function Notifications() {
 
       <div className="notifications-container">
         <div className="notifications-content">
-          {unreadCount > 0 && (
-            <div className="unread-banner">{unreadCount} new notifications</div>
-          )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="total-pill total-highlight">Total: {total}</div>
+              <div className="total-pill total-highlight unread-pill">Unread: {unreadCount}</div>
+              <Button
+                size="small"
+                type="primary"
+                className="mark-all-btn"
+                onClick={async () => {
+                  if (markingAll || total === 0) return;
+                  setMarkingAll(true);
+                  try {
+                    const token = localStorage.getItem('access_token');
+                    const res = await fetch(API_ENDPOINTS.NOTIFICATIONS_MARK_ALL_READ, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                      },
+                    });
+                    const data = await res.json();
+                    if (!data || data.error) throw new Error('Failed to mark all read');
+                    try { window.dispatchEvent(new Event('notifications:updated')); } catch (e) {}
+                    await fetchList(page, pageSize);
+                  } catch (e) {
+                    console.error('Mark all read failed', e);
+                  } finally {
+                    setMarkingAll(false);
+                  }
+                }}
+                disabled={total === 0 || markingAll}
+              >
+                {markingAll ? 'Marking...' : 'Mark all read'}
+              </Button>
+            </div>
+            <div style={{ width: 1 }} />
+          </div>
           {loading ? (
             <div>Loading...</div>
           ) : notifications.length > 0 ? (
-            <div className="notifications-list">
-              {notifications.map((notification, index) => (
-                <NotificationCard
-                  key={notification.id}
-                  notification={notification}
-                  index={index}
-                  unread={!(notification.is_seen === true)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="notifications-list">
+                {notifications.map((notification, index) => (
+                  <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                    index={(page - 1) * pageSize + index}
+                    unread={!(notification.is_seen === true)}
+                  />
+                ))}
+
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', paddingBottom: 12 }}>
+                  <Pagination
+                    current={page}
+                    pageSize={pageSize}
+                    total={total}
+                    showSizeChanger={false}
+                    onChange={(p) => setPage(p)}
+                  />
+                </div>
+              </div>
+            </>
           ) : (
             <div className="no-results">
               <Empty description={<span>No notifications</span>} />

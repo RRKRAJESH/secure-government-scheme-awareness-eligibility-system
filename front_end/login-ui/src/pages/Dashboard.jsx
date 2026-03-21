@@ -106,8 +106,14 @@ function Dashboard() {
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;
-        const list = data?.notifications || data?.data || [];
-        setNotificationCount(list.filter((n) => n.unread).length);
+        // normalize supported response shapes into an array
+        let list = [];
+        if (data) {
+          if (Array.isArray(data.notifications)) list = data.notifications;
+          else if (data.data && Array.isArray(data.data.notifications)) list = data.data.notifications;
+          else if (Array.isArray(data.data)) list = data.data;
+        }
+        setNotificationCount((list || []).filter((n) => n.is_seen === false || n.unread === true).length);
       })
       .catch((err) => {
         if (!cancelled) console.debug("Failed to fetch notification count", err);
@@ -146,6 +152,35 @@ function Dashboard() {
       }
     } catch (e) {}
   }, [location]);
+
+  // Re-fetch notification count when notifications change (e.g., marked read)
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        fetch(API_ENDPOINTS.NOTIFICATIONS_LIST, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            let list = [];
+            if (data) {
+              if (Array.isArray(data.notifications)) list = data.notifications;
+              else if (data.data && Array.isArray(data.data.notifications)) list = data.data.notifications;
+              else if (Array.isArray(data.data)) list = data.data;
+            }
+            setNotificationCount((list || []).filter((n) => n.unread || n.is_seen === false).length);
+          })
+          .catch(() => {});
+      } catch (e) {}
+    };
+
+    window.addEventListener("notifications:updated", handler);
+    return () => window.removeEventListener("notifications:updated", handler);
+  }, []);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -209,17 +244,12 @@ function Dashboard() {
               </Menu.Item>
 
               <Menu.Item key="notifications" icon={<BellOutlined />}>
-                {notificationCount > 0 ? (
-                  <Badge
-                    count={notificationCount}
-                    overflowCount={99}
-                    offset={[10, 0]}
-                  >
-                    <span style={{ fontWeight: "bold" }}>Notifications</span>
-                  </Badge>
-                ) : (
-                  <span style={{ fontWeight: "bold" }}>Notifications</span>
-                )}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: "bold" }}>
+                  <span>Notifications</span>
+                  {notificationCount > 0 && (
+                    <Badge count={notificationCount} overflowCount={99} />
+                  )}
+                </span>
               </Menu.Item>
 
               <Menu.Item key="profile" icon={<ProfileOutlined />}>
