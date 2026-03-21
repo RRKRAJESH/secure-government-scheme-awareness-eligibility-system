@@ -42,7 +42,7 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
         <Text type="secondary">🕐 {createdAt ? formatDateTimeIST(createdAt) : ""}</Text>
         {refUrl && (
           <Text style={{ marginLeft: 12 }} type="secondary">
-            • <Button
+            <Button
               type="link"
               size="small"
               className="view-btn"
