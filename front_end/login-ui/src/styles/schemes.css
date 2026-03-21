@@ -270,6 +270,26 @@
   position: relative;
 }
 
+/* Delete (trash) icon button positioned at top-right of the card */
+.scheme-delete-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 5 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,0.9) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important;
+}
+
+.scheme-delete-btn:hover {
+  background: rgba(255,255,255,1) !important;
+}
+
 .scheme-card:hover,
 .global-card:hover {
   transform: translateY(-4px);

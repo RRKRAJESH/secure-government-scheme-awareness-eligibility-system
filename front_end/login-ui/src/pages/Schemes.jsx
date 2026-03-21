@@ -25,9 +25,12 @@ import {
   FileTextOutlined,
   GlobalOutlined,
   InfoCircleOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  DeleteOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
+import useAuth from "../hooks/useAuth";
+import { ROLES } from "../config/constants";
 import API_ENDPOINTS from "../config/api.config";
 import { SECTORS } from "../config/constants";
 import { formatDateTimeIST } from "../utils/dateFormat";
@@ -70,7 +73,7 @@ const PAGE_SIZE_OPTIONS = [
 ];
 
 // Scheme Card Component
-const SchemeCard = React.memo(({ scheme, onClick }) => {
+const SchemeCard = React.memo(({ scheme, onClick, onDelete }) => {
   const getLevelColor = (level) => ({
     CENTRAL: "orange",
     STATE: "cyan",
@@ -133,6 +136,17 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
           <div className="scheme-added-date">
             Posted At: {formatDateTimeIST(scheme.createdAt)}
           </div>
+        )}
+
+        {onDelete && (
+          <Button
+            type="text"
+            danger
+            size="small"
+            onClick={(e) => { e.stopPropagation(); onDelete(scheme); }}
+            className="scheme-delete-btn"
+            icon={<DeleteOutlined />}
+          />
         )}
       </div>
     </Card>
@@ -435,6 +449,7 @@ const FilterContent = ({ filters, onFilterChange, onClear, activeFiltersCount })
 // Main Schemes Component
 const Schemes = React.memo(() => {
   const { apiRequest } = useApi();
+  const { getRole } = useAuth();
   
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
@@ -565,6 +580,23 @@ const Schemes = React.memo(() => {
     setSubSchemes([]);
   }, []);
 
+  // Delete scheme (mark isDeleted: true)
+  const handleDeleteScheme = useCallback(async (schemeId) => {
+    const confirmed = window.confirm("Delete this scheme? This will mark it as deleted and remove it from the list.");
+    if (!confirmed) return;
+
+    try {
+      // call API to mark deleted
+      const url = API_ENDPOINTS.SCHEMES_MARK_DELETED.replace('{scheme_id}', schemeId);
+      await apiRequest(url, "PUT", { isDeleted: true });
+      message.success("Scheme marked deleted");
+      // refresh current page
+      fetchSchemes(pagination.currentPage || 1, searchKeyword);
+    } catch (err) {
+      message.error(err.message || "Failed to delete scheme");
+    }
+  }, [apiRequest, fetchSchemes, pagination.currentPage, searchKeyword]);
+
   return (
     <div className="schemes-wrapper">
       {/* Top Bar - Search, Filter, Pagination */}
@@ -678,7 +710,11 @@ const Schemes = React.memo(() => {
             <Row gutter={[16, 16]} className="schemes-grid">
               {schemes.map((scheme) => (
                 <Col xs={24} sm={12} lg={8} xl={8} key={scheme._id}>
-                  <SchemeCard scheme={scheme} onClick={handleSchemeClick} />
+                  <SchemeCard
+                    scheme={scheme}
+                    onClick={handleSchemeClick}
+                    onDelete={getRole() === ROLES.ADMIN ? async (s) => { await handleDeleteScheme(s._id); } : undefined}
+                  />
                 </Col>
               ))}
             </Row>

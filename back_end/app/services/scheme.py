@@ -157,12 +157,45 @@ def get_scheme_by_id(scheme_id: str):
             "scheme": scheme,
             "subSchemes": sub_schemes
         }
-
+    
     except HTTPException:
         raise
 
     except Exception as e:
         error_msg = f"Error occurred while processing get_scheme_by_id() :: {str(e)}"
+        raise Exception(error_msg)
+
+
+def mark_scheme_deleted(scheme_id: str):
+    """Mark a scheme document as deleted by setting `isDeleted` to True and updating status."""
+    try:
+        schemes_collection = get_schemes_collection()
+
+        # Validate ObjectId
+        if not ObjectId.is_valid(scheme_id):
+            raise_http_error(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                message="Invalid scheme ID format"
+            )
+
+        result = schemes_collection.update_one(
+            {"_id": ObjectId(scheme_id)},
+            {"$set": {"isDeleted": True, "status": "DELETED"}}
+        )
+
+        if result.matched_count == 0:
+            raise_http_error(
+                status_code=status.HTTP_404_NOT_FOUND,
+                message="Scheme not found"
+            )
+
+        return {"message": "Scheme marked deleted"}
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        error_msg = f"Error occurred while processing mark_scheme_deleted() :: {str(e)}"
         raise Exception(error_msg)
 
 

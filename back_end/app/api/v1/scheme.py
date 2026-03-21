@@ -18,6 +18,7 @@ from app.services.scheme import (
     get_scheme_by_id,
     search_schemes,
     get_scheme_by_code,
+    mark_scheme_deleted,
     get_eligible_schemes_for_user
 )
 
@@ -142,6 +143,40 @@ async def get_scheme_detail_handler(
     """Get scheme details by ID"""
     try:
         result = get_scheme_by_id(scheme_id)
+
+        return {
+            "error": False,
+            "data": result
+        }
+
+    except HTTPException:
+        raise
+
+    except ValueError as e:
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{str(e)}"
+        )
+
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}"
+        )
+
+
+@router.put(
+    "/{scheme_id}/mark-deleted",
+    response_model=Union[dict, ErrorResponse],
+    status_code=status.HTTP_200_OK
+)
+async def mark_scheme_deleted_handler(
+    scheme_id: str,
+    token: str = Depends(verify_token)
+):
+    """Mark a scheme as deleted (soft delete)."""
+    try:
+        result = mark_scheme_deleted(scheme_id)
 
         return {
             "error": False,

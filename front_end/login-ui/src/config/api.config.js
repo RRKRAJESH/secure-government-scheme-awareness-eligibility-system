@@ -107,6 +107,12 @@ export const API_ENDPOINTS = {
   // Response: { data: { schemes: [...], pagination: {...} } }
   SCHEMES_ELIGIBLE: `${API_BASE_URL}/api/v1/backend/schemes/eligible`,
 
+  // PUT /schemes/{scheme_id}/mark-deleted
+  // Headers: Authorization: Bearer {token}
+  // Request: { isDeleted: true }
+  // Response: { message }
+  SCHEMES_MARK_DELETED: `${API_BASE_URL}/api/v1/backend/schemes/{scheme_id}/mark-deleted`,
+
   // GET /schemes/suggestions?keyword=...&limit=10
   // Headers: Authorization: Bearer {token}
   // Response: { data: { suggestions: [{ id, name, code, type }] } }
