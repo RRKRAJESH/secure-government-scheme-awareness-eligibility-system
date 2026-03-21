@@ -1,0 +1,417 @@
+/* ===== FULL SCREEN TRICOLOR ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.dashboard-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Remove ALL antd layout backgrounds */
+.ant-layout,
+.ant-layout-content,
+.ant-layout-sider {
+  background: transparent !important;
+}
+
+/* ===== SIDEBAR ===== */
+.dashboard-sider {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100vh;
+  margin-left: 20px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-logo {
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin: 50px 20px;
+
+  letter-spacing: 3px;
+  text-transform: uppercase;
+
+  padding: 18px 10px;
+  border-radius: 16px;
+
+  /* Warm light beige / cream background */
+  background: rgba(255, 248, 230, 0.85); /* very light beige with some transparency */
+  backdrop-filter: blur(6px); /* soft glass effect */
+
+  /* Soft shadow */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  /* Gradient text */
+  background-image: linear-gradient(90deg, #e65100, rgb(83, 83, 231), #0ae20a); /* dark tricolor */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Add subtle text shadow for visibility */
+  text-shadow:
+    0 1px 3px rgba(0,0,0,0.2),
+    0 0 5px rgba(0,0,0,0.1);
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.logo-text {
+  letter-spacing: 0.5px;
+}
+
+/* User Info Section */
+.user-info-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin: 0 15px 20px 15px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  max-width: 100%;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #8c8c8c;
+  text-transform: capitalize;
+}
+
+/* Profile Completion Section - Circular */
+.profile-completion-section.circular {
+  margin: 0 15px 20px 15px;
+  padding: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafc 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-completion-section.circular .ant-progress {
+  margin: 0;
+}
+
+.profile-completion-section.circular .ant-progress-circle .ant-progress-text {
+  font-size: 16px !important;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.profile-completion-section.circular .completion-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-circle-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* Menu */
+.dashboard-menu {
+  background: transparent !important;
+  border-right: none !important;
+  padding: 0 15px;   /* 🔥 add inner spacing */
+
+}
+
+.dashboard-menu .ant-menu-item {
+  margin: 8px 0;
+  border-radius: 12px;   
+}
+
+.dashboard-menu .ant-menu-item-selected {
+  background-color: #1677FF !important;
+  color: white !important;
+}
+
+.sidebar-top {
+  flex: 1;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 30px;
+
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+/* Make badge center perfectly */
+.sidebar-bottom .ant-badge {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Center avatar properly */
+.sidebar-bottom .ant-avatar {
+  cursor: pointer;
+}
+
+/* ===== CONTENT ===== */
+.dashboard-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-right: 40px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow: hidden;
+  box-sizing: border-box;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Dashboard Header with Greeting */
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 0 16px 0;
+  margin-bottom: 16px;
+}
+
+.greeting-section {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.greeting-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.user-email {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f1f1f;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Content for grievances - takes full height and width */
+.dashboard-content.grievances-view {
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+/* Default center alignment for other content */
+.dashboard-content.default-view {
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.dashboard-card {
+  width: 100%;
+  max-width: 1200px;
+  padding: 50px;
+  border-radius: 12px;
+  border-top: 5px solid #52c41a;
+  background: white;
+}
+
+/* Center the search section */
+.search-wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Bigger card */
+.search-card {
+  width: 900px;
+  max-width: 95%;
+  text-align: center;
+  padding: 50px;
+}
+
+/* Title */
+.search-title {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.search-subtitle {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Blue Search Button */
+.blue-search .ant-btn-primary {
+  background-color: #1677FF !important;
+  border-color: #1677FF !important;
+}
+
+.blue-search .ant-btn-primary:hover {
+  background-color: #0958D9 !important;
+  border-color: #0958D9 !important;
+}
+.dashboard-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ============ GLOBAL FORM ENHANCEMENTS ============ */
+/* Apply to all forms inside dashboard */
+.dashboard-content .ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.dashboard-content .ant-input,
+.dashboard-content .ant-select-selector,
+.dashboard-content .ant-picker {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  height: 42px !important;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-content .ant-input:hover,
+.dashboard-content .ant-select-selector:hover,
+.dashboard-content .ant-picker:hover {
+  border-color: #667eea !important;
+}
+
+.dashboard-content .ant-input:focus,
+.dashboard-content .ant-input-focused,
+.dashboard-content .ant-select-focused .ant-select-selector,
+.dashboard-content .ant-picker-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+.dashboard-content .ant-select-selection-item,
+.dashboard-content .ant-select-selection-placeholder {
+  line-height: 40px !important;
+}
+
+.dashboard-content .ant-input-number {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  width: 100%;
+}
+
+.dashboard-content .ant-input-number:hover {
+  border-color: #667eea !important;
+}
+
+.dashboard-content .ant-input-number-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Textarea */
+.dashboard-content .ant-input-textarea textarea {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  font-size: 14px;
+  min-height: 100px;
+}
+
+.dashboard-content .ant-input-textarea textarea:hover {
+  border-color: #667eea !important;
+}
+
+.dashboard-content .ant-input-textarea textarea:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Switch */
+.dashboard-content .ant-switch-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Checkbox */
+.dashboard-content .ant-checkbox-checked .ant-checkbox-inner {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+/* Buttons */
+.dashboard-content .ant-btn-primary:not(.ant-btn-dangerous) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dashboard-content .ant-btn-primary:not(.ant-btn-dangerous):hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Form Item Extra Styling */
+.dashboard-content .ant-form-item {
+  margin-bottom: 20px;
+}
+
+/* Disabled Input */
+.dashboard-content .ant-input-disabled,
+.dashboard-content .ant-select-disabled .ant-select-selector {
+  background: #f8f9fa !important;
+  color: #666 !important;
+  cursor: not-allowed;
+}

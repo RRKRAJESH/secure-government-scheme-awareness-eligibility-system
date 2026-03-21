@@ -1,0 +1,117 @@
+.app-bg {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  background: linear-gradient(
+    135deg,
+    #ff9933 0%,
+    #ffb366 25%,
+    #ffffff 50%,
+    #66cc66 75%,
+    #138808 100%
+  );
+}
+
+/* Global text overrides for better visibility on tricolor background */
+.ant-typography.ant-typography-secondary {
+  color: #4b5563 !important;
+}
+
+.ant-empty-description {
+  color: #374151 !important;
+}
+
+/* Watermark Image */
+.watermark-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.watermark-image {
+  width: 480px;
+  height: auto;
+  opacity: 0.15;
+  filter: grayscale(30%);
+}
+
+.app-bg > *:not(.watermark-container) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Standard Close button styling used across the app */
+.btn-close {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #fff !important;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #fff !important;
+}
+
+/* Shared refresh button used across pages */
+
+.global-refresh-btn {
+  height: 44px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: none;
+}
+
+.global-refresh-btn.neutral {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+}
+
+/* Purple variant used for prominent refresh actions (matches mark-all) */
+.global-refresh-btn.purple {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+}
+
+.global-refresh-btn:hover {
+  filter: brightness(0.98);
+}
+
+.global-refresh-btn:active {
+  transform: translateY(1px);
+}
+
+/* Force the global tricolor background in case other styles override it */
+body > .app-bg,
+html > body > .app-bg,
+.app-bg {
+  background: linear-gradient(
+    135deg,
+    #ff9933 0%,
+    #ffb366 25%,
+    #ffffff 50%,
+    #66cc66 75%,
+    #138808 100%
+  ) !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}

@@ -1,0 +1,865 @@
+.grievances-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Write modal overrides */
+.write-modal .ant-modal-body {
+  padding: 24px 32px !important;
+}
+.write-modal .ant-input-textarea textarea {
+  min-height: 220px !important;
+  font-size: 15px !important;
+}
+
+/* Ensure only one rounded border appears around the write modal textarea
+   by styling the textarea wrapper and removing the inner textarea border. */
+.write-modal .ant-input-textarea {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.write-modal .ant-input-textarea textarea {
+  border: 1.5px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  padding: 14px !important;
+  min-height: 220px !important;
+  box-sizing: border-box !important;
+  resize: none !important;
+  outline: none !important;
+}
+
+/* Remove any outer wrapper border/outline so only the textarea border is visible */
+.write-modal .ant-form-item-control,
+.write-modal .ant-form-item-control-input,
+.write-modal .ant-form-item-control-input-content,
+.write-modal .ant-form-item-control-wrapper,
+.write-modal .ant-input-textarea {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Keep focus state only on the textarea itself (no outer blue ring) */
+.write-modal .ant-input-textarea textarea:focus {
+  border-color: #7aa0ff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Extra deep overrides to remove any residual outer outlines from Ant wrappers */
+.write-modal .ant-modal-content,
+.write-modal .ant-modal-body,
+.write-modal .ant-form-item,
+.write-modal .ant-form-item-control,
+.write-modal .ant-form-item-control-input,
+.write-modal .ant-form-item-control-input-content,
+.write-modal .ant-input-affix-wrapper,
+.write-modal .ant-row,
+.write-modal .ant-col {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.write-modal .ant-input-textarea:before,
+.write-modal .ant-input-textarea:after {
+  display: none !important;
+}
+
+.grievances-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.ant-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ant-tabs-content-holder {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ant-tabs-tabpane {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.grievances-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.professional-card {
+  padding: 12px;
+}
+
+.professional-card .professional-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pc-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pc-title .pc-meta {
+  font-size: 12px;
+}
+
+.pc-body {
+  flex: 1;
+  margin-top: 8px;
+}
+
+.pc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.pc-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.post-detail-modal .post-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+.post-detail-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.post-hero-left {
+  flex: 1;
+}
+.post-hero-right {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+.author-box {
+  display: flex;
+  align-items: center;
+}
+.post-actions button {
+  margin-left: 6px;
+}
+
+.post-detail-body {
+  display: flex;
+  gap: 24px;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.post-content {
+  flex: 2;
+  overflow: auto;
+  padding-right: 8px;
+}
+.post-comments {
+  flex: 1;
+  overflow: auto;
+  padding-left: 8px;
+}
+
+/* keep comment form visible below scrollable area */
+.post-comment-form {
+  flex-shrink: 0;
+  background: #fff;
+}
+
+/* Make the modal fixed height and ensure internal areas scroll without resizing modal */
+.post-detail-modal .ant-modal-content {
+  height: 80vh;
+  max-height: 80vh;
+}
+.post-detail-modal .ant-modal-body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  height: 100%;
+  overflow: hidden;
+}
+.post-detail-modal .post-detail-grid {
+  height: 100%;
+}
+
+/* ensure comment form stays visible at bottom */
+.post-detail-modal .post-comment-form {
+  margin-top: 12px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-body {
+  flex: 1;
+  min-width: 0;
+  padding-right: 0;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.comment-author {
+  line-height: 1.2;
+}
+
+.comment-time {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.comment-content {
+  color: #333;
+  margin-top: 2px;
+}
+
+/* Preserve user-entered newlines and spacing for descriptions and comments */
+.scheme-desc,
+.comment-content,
+.detail-section .section-content .ant-typography,
+.detail-section .section-content p {
+  white-space: pre-wrap; /* keep newlines and wrap long lines */
+  word-break: break-word;
+}
+
+.write-button-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.write-button {
+  height: 44px !important;
+  padding: 0 20px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+.write-button:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+}
+
+.posts-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: block;
+  padding-right: 8px;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* when we render Row/Col inside .posts-list, adjust row/col spacing */
+.posts-list > .schemes-grid {
+  margin: 0 -8px;
+}
+.posts-list .ant-col {
+  padding: 0 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.posts-list .no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* hide default scrollbar track background to avoid white gap */
+/* unify scrollbar style with other pages (profile/notifications) */
+.posts-list,
+.comments-list,
+.comments-section .section-content,
+.post-detail-modal .post-detail-grid,
+.scheme-grid-scroll {
+  /* ensure scrollable areas use the same look */
+}
+
+.posts-list::-webkit-scrollbar,
+.comments-list::-webkit-scrollbar,
+.comments-section .section-content::-webkit-scrollbar,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar,
+.scheme-grid-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.posts-list::-webkit-scrollbar-thumb,
+.comments-list::-webkit-scrollbar-thumb,
+.comments-section .section-content::-webkit-scrollbar-thumb,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-thumb,
+.scheme-grid-scroll::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.posts-list::-webkit-scrollbar-thumb:hover,
+.comments-list::-webkit-scrollbar-thumb:hover,
+.comments-section .section-content::-webkit-scrollbar-thumb:hover,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-thumb:hover,
+.scheme-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+.posts-list::-webkit-scrollbar-track,
+.comments-list::-webkit-scrollbar-track,
+.comments-section .section-content::-webkit-scrollbar-track,
+.post-detail-modal .post-detail-grid::-webkit-scrollbar-track,
+.scheme-grid-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.post-card {
+  /* legacy hookup kept for backward compatibility; primary layout uses .scheme-card */
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Use the shared .global-card/.scheme-card styles for visual parity with Schemes */
+.grievances-content .scheme-card,
+.grievances-content .global-card {
+  /* allow cards to grow with content */
+  min-height: 220px;
+
+  /* Shared edit button used for grievance cards and detail view.
+   Place as top-level selector and add modal/detail-specific selectors
+   so the same appearance is enforced across cards and pages. */
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  /* keep card content boxed and avoid reflowing page layout */
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+}
+
+.grievances-content .scheme-card:hover,
+.grievances-content .global-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  border-color: #667eea;
+}
+
+.grievances-content .scheme-card::after,
+.grievances-content .global-card::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(102, 126, 234, 0);
+  pointer-events: none;
+  transition:
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+  opacity: 0;
+}
+
+/* ensure inner content is positioned so absolute controls can anchor to it */
+.scheme-card-content {
+  position: relative;
+  padding-top: 12px;
+  padding-right: 56px; /* reserve space for top-right edit button */
+}
+
+/* Truncate long descriptions in card view to keep cards compact.
+   Use Ant Paragraph ellipsis and ensure stable line-height so last
+   visible line is not partially cut. Preserve newlines but allow
+   wrapping. */
+.scheme-desc {
+  line-height: 1.5;
+  max-height: calc(1.5em * 3); /* 3 lines */
+  overflow: hidden;
+  display: block;
+  white-space: pre-line; /* preserve newlines, allow wrapping */
+  word-break: break-word;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the small edit button inside cards is positioned top-right and doesn't shift layout */
+.grievances-content .scheme-card .grievance-edit-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 50 !important;
+}
+
+/* In the full-detail modal, show the edit button inline beside the tags (Comments) */
+.grievance-detail-modal .grievance-edit-btn {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  margin-left: 8px !important;
+  z-index: 6 !important;
+}
+
+.grievances-content .scheme-card:hover::after,
+.grievances-content .scheme-card:focus-within::after,
+.grievances-content .global-card:hover::after,
+.grievances-content .global-card:focus-within::after {
+  border-color: rgba(102, 126, 234, 0.95);
+  opacity: 1;
+}
+
+.post-card h4 {
+  color: #1f1f1f;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 8px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.post-details {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.post-details span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-card p {
+  margin-top: 12px;
+  line-height: 1.8;
+  color: #444;
+  font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .post-footer .meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+}
+
+.ant-tabs-nav {
+  margin-bottom: 0 !important;
+  border-bottom: 2px solid #ffd666 !important;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 8px 8px 0 0;
+}
+
+.ant-tabs-nav-list {
+  padding: 0 24px;
+}
+
+.ant-tabs-tab {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  padding: 12px 8px !important;
+  color: #8c8c8c !important;
+}
+
+.ant-tabs-tab-active {
+  color: #1890ff !important;
+}
+
+.ant-tabs-ink-bar {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+  height: 3px !important;
+}
+
+.ant-modal-header {
+  border-bottom: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 18px 24px;
+  border-radius: 16px 16px 0 0;
+}
+
+.ant-modal-title {
+  font-weight: 600;
+  font-size: 17px;
+  color: #fff !important;
+}
+
+.ant-modal-body {
+  padding: 28px 24px;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  background: #fafafa;
+}
+
+/* Modal Close Button */
+.ant-modal-close {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ant-modal-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ant-empty {
+  padding: 40px 20px;
+}
+
+/* Grievance Form Styling */
+.grievances-wrapper .ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.grievances-wrapper .ant-modal .ant-input,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.grievances-wrapper .ant-modal .ant-input {
+  height: 44px !important;
+}
+
+.grievances-wrapper .ant-modal .ant-input-textarea textarea {
+  min-height: 120px;
+}
+
+.grievances-wrapper .ant-modal .ant-input:hover,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea:hover {
+  border-color: #667eea !important;
+}
+
+.grievances-wrapper .ant-modal .ant-input:focus,
+.grievances-wrapper .ant-modal .ant-input-textarea textarea:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Modal Buttons */
+.grievances-wrapper .ant-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  height: 42px !important;
+  padding: 0 24px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.grievances-wrapper .ant-modal .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+.grievances-wrapper .ant-modal .ant-btn-default {
+  height: 42px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+
+/* Strong, top-level rule for the shared edit button so it looks
+   identical in cards and in the post detail/modal. The modal
+   default styles are more specific, so include modal-specific
+   selectors and use !important where necessary to override. */
+.grievance-edit-btn,
+.grievances-content .grievance-edit-btn,
+.post-detail-modal .grievance-edit-btn,
+.post-hero-right .grievance-edit-btn,
+.post-hero-left .grievance-edit-btn {
+  /* Use same gradient as the primary write button */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  height: auto !important;
+  min-height: 36px !important;
+  min-width: 44px !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25) !important;
+  line-height: 1 !important;
+  /* pin edit button to top-right of the card/modal so it remains visible */
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}
+
+/* Small icon-only edit button used for inline comment edits
+   Keep it subtle but visible and align color with primary gradient. */
+.comment-edit-btn {
+  color: #667eea !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 4px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  margin-left: 8px !important;
+}
+.comment-edit-btn:hover {
+  color: #4b63d6 !important;
+  background: rgba(102, 126, 234, 0.06) !important;
+  border-radius: 6px;
+}
+
+/* Ensure Ant icon inside the button is visible and uses the button color */
+.comment-edit-btn .anticon {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  color: inherit !important;
+}
+.comment-edit-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: currentColor !important;
+}
+
+/* Fallback: make the button slightly larger if the icon is still not visible */
+.comment-edit-btn.visible-debug {
+  padding: 6px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+}
+
+/* Target Ant button variants carrying our class to ensure no
+   Ant default (ghost/default) style bleeds through in modals */
+.post-detail-modal .ant-btn.grievance-edit-btn,
+.ant-modal .ant-btn.grievance-edit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.grievance-edit-btn:hover,
+.post-detail-modal .ant-btn.grievance-edit-btn:hover,
+.ant-modal .ant-btn.grievance-edit-btn:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+/* Author username tag used in cards and detail view */
+.author-tag {
+  background: #e6f7ff !important;
+  color: #096dd9 !important;
+  border: 1px solid #91d5ff !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.post-detail-modal .author-tag {
+  /* ensure visibility on hero gradient */
+  background: rgba(230, 247, 255, 0.95) !important;
+}
+
+/* Single-column detail layout for posts */
+.grievance-detail-modal .scheme-hero-inner {
+  max-width: 1400px !important;
+}
+
+.post-detail-column {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 40px 0 40px;
+  box-sizing: border-box;
+}
+
+.comments-section .section-content {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.comment-inline-form {
+  margin: 0;
+}
+
+.comment-below-list-form {
+  margin-top: 0;
+}
+
+.comment-inline-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.comment-input-item {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.comment-input-item .ant-input-textarea textarea {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  /* vertically center single-line placeholder/caret by setting padding around the text
+     font-size is set so padding can be computed: (height - font-size)/2 */
+  box-sizing: border-box !important;
+  height: 48px !important;
+  font-size: 14px !important;
+  padding: 0 12px !important;
+  line-height: 48px !important;
+  min-height: 48px !important;
+  resize: none !important;
+}
+
+.comment-input-item .ant-input-textarea textarea::placeholder {
+  line-height: 48px !important;
+  color: #9aa4d6 !important;
+}
+
+.comment-submit-item {
+  margin-bottom: 0 !important;
+}
+
+.comment-submit-item .ant-btn {
+  height: 48px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .grievances-content {
+    padding: 16px;
+  }
+
+  .post-card {
+    padding: 16px;
+  }
+
+  .post-details {
+    gap: 12px;
+  }
+
+  .write-button {
+    width: 100%;
+  }
+
+  .ant-tabs-nav-list {
+    padding: 0 16px;
+  }
+
+  .post-detail-column {
+    padding: 0 16px 0 16px;
+  }
+
+  .comment-inline-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comment-input-item .ant-input-textarea textarea {
+    border-radius: 100px !important;
+    height: 42px !important;
+    font-size: 14px !important;
+    padding: 0 12px !important;
+    line-height: 42px !important;
+  }
+
+  .comment-input-item .ant-input-textarea textarea::placeholder {
+    line-height: 42px !important;
+  }
+
+  .comment-submit-item .ant-btn {
+    width: 100%;
+    border-radius: 8px !important;
+    height: 42px !important;
+  }
+}
