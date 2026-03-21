@@ -615,10 +615,10 @@ const Schemes = React.memo(() => {
             className="page-size-select"
           />
 
-          <Button 
-            icon={<ReloadOutlined />} 
+          <Button
+            icon={<ReloadOutlined />}
             onClick={() => fetchSchemes(pagination.currentPage, searchKeyword)}
-            size="large"
+            className="global-refresh-btn neutral refresh-pill-btn"
             title="Refresh"
           />
 

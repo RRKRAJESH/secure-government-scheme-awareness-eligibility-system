@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Card, Row, Col, Empty, Typography, Button, Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
-import { BellOutlined } from "@ant-design/icons";
+import { BellOutlined, ReloadOutlined } from "@ant-design/icons";
 import { formatDateTimeIST } from "../utils/dateFormat";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
@@ -104,6 +104,21 @@ function Notifications() {
   const [total, setTotal] = useState(0);
   const [markingAll, setMarkingAll] = useState(false);
 
+  // Refresh action that also tells other parts of the app to re-open any active post
+  const handleRefresh = async () => {
+    try {
+      setLoading(true);
+      await fetchList(page, pageSize);
+      // Dispatch a generic refresh event only — do NOT include navigation intent
+      const detail = { action: "refresh" };
+      try { window.dispatchEvent(new CustomEvent('notifications:updated', { detail })); } catch (e) { try { window.dispatchEvent(new Event('notifications:updated')); } catch (e2) {} }
+    } catch (e) {
+      console.error('Refresh failed', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchList = useCallback(async (p = page, ps = pageSize) => {
     const token = localStorage.getItem("access_token");
     let cancelled = false;
@@ -158,6 +173,57 @@ function Notifications() {
     return () => window.removeEventListener("notifications:updated", handler);
   }, [fetchList, page, pageSize]);
 
+  // Last-resort: inject a stylesheet at runtime with !important rules
+  // so the header action buttons stay purple even if other styles use !important.
+  useEffect(() => {
+    const css = `
+      /* Force the refresh pill to be purple only */
+      .notifications-wrapper .refresh-pill-btn {
+        background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 6px 18px rgba(59,130,246,0.18) !important;
+      }
+      .notifications-wrapper .refresh-pill-btn .anticon {
+        color: #ffffff !important;
+      }
+    `;
+    const el = document.createElement('style');
+    el.setAttribute('data-inline', 'notifications-force-purple');
+    el.appendChild(document.createTextNode(css));
+    document.head.appendChild(el);
+    return () => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    };
+  }, []);
+
+  // As a final guarantee, set inline styles with !important on the actual buttons
+  // (some build-time styles insert later with !important and can still win).
+  useEffect(() => {
+    const applyImportant = () => {
+      try {
+        const root = document.querySelector('.notifications-wrapper');
+        if (!root) return;
+        const buttons = root.querySelectorAll('.refresh-pill-btn');
+        buttons.forEach((b) => {
+          b.style.setProperty('background', 'linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%)', 'important');
+          b.style.setProperty('color', '#ffffff', 'important');
+          b.style.setProperty('border', 'none', 'important');
+          b.style.setProperty('box-shadow', '0 6px 18px rgba(59,130,246,0.18)', 'important');
+          // ensure icon color
+          const icon = b.querySelector('.anticon');
+          if (icon) icon.style.setProperty('color', '#ffffff', 'important');
+        });
+      } catch (e) {
+        console.debug('applyImportant failed', e);
+      }
+    };
+    // run now and also schedule shortly after in case other styles load later
+    applyImportant();
+    const t = setTimeout(applyImportant, 300);
+    return () => clearTimeout(t);
+  }, []);
+
   // counting unread
   const unreadCount = notifications.filter((n) => n.is_seen === false || n.unread === true).length;
 
@@ -172,9 +238,12 @@ function Notifications() {
       <div className="notifications-container">
         <div className="notifications-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className="total-pill total-highlight">Total: {total}</div>
-              <div className="total-pill total-highlight unread-pill">Unread: {unreadCount}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span className="total-text">Total: <strong>{total}</strong></span>
+              <span className="unread-text">Unread: <strong>{unreadCount}</strong></span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Button
                 size="small"
                 type="primary"
@@ -205,8 +274,16 @@ function Notifications() {
               >
                 {markingAll ? 'Marking...' : 'Mark all read'}
               </Button>
+
+              <Button
+                type="default"
+                className="mark-all-btn refresh-pill-btn"
+                onClick={handleRefresh}
+                disabled={loading}
+                style={{ background: 'linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%)', color: '#ffffff', border: 'none', boxShadow: '0 6px 18px rgba(59,130,246,0.18)' }}
+                icon={<ReloadOutlined style={{ color: '#ffffff' }} />}
+              />
             </div>
-            <div style={{ width: 1 }} />
           </div>
           {loading ? (
             <div>Loading...</div>

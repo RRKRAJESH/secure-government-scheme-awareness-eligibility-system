@@ -155,8 +155,19 @@ function Dashboard() {
 
   // Re-fetch notification count when notifications change (e.g., marked read)
   useEffect(() => {
-    const handler = () => {
+    const handler = (ev) => {
       try {
+        // If an event carried navigation intent (open_tab/open_post_id), honor it
+        const detail = ev && ev.detail;
+        if (detail && detail.open_tab) {
+          try {
+            if (detail.open_post_id) {
+              sessionStorage.setItem("open_post_id", String(detail.open_post_id));
+            }
+            setActiveTab(detail.open_tab);
+          } catch (e) {}
+        }
+
         const token = localStorage.getItem("access_token");
         fetch(API_ENDPOINTS.NOTIFICATIONS_LIST, {
           headers: {

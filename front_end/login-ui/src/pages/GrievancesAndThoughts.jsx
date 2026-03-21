@@ -22,6 +22,7 @@ import {
   CommentOutlined,
   FileTextOutlined,
   EditOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
@@ -635,6 +636,18 @@ function GrievancesAndThoughts() {
     }
   }, []);
 
+    const handleRefreshPosts = useCallback(() => {
+      try {
+        if (activeTab === "grievances") {
+          fetchPosts("GRIEVANCE", grievancesPage, grievancesPageSize);
+        } else {
+          fetchPosts("THOUGHT", thoughtsPage, thoughtsPageSize);
+        }
+      } catch (e) {
+        console.error("Refresh posts failed", e);
+      }
+    }, [activeTab, fetchPosts, grievancesPage, grievancesPageSize, thoughtsPage, thoughtsPageSize]);
+
   useEffect(() => {
     fetchPosts("GRIEVANCE", grievancesPage, grievancesPageSize);
     fetchPosts("THOUGHT", thoughtsPage, thoughtsPageSize);
@@ -723,6 +736,13 @@ function GrievancesAndThoughts() {
               >
                 Write Grievance
               </Button>
+              <Button
+                type="default"
+                className="mark-all-btn refresh-pill-btn"
+                onClick={handleRefreshPosts}
+                style={{ marginLeft: 12 }}
+                icon={<ReloadOutlined />}
+              />
             </div>
 
             <div>
@@ -813,6 +833,13 @@ function GrievancesAndThoughts() {
               >
                 Write Thought
               </Button>
+              <Button
+                type="default"
+                className="mark-all-btn refresh-pill-btn"
+                onClick={handleRefreshPosts}
+                style={{ marginLeft: 12 }}
+                icon={<ReloadOutlined />}
+              />
             </div>
 
             <div>

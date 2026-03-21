@@ -145,6 +145,21 @@
   border-color: #fff !important;
 }
 
+/* Force neutral (white) refresh button look inside schemes top bar */
+.controls-section .global-refresh-btn.neutral {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.06) !important;
+}
+
+/* Force the shared global refresh button to retain its pill appearance inside the top bar
+   (overrides the `.controls-section .ant-btn` !important rules). */
+/* Schemes top-bar uses the shared `.global-refresh-btn` from layout.css */
+
+/* Ensure the shared global refresh button keeps its intended look inside the schemes top bar */
+/* Schemes top-bar will use the shared `.global-refresh-btn` from layout.css */
+
 .controls-section .ant-btn-dangerous {
   background: rgba(255, 77, 79, 0.2) !important;
   border-color: rgba(255, 77, 79, 0.5) !important;
