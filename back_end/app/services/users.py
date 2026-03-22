@@ -14,7 +14,7 @@ def get_users_collection():
     )
 
 
-def list_users(page: int = 1, limit: int = 20) -> Dict:
+def list_users(page: int = 1, limit: int = 20, sort_by: str = None, sort_order: str = None) -> Dict:
     try:
         coll = get_users_collection()
 
@@ -30,10 +30,24 @@ def list_users(page: int = 1, limit: int = 20) -> Dict:
         if limit < 1:
             limit = 1
 
+        # Determine sort field and order
+        sort_map = {
+            "username": "username",
+            "role": "role",
+            "is_active": "is_active",
+            "success_login_count": "success_login_count",
+            "updated_at": "updated_at",
+            "created_at": "created_at",
+        }
+        sort_field = sort_map.get(str(sort_by)) if sort_by else "created_at"
+        sort_dir = -1 if str(sort_order).lower() == "descend" else 1
+
         total = coll.count_documents({})
         skip = (page - 1) * limit
         # include login/count, updated_at (last activity), and is_active flag
-        cursor = coll.find({}, {"_id": 1, "username": 1, "email": 1, "role": 1, "created_at": 1, "success_login_count": 1, "updated_at": 1, "is_active": 1}).skip(skip).limit(limit).sort("created_at", -1)
+        cursor = coll.find({}, {"_id": 1, "username": 1, "email": 1, "role": 1, "created_at": 1, "success_login_count": 1, "updated_at": 1, "is_active": 1})\
+            .sort(sort_field, sort_dir)\
+            .skip(skip).limit(limit)
 
         users = []
         for doc in cursor:

@@ -23,11 +23,30 @@ function Users() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [sorter, setSorter] = useState({ field: undefined, order: undefined });
 
-  const fetchUsers = useCallback(async (page = 1, limit = 10) => {
+  // Helper to update both page/limit and keep sort state
+  const handleTableChange = (paginationObj, _filters, sorterObj) => {
+    // Update pagination
+    setPagination((prev) => ({
+      ...prev,
+      page: paginationObj.current,
+      limit: paginationObj.pageSize,
+    }));
+    // Update sorter
+    if (sorterObj && sorterObj.field && sorterObj.order) {
+      setSorter({ field: sorterObj.field, order: sorterObj.order });
+    } else {
+      setSorter({ field: undefined, order: undefined });
+    }
+  };
+  const fetchUsers = useCallback(async (page = 1, limit = 10, sortField, sortOrder) => {
     setLoading(true);
     try {
-      const url = `${API_ENDPOINTS.USERS_LIST}?page=${page}&limit=${limit}`;
+      let url = `${API_ENDPOINTS.USERS_LIST}?page=${page}&limit=${limit}`;
+      if (sortField && sortOrder) {
+        url += `&sort_by=${encodeURIComponent(sortField)}&sort_order=${encodeURIComponent(sortOrder)}`;
+      }
       const res = await apiRequest(url, "GET");
       if (res && res.data) {
         setUsers(res.data.users || []);
@@ -47,8 +66,9 @@ function Users() {
   }, [apiRequest]);
 
   useEffect(() => {
-    fetchUsers(pagination.page, pagination.limit);
-  }, []);
+    fetchUsers(pagination.page, pagination.limit, sorter.field, sorter.order);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.limit, sorter.field, sorter.order]);
 
   /* soft-delete a user (set is_active=false in DB) */
   const handleDeleteUser = useCallback(async (userId) => {
@@ -231,9 +251,9 @@ function Users() {
               pageSize: pagination.limit,
               total: pagination.total,
               showSizeChanger: false,
-              onChange: (p, ps) => fetchUsers(p, ps),
               position: ["bottomCenter"],
             }}
+            onChange={handleTableChange}
             className="users-table"
           />
         )}
