@@ -46,6 +46,9 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
                 "status": 1,
                 "directUse": 1,
                 "benefits": 1,
+                "category": 1,
+                "sub_category": 1,
+                "department": 1,
                 "createdAt": 1,
             }
         ).skip(skip).limit(limit).sort("schemeName", 1)
@@ -260,82 +263,6 @@ def search_schemes(filters: dict):
             })
             applied_filters["benefitType"] = benefit_type
 
-        # State filter
-        state = filters.get("state")
-        if state:
-            query["$or"] = query.get("$or", [])
-            query["$and"] = [
-                {"$or": [
-                    {"eligibility.statesAllowed": {"$size": 0}},
-                    {"eligibility.statesAllowed": {"$in": [state]}},
-                    {"eligibility": None}
-                ]}
-            ]
-            applied_filters["state"] = state
-
-        # Age eligibility filter
-        min_age = filters.get("minAge")
-        if min_age:
-            query["$or"] = query.get("$or", [])
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {"eligibility.minAge": {"$lte": min_age}},
-                    {"eligibility.minAge": None},
-                    {"eligibility": None}
-                ]
-            })
-            applied_filters["minAge"] = min_age
-
-        max_age = filters.get("maxAge")
-        if max_age:
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {"eligibility.maxAge": {"$gte": max_age}},
-                    {"eligibility.maxAge": None},
-                    {"eligibility": None}
-                ]
-            })
-            applied_filters["maxAge"] = max_age
-
-        # Land holding filter
-        land_holding = filters.get("landHolding")
-        if land_holding is not None:
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {
-                        "$and": [
-                            {"$or": [{"eligibility.landHolding.min": {"$lte": land_holding}}, {"eligibility.landHolding.min": None}]},
-                            {"$or": [{"eligibility.landHolding.max": {"$gte": land_holding}}, {"eligibility.landHolding.max": None}]}
-                        ]
-                    },
-                    {"eligibility": None}
-                ]
-            })
-            applied_filters["landHolding"] = land_holding
-
-        # Income limit filter
-        income_limit = filters.get("incomeLimit")
-        if income_limit is not None:
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {"eligibility.incomeLimit": {"$gte": income_limit}},
-                    {"eligibility.incomeLimit": None},
-                    {"eligibility": None}
-                ]
-            })
-            applied_filters["incomeLimit"] = income_limit
-
-        # Caste category filter
-        caste_category = filters.get("casteCategory")
-        if caste_category:
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {"eligibility.casteCategory": {"$in": [caste_category, "ANY"]}},
-                    {"eligibility": None}
-                ]
-            })
-            applied_filters["casteCategory"] = caste_category
-
         # Pagination
         page = filters.get("page", 1)
         limit = filters.get("limit", 10)
@@ -359,6 +286,9 @@ def search_schemes(filters: dict):
                 "status": 1,
                 "directUse": 1,
                 "benefits": 1,
+                "category": 1,
+                "sub_category": 1,
+                "department": 1,
                 "createdAt": 1,
             }
         ).skip(skip).limit(limit).sort("schemeName", 1)
@@ -450,64 +380,16 @@ def get_scheme_by_code(scheme_code: str):
 
 
 def get_eligible_schemes_for_user(user_profile: dict):
-    """Get schemes eligible for user based on their profile"""
+    """Get schemes eligible for user based on their profile using eligibilityV2 rules"""
     try:
         schemes_collection = get_schemes_collection()
 
-        beneficiary_info = user_profile.get("beneficiary_info") or {}
-        basic_info = user_profile.get("basic_info") or {}
-
-        # Build eligibility query
+        # Fetch all active direct-use schemes
         query = {
             "status": "ACTIVE",
             "directUse": True
         }
 
-        conditions = []
-
-        # Age check
-        # TODO: Calculate age from DOB if needed
-
-        # Land holding check
-        land_holding = beneficiary_info.get("land_holding")
-        if land_holding:
-            conditions.append({
-                "$or": [
-                    {
-                        "$and": [
-                            {"$or": [{"eligibility.landHolding.min": {"$lte": land_holding}}, {"eligibility.landHolding.min": None}]},
-                            {"$or": [{"eligibility.landHolding.max": {"$gte": land_holding}}, {"eligibility.landHolding.max": None}]}
-                        ]
-                    },
-                    {"eligibility": None}
-                ]
-            })
-
-        # Income check
-        annual_income = beneficiary_info.get("annual_income")
-        if annual_income:
-            conditions.append({
-                "$or": [
-                    {"eligibility.incomeLimit": {"$gte": annual_income}},
-                    {"eligibility.incomeLimit": None},
-                    {"eligibility": None}
-                ]
-            })
-
-        # Caste category check
-        social_category = beneficiary_info.get("social_category")
-        if social_category:
-            conditions.append({
-                "$or": [
-                    {"eligibility.casteCategory": {"$in": [social_category, "ANY"]}},
-                    {"eligibility": None}
-                ]
-            })
-
-        if conditions:
-            query["$and"] = conditions
-
-        # Fetch eligible schemes
         schemes_cursor = schemes_collection.find(
             query,
             {
@@ -519,13 +401,16 @@ def get_eligible_schemes_for_user(user_profile: dict):
                 "governmentLevel": 1,
                 "description": 1,
                 "status": 1,
-                "directUse": 1
+                "directUse": 1,
+                "eligibilityV2": 1,
             }
         ).sort("schemeName", 1)
 
         schemes = []
         for scheme in schemes_cursor:
             scheme["_id"] = str(scheme["_id"])
+            # Remove eligibilityV2 from list response to keep payload small
+            scheme.pop("eligibilityV2", None)
             schemes.append(scheme)
 
         return {

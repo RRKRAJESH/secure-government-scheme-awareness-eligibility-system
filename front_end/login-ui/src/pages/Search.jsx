@@ -45,6 +45,7 @@ const GOVERNMENT_LEVELS = [
 const BENEFIT_TYPES = [
   { value: "INFRASTRUCTURE_SUPPORT", label: "Infrastructure Support" },
   { value: "SERVICE", label: "Service" },
+  { value: "SERVICE_SUPPORT", label: "Service Support" },
   { value: "SUBSIDY", label: "Subsidy" },
   { value: "PRICE_SUPPORT", label: "Price Support" },
   { value: "LOAN", label: "Loan" },
@@ -52,6 +53,7 @@ const BENEFIT_TYPES = [
   { value: "TRAINING", label: "Training" },
   { value: "INSURANCE", label: "Insurance" },
   { value: "PENSION", label: "Pension" },
+  { value: "NA", label: "NA" },
 ];
 
 // Shared color helpers
@@ -195,7 +197,12 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                     <BankOutlined /> {scheme.ministry.name}
                   </div>
                 )}
-                <Tag color="green" style={{ marginTop: 12 }}>{scheme.sector?.replace("_", " ")}</Tag>
+                <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <Tag color="green">{scheme.sector?.replace("_", " ")}</Tag>
+                  {scheme.category && <Tag color="blue">{scheme.category.replace(/_/g, " ")}</Tag>}
+                  {scheme.sub_category && <Tag color="geekblue">{scheme.sub_category.replace(/_/g, " ")}</Tag>}
+                  {scheme.department && <Tag color="orange">{scheme.department.replace(/_/g, " ")}</Tag>}
+                </div>
               </div>
             </div>
 
@@ -239,48 +246,42 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
               </div>
             )}
 
-            {/* Eligibility Section */}
-            {scheme.eligibility && (
+            {/* Eligibility Section (eligibilityV2) */}
+            {scheme.eligibilityV2 && (
               <div className="detail-section eligibility-section">
                 <div className="section-header">
                   <InfoCircleOutlined className="section-icon" />
                   <span>Eligibility Criteria</span>
                 </div>
                 <div className="section-content">
-                  <table className="detail-info-table">
-                    <tbody>
-                      {scheme.eligibility.minAge && (
-                        <tr>
-                          <td className="label-cell">Age Range</td>
-                          <td className="value-cell">{scheme.eligibility.minAge} - {scheme.eligibility.maxAge || "No limit"} years</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.incomeLimit && (
-                        <tr>
-                          <td className="label-cell">Income Limit</td>
-                          <td className="value-cell">₹{scheme.eligibility.incomeLimit?.toLocaleString()}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.landHolding && (
-                        <tr>
-                          <td className="label-cell">Land Holding</td>
-                          <td className="value-cell">{scheme.eligibility.landHolding.min || 0} - {scheme.eligibility.landHolding.max || "No limit"} {scheme.eligibility.landHolding.unit}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.casteCategory?.length > 0 && (
-                        <tr>
-                          <td className="label-cell">Sector</td>
-                          <td className="value-cell">{scheme.eligibility.casteCategory.join(", ")}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                  {scheme.eligibility.requiredDocuments?.length > 0 && (
+                  {scheme.eligibilityV2.inclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Inclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.inclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Rule ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.exclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Exclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.exclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Exclusion ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.requiredDocuments?.length > 0 && (
                     <div className="documents-section">
                       <Text strong style={{ display: 'block', marginBottom: 8 }}>Required Documents:</Text>
                       <div className="document-tags">
-                        {scheme.eligibility.requiredDocuments.map((doc, idx) => (
-                          <Tag key={idx} color="purple">{doc}</Tag>
+                        {scheme.eligibilityV2.requiredDocuments.map((doc, idx) => (
+                          <Tag key={idx} color={doc.mandatory ? "red" : "purple"}>
+                            {doc.name}{doc.mandatory ? " *" : ""}
+                          </Tag>
                         ))}
                       </div>
                     </div>
