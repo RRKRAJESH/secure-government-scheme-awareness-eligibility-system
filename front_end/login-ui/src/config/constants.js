@@ -53,19 +53,39 @@ export const DISTRICTS = [
 
 export const QUALIFICATIONS = ["SSLC", "HSC", "DIPLOMA", "UG", "PG"];
 
-export const FARMER_CATEGORIES = ["MARGINAL", "SMALL", "MEDIUM", "LARGE"];
+export const FARMER_CATEGORIES = [
+  "MARGINAL",
+  "SMALL",
+  "SEMI_MEDIUM",
+  "MEDIUM",
+  "LARGE",
+];
 
-export const SOCIAL_CATEGORIES = ["SC", "ST", "OBC", "OC"];
+export const SOCIAL_CATEGORIES = ["SC", "ST", "OBC", "MBC", "GENERAL", "EWS"];
 
 export const GENDERS = ["Male", "Female", "Other"];
 
-export const SECTORS = [
-  "AGRICULTURE",
-  "DAIRY",
-  "POULTRY",
-  "FISHERIES",
-  "HORTICULTURE",
+export const SECTORS = ["AGRICULTURE", "DAIRY", "POULTRY", "FISHERIES"];
+
+export const LAND_UNITS = ["ACRE", "HECTARE"];
+
+export const CROP_NAMES = [
+  "PADDY",
+  "WHEAT",
+  "MAIZE",
+  "SUGARCANE",
+  "COTTON",
+  "GROUNDNUT",
+  "MILLET",
+  "PULSES",
+  "VEGETABLES",
+  "FRUITS",
+  "OTHER",
 ];
+
+export const FARM_TYPES = ["BACKYARD", "COMMERCIAL"];
+
+export const WATER_BODY_ACCESS = ["OWNED", "LEASED", "COMMUNITY", "NONE"];
 
 export const STORAGE_KEYS = {
   ACCESS_TOKEN: "access_token",

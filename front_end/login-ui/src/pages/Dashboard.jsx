@@ -62,7 +62,7 @@ function Dashboard() {
 
   // Get username from JWT token
   const username = getUsername();
-  const profileName = profileData?.name || null;
+  const profileName = profileData?.profile?.basic_info?.name || null;
   const userName = username || profileName || "User";
 
   // Get first letter of username for avatar (uppercase)
