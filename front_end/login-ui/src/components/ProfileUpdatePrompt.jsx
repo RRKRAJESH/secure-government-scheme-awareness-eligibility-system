@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Modal, Button, Typography } from "antd";
 import { UserOutlined, EditOutlined, RocketOutlined } from "@ant-design/icons";
 import "../styles/profile-prompt.css";
@@ -11,41 +11,30 @@ const { Title, Text } = Typography;
  * 
  * @param {boolean} visible - Controls modal visibility
  * @param {function} onUpdateProfile - Callback when user clicks to update profile
- * @param {function} onDismiss - Callback when user dismisses the prompt
+ * @param {function} onSkip - Callback when user chooses to update later
  */
-const ProfileUpdatePrompt = ({ visible, onUpdateProfile, onDismiss }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Small delay for smooth animation on mount
-    if (visible) {
-      const timer = setTimeout(() => setIsVisible(true), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
-  }, [visible]);
-
+const ProfileUpdatePrompt = ({ visible, onUpdateProfile, onSkip }) => {
   const handleUpdateClick = () => {
-    setIsVisible(false);
-    setTimeout(() => onUpdateProfile(), 200);
+    onUpdateProfile();
   };
 
-  const handleDismiss = () => {
-    setIsVisible(false);
-    setTimeout(() => onDismiss(), 200);
+  const handleSkipClick = () => {
+    onSkip();
   };
 
   return (
     <Modal
-      open={isVisible}
-      onCancel={handleDismiss}
+      open={visible}
       footer={null}
       centered
       closable={false}
+      keyboard={false}
       className="profile-prompt-modal"
+      rootClassName="profile-prompt-modal"
       maskClosable={false}
+      destroyOnHidden
       width={480}
+      zIndex={2000}
     >
       <div className="profile-prompt-content">
         {/* Animated Icon Section */}
@@ -66,11 +55,12 @@ const ProfileUpdatePrompt = ({ visible, onUpdateProfile, onDismiss }) => {
             Welcome! 🎉
           </Title>
           <Text className="profile-prompt-subtitle">
-            Complete your profile for a personalized experience
+            Complete your profile to continue with the full experience
           </Text>
           <Text className="profile-prompt-description">
-            Get scheme recommendations based on your profile 
-            and access exclusive benefits tailored just for you.
+            Your profile is still incomplete. Update it now so you can get
+            accurate scheme recommendations, eligibility checks, and relevant
+            notifications.
           </Text>
         </div>
 
@@ -100,10 +90,10 @@ const ProfileUpdatePrompt = ({ visible, onUpdateProfile, onDismiss }) => {
           <Button
             type="text"
             size="small"
-            onClick={handleDismiss}
+            onClick={handleSkipClick}
             className="profile-prompt-later-btn"
           >
-            I'll do it later
+            Skip for now
           </Button>
         </div>
 

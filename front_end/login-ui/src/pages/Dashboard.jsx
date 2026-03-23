@@ -71,21 +71,21 @@ function Dashboard() {
 
   // State for profile update prompt
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
-  const [hasShownPrompt, setHasShownPrompt] = useState(false);
   const [openProfileForm, setOpenProfileForm] = useState(false);
 
-  // Show profile prompt if profile is incomplete and hasn't been shown yet
+  // Keep the prompt visible for incomplete user profiles after login.
   useEffect(() => {
-    if (role === "ADMIN") return; // admins don't need profile
-    if (!profileLoading && !isProfileComplete && !hasShownPrompt) {
-      // Check if user has dismissed the prompt in this session
-      const dismissed = sessionStorage.getItem("profilePromptDismissed");
-      if (!dismissed) {
-        setShowProfilePrompt(true);
-        setHasShownPrompt(true);
-      }
+    if (role === "ADMIN") {
+      setShowProfilePrompt(false);
+      return;
     }
-  }, [profileLoading, isProfileComplete, hasShownPrompt, role]);
+
+    if (profileLoading) {
+      return;
+    }
+
+    setShowProfilePrompt(!isProfileComplete);
+  }, [profileLoading, isProfileComplete, role]);
 
   const handleProfilePromptUpdate = useCallback(() => {
     setShowProfilePrompt(false);
@@ -93,9 +93,8 @@ function Dashboard() {
     setActiveTab("profile");
   }, []);
 
-  const handleProfilePromptDismiss = useCallback(() => {
+  const handleProfilePromptSkip = useCallback(() => {
     setShowProfilePrompt(false);
-    sessionStorage.setItem("profilePromptDismissed", "true");
   }, []);
 
   const [notificationCount, setNotificationCount] = useState(0);
@@ -307,7 +306,7 @@ function Dashboard() {
       <ProfileUpdatePrompt
         visible={showProfilePrompt}
         onUpdateProfile={handleProfilePromptUpdate}
-        onDismiss={handleProfilePromptDismiss}
+        onSkip={handleProfilePromptSkip}
       />
     </MainLayout>
   );
