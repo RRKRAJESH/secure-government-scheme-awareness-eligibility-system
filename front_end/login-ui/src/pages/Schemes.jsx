@@ -483,6 +483,7 @@ const FilterContent = ({ filters, onFilterChange, onClear, activeFiltersCount })
 const Schemes = React.memo(() => {
   const { apiRequest } = useApi();
   const { getRole } = useAuth();
+  const isAdmin = getRole() === ROLES.ADMIN;
   
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
@@ -676,6 +677,19 @@ const Schemes = React.memo(() => {
             allowClear
             className="schemes-search-input"
           />
+
+          {!isAdmin && (
+            <Button
+              icon={<CheckCircleOutlined />}
+              type="primary"
+              size="large"
+              onClick={handleCheckEligibility}
+              loading={eligibilityLoading}
+              className="eligibility-action-btn"
+            >
+              <span className="eligibility-action-label">Check My Eligibility</span>
+            </Button>
+          )}
         </div>
 
         <div className="controls-section">
@@ -717,16 +731,6 @@ const Schemes = React.memo(() => {
             className="global-refresh-btn neutral refresh-pill-btn"
             title="Refresh"
           />
-
-          <Button
-            icon={<CheckCircleOutlined />}
-            type="primary"
-            size="large"
-            onClick={handleCheckEligibility}
-            loading={eligibilityLoading}
-          >
-            Check My Eligibility
-          </Button>
 
           {(activeFiltersCount > 0 || searchKeyword) && (
             <Button 
@@ -787,7 +791,7 @@ const Schemes = React.memo(() => {
                   <SchemeCard
                     scheme={scheme}
                     onClick={handleSchemeClick}
-                    onDelete={getRole() === ROLES.ADMIN ? async (s) => { await handleDeleteScheme(s._id); } : undefined}
+                    onDelete={isAdmin ? async (s) => { await handleDeleteScheme(s._id); } : undefined}
                   />
                 </Col>
               ))}

@@ -32,11 +32,13 @@
   gap: 12px;
   flex: 1;
   min-width: 300px;
+  flex-wrap: wrap;
 }
 
 .schemes-search-input {
   flex: 1;
-  max-width: 500px;
+  min-width: 280px;
+  max-width: 520px;
 }
 
 .schemes-search-input.ant-input-affix-wrapper {
@@ -748,6 +750,16 @@
 
   .schemes-search-input {
     max-width: none;
+  }
+
+  .search-section {
+    justify-content: stretch;
+  }
+
+  .search-section .eligibility-action-btn,
+  .controls-section .eligibility-action-btn {
+    min-width: 100%;
+    justify-content: center;
   }
 
   .controls-section {
