@@ -379,19 +379,166 @@ def get_scheme_by_code(scheme_code: str):
         raise Exception(error_msg)
 
 
+# ---------------------------------------------------------------------------
+# Eligibility Rule Engine
+# ---------------------------------------------------------------------------
+
+# Old-schema path → new-schema path (or special sentinel)
+_PATH_ALIASES = {
+    # Documents no longer tracked — assume present for verified users
+    "documents.aadhaar.exists": "__ALWAYS_TRUE__",
+    "documents.bank.exists": "__ALWAYS_TRUE__",
+    # Land record → agriculture hasLand flag
+    "documents.land_record.exists": "profile.beneficiary_info.agriculture_info.hasLand",
+    # assets.* → profile.beneficiary_info.*
+    "assets.land.hasLand": "profile.beneficiary_info.agriculture_info.hasLand",
+    "assets.land.area": "profile.beneficiary_info.agriculture_info.landArea",
+    "assets.land.unit": "profile.beneficiary_info.agriculture_info.landUnit",
+    "assets.dairy.cattleCount": "profile.beneficiary_info.dairy_info.cattleCount",
+    "assets.poultry.birdCount": "profile.beneficiary_info.poultry.birdCount",
+    "assets.agriculture.cropSowingDetails.exists": "__CROP_SOWING_EXISTS__",
+}
+
+
+def _compute_age(dob_str: str):
+    """Return age in years given a YYYY-MM-DD date string, or None on error."""
+    from datetime import date, datetime
+    try:
+        dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+        today = date.today()
+        return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    except Exception:
+        return None
+
+
+def _resolve_path(path: str, doc: dict):
+    """Navigate a dot-separated path through a nested dict.
+    Returns (value, found: bool).
+    """
+    keys = path.split(".")
+    current = doc
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return None, False
+        current = current[key]
+    return current, True
+
+
+def _evaluate_predicate(pred: dict, doc: dict) -> bool:
+    """Evaluate a single {path, op, value} predicate against the profile doc."""
+    path = pred.get("path", "")
+    op = pred.get("op", "")
+    expected = pred.get("value")
+
+    resolved_path = _PATH_ALIASES.get(path, path)
+
+    if resolved_path == "__ALWAYS_TRUE__":
+        actual, found = True, True
+    elif resolved_path == "__CROP_SOWING_EXISTS__":
+        cd, _ = _resolve_path("profile.beneficiary_info.agriculture_info.cropSowingDetails", doc)
+        actual = bool(cd and (cd.get("cropNamesEnum") or cd.get("cropNamesOther")))
+        found = True
+    else:
+        actual, found = _resolve_path(resolved_path, doc)
+
+    if not found or actual is None:
+        return False
+
+    try:
+        if op == "eq":
+            return actual == expected
+        elif op == "neq":
+            return actual != expected
+        elif op == "gte":
+            return actual >= expected
+        elif op == "lte":
+            return actual <= expected
+        elif op == "gt":
+            return actual > expected
+        elif op == "lt":
+            return actual < expected
+        elif op == "in":
+            return actual in (expected or [])
+        elif op == "nin":
+            return actual not in (expected or [])
+        elif op == "exists":
+            return bool(actual)
+        else:
+            return False
+    except TypeError:
+        return False
+
+
+def _evaluate_logic(node: dict, rule_map: dict, doc: dict) -> bool:
+    """Recursively evaluate a logic node which can be:
+    - {ref: "<rule_id>"}  →  resolve the rule then evaluate its logic
+    - {all: [...]}        →  AND over children
+    - {any: [...]}        →  OR over children
+    - {path, op, value}   →  leaf predicate
+    """
+    if "ref" in node:
+        rule = rule_map.get(node["ref"])
+        if not rule:
+            return False
+        return _evaluate_logic(rule.get("logic", {}), rule_map, doc)
+
+    if "all" in node:
+        children = node["all"]
+        if not children:
+            return False  # empty rule list must not match everyone
+        return all(_evaluate_logic(child, rule_map, doc) for child in children)
+
+    if "any" in node:
+        children = node["any"]
+        if not children:
+            return False
+        return any(_evaluate_logic(child, rule_map, doc) for child in children)
+
+    # Leaf predicate
+    if "path" in node and "op" in node:
+        return _evaluate_predicate(node, doc)
+
+    return False
+
+
+def _is_scheme_eligible(eligibility_v2: dict, user_profile: dict) -> bool:
+    """Return True when the user satisfies the scheme's resultComputation.eligibleIf
+    AND does not trigger any exclusion rule."""
+    result_computation = eligibility_v2.get("resultComputation", {})
+    eligible_if = result_computation.get("eligibleIf")
+    if not eligible_if:
+        return False  # No criteria defined — skip
+
+    inclusion_rules = eligibility_v2.get("inclusionRules", [])
+    exclusion_rules = eligibility_v2.get("exclusionRules", [])
+    all_rules = inclusion_rules + exclusion_rules
+    rule_map = {r["id"]: r for r in all_rules if "id" in r}
+
+    # If any exclusion rule evaluates to True → user is excluded
+    for exc in exclusion_rules:
+        logic = exc.get("logic", {})
+        if logic and _evaluate_logic(logic, rule_map, user_profile):
+            return False
+
+    return _evaluate_logic(eligible_if, rule_map, user_profile)
+
+
+# ---------------------------------------------------------------------------
+
 def get_eligible_schemes_for_user(user_profile: dict):
     """Get schemes eligible for user based on their profile using eligibilityV2 rules"""
     try:
+        # Inject computed age so path "profile.basic_info.age" resolves
+        dob = (user_profile.get("profile") or {}).get("basic_info", {}).get("dob")
+        if dob:
+            age = _compute_age(dob)
+            if age is not None:
+                user_profile["profile"]["basic_info"]["age"] = age
+
         schemes_collection = get_schemes_collection()
 
-        # Fetch all active direct-use schemes
-        query = {
-            "status": "ACTIVE",
-            "directUse": True
-        }
-
         schemes_cursor = schemes_collection.find(
-            query,
+            {"status": "ACTIVE", "directUse": True, "eligibilityV2": {"$exists": True}},
             {
                 "_id": 1,
                 "schemeName": 1,
@@ -402,20 +549,41 @@ def get_eligible_schemes_for_user(user_profile: dict):
                 "description": 1,
                 "status": 1,
                 "directUse": 1,
+                "benefits": 1,
+                "category": 1,
+                "sub_category": 1,
+                "department": 1,
+                "createdAt": 1,
                 "eligibilityV2": 1,
             }
         ).sort("schemeName", 1)
 
-        schemes = []
+        eligible_schemes = []
         for scheme in schemes_cursor:
+            ev2 = scheme.get("eligibilityV2")
+            if not ev2 or not _is_scheme_eligible(ev2, user_profile):
+                continue
+
             scheme["_id"] = str(scheme["_id"])
-            # Remove eligibilityV2 from list response to keep payload small
             scheme.pop("eligibilityV2", None)
-            schemes.append(scheme)
+
+            if scheme.get("createdAt"):
+                scheme["createdAt"] = serialize_datetime_utc(scheme["createdAt"])
+
+            benefit = None
+            if scheme.get("benefitType"):
+                benefit = scheme["benefitType"]
+            elif isinstance(scheme.get("benefits"), dict):
+                benefit = scheme["benefits"].get("benefitType")
+            scheme["benefitType"] = benefit
+
+            scheme.pop("benefits", None)
+
+            eligible_schemes.append(scheme)
 
         return {
-            "schemes": schemes,
-            "totalCount": len(schemes)
+            "schemes": eligible_schemes,
+            "totalCount": len(eligible_schemes)
         }
 
     except HTTPException:

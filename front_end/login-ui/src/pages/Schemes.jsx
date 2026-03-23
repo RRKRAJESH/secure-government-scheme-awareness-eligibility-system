@@ -26,7 +26,8 @@ import {
   GlobalOutlined,
   InfoCircleOutlined,
   ReloadOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import useAuth from "../hooks/useAuth";
@@ -476,6 +477,11 @@ const Schemes = React.memo(() => {
   // Filter popover state
   const [filterVisible, setFilterVisible] = useState(false);
 
+  // Eligibility modal state
+  const [eligibilityModalVisible, setEligibilityModalVisible] = useState(false);
+  const [eligibleSchemes, setEligibleSchemes] = useState([]);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+
   // Fetch schemes
   const fetchSchemes = useCallback(async (page = 1, keyword = searchKeyword) => {
     setSearchLoading(true);
@@ -581,6 +587,28 @@ const Schemes = React.memo(() => {
     setSubSchemes([]);
   }, []);
 
+  const handleCheckEligibility = useCallback(async () => {
+    setEligibilityLoading(true);
+    setEligibilityModalVisible(true);
+    setEligibleSchemes([]);
+    try {
+      const response = await apiRequest(API_ENDPOINTS.SCHEMES_ELIGIBLE, "GET");
+      if (response?.data) {
+        setEligibleSchemes(response.data.schemes || []);
+      }
+    } catch (error) {
+      message.error(error.message || "Failed to check eligibility");
+      setEligibilityModalVisible(false);
+    } finally {
+      setEligibilityLoading(false);
+    }
+  }, [apiRequest]);
+
+  const closeEligibilityModal = useCallback(() => {
+    setEligibilityModalVisible(false);
+    setEligibleSchemes([]);
+  }, []);
+
   // Delete scheme (mark isDeleted: true)
   const handleDeleteScheme = useCallback(async (schemeId) => {
     const confirmed = window.confirm("Delete this scheme? This will mark it as deleted and remove it from the list.");
@@ -654,6 +682,16 @@ const Schemes = React.memo(() => {
             className="global-refresh-btn neutral refresh-pill-btn"
             title="Refresh"
           />
+
+          <Button
+            icon={<CheckCircleOutlined />}
+            type="primary"
+            size="large"
+            onClick={handleCheckEligibility}
+            loading={eligibilityLoading}
+          >
+            Check My Eligibility
+          </Button>
 
           {(activeFiltersCount > 0 || searchKeyword) && (
             <Button 
@@ -743,6 +781,54 @@ const Schemes = React.memo(() => {
         onClose={closeDetailModal}
         loading={detailLoading}
       />
+
+      {/* Eligibility Modal */}
+      <Modal
+        open={eligibilityModalVisible}
+        onCancel={closeEligibilityModal}
+        footer={<Button onClick={closeEligibilityModal}>Close</Button>}
+        width="80vw"
+        style={{ maxWidth: 1100 }}
+        title={
+          <span>
+            <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 8 }} />
+            Your Eligible Schemes
+          </span>
+        }
+        centered
+      >
+        {eligibilityLoading ? (
+          <div className="loading-state" style={{ padding: 40 }}>
+            <Spin size="large" />
+            <Text type="secondary" style={{ display: "block", marginTop: 12 }}>Checking eligibility...</Text>
+          </div>
+        ) : eligibleSchemes.length === 0 ? (
+          <div style={{ padding: 40 }}>
+            <Empty
+              description={
+                <span>
+                  No eligible schemes found.{" "}
+                  <Text type="secondary">Complete your profile to unlock more results.</Text>
+                </span>
+              }
+            />
+          </div>
+        ) : (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 6 }} />
+              <Text>You are eligible for <Text strong>{eligibleSchemes.length}</Text> scheme(s)</Text>
+            </div>
+            <Row gutter={[16, 16]}>
+              {eligibleSchemes.map((scheme) => (
+                <Col xs={24} sm={12} lg={8} key={scheme._id}>
+                  <SchemeCard scheme={scheme} onClick={(s) => { closeEligibilityModal(); handleSchemeClick(s); }} />
+                </Col>
+              ))}
+            </Row>
+          </>
+        )}
+      </Modal>
     </div>
   );
 });

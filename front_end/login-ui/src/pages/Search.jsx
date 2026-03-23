@@ -22,7 +22,8 @@ import {
   DollarOutlined,
   FileTextOutlined,
   GlobalOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
@@ -363,6 +364,11 @@ const SearchScheme = React.memo(() => {
   const [pagination, setPagination] = useState({ currentPage: 1, totalCount: 0, totalPages: 1 });
   const [hasSearched, setHasSearched] = useState(false);
   
+  // Eligibility view state
+  const [eligibilityView, setEligibilityView] = useState(false);
+  const [eligibleSchemes, setEligibleSchemes] = useState([]);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  
   // Detail modal state
   const [selectedScheme, setSelectedScheme] = useState(null);
   const [subSchemes, setSubSchemes] = useState([]);
@@ -444,6 +450,102 @@ const SearchScheme = React.memo(() => {
     setHasSearched(false);
     setSchemes([]);
   }, []);
+
+  // Check eligibility against user profile
+  const handleCheckEligibility = useCallback(async () => {
+    setEligibilityLoading(true);
+    setEligibilityView(true);
+    setEligibleSchemes([]);
+    try {
+      const response = await apiRequest(API_ENDPOINTS.SCHEMES_ELIGIBLE, "GET");
+      if (response?.data) {
+        setEligibleSchemes(response.data.schemes || []);
+      }
+    } catch (error) {
+      message.error(error.message || "Failed to check eligibility");
+      setEligibilityView(false);
+    } finally {
+      setEligibilityLoading(false);
+    }
+  }, [apiRequest]);
+
+  const backFromEligibility = useCallback(() => {
+    setEligibilityView(false);
+    setEligibleSchemes([]);
+  }, []);
+
+  // ELIGIBILITY VIEW - Show eligible schemes for the user
+  if (eligibilityView) {
+    return (
+      <div className="results-wrapper">
+        <div className="results-page-header">
+          <Button
+            icon={<CheckCircleOutlined />}
+            onClick={backFromEligibility}
+          >
+            Back to Search
+          </Button>
+          <Title level={3} style={{ margin: 0, flex: 1, textAlign: "center" }}>
+            Your Eligible Schemes
+          </Title>
+          <div style={{ width: 140 }} />
+        </div>
+
+        <div className="results-page-container">
+          <div className="results-page-content">
+            {eligibilityLoading ? (
+              <div className="loading-state">
+                <Spin size="large" />
+                <Text type="secondary">Checking eligibility...</Text>
+              </div>
+            ) : eligibleSchemes.length === 0 ? (
+              <div className="no-results">
+                <Empty
+                  description={
+                    <span>
+                      No eligible schemes found.{" "}
+                      <Text type="secondary">
+                        Please complete your profile to unlock more results.
+                      </Text>
+                    </span>
+                  }
+                />
+                <Button type="primary" onClick={backFromEligibility} style={{ marginTop: 16 }}>
+                  Back to Search
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="results-info-bar">
+                  <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 6 }} />
+                  <Text>
+                    You are eligible for <Text strong>{eligibleSchemes.length}</Text> scheme(s)
+                  </Text>
+                </div>
+                <div className="schemes-grid-scroll">
+                  <Row gutter={[16, 16]}>
+                    {eligibleSchemes.map((scheme) => (
+                      <Col xs={24} sm={12} lg={8} key={scheme._id}>
+                        <SchemeCard scheme={scheme} onClick={handleSchemeClick} />
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <SchemeDetailModal
+          visible={detailModalVisible}
+          scheme={selectedScheme}
+          subSchemes={subSchemes}
+          onClose={closeDetailModal}
+          loading={detailLoading}
+        />
+      </div>
+    );
+  }
 
   // RESULTS PAGE - Full takeover when hasSearched is true
   if (hasSearched) {
@@ -560,6 +662,14 @@ const SearchScheme = React.memo(() => {
             ghost
           >
             {showFilters ? "Hide Filters" : "Show Filters"}
+          </Button>
+          <Button
+            icon={<CheckCircleOutlined />}
+            type="primary"
+            onClick={handleCheckEligibility}
+            loading={eligibilityLoading}
+          >
+            Check My Eligibility
           </Button>
         </div>
 
