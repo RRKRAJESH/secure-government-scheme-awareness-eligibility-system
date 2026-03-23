@@ -14,7 +14,9 @@ import {
   Typography,
   message,
   Popover,
-  Divider
+  Divider,
+  Form,
+  Switch
 } from "antd";
 import { 
   SearchOutlined, 
@@ -27,7 +29,8 @@ import {
   InfoCircleOutlined,
   ReloadOutlined,
   DeleteOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  PlusOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import useAuth from "../hooks/useAuth";
@@ -38,6 +41,64 @@ import { formatDateTimeIST } from "../utils/dateFormat";
 import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
+const { TextArea } = Input;
+
+const defaultBenefitsJson = JSON.stringify(
+  {
+    benefitType: "CASH_TRANSFER",
+    financial: {
+      totalAmount: 0,
+      currency: "INR",
+      installmentCount: 1,
+      installmentAmount: 0,
+    },
+    disbursementSchedule: [],
+    paymentMode: "DBT",
+    frequency: "YEARLY",
+  },
+  null,
+  2,
+);
+
+const defaultApplicationJson = JSON.stringify(
+  {
+    mode: "ONLINE",
+    officialWebsite: "",
+    startDate: null,
+    endDate: null,
+  },
+  null,
+  2,
+);
+
+const defaultEligibilityJson = JSON.stringify(
+  {
+    type: "RULE_BASED",
+    inclusionRules: [],
+    exclusionRules: [],
+    requiredDocuments: [],
+    operationalChecks: [],
+    resultComputation: {
+      eligibleIf: {
+        all: [],
+      },
+    },
+  },
+  null,
+  2,
+);
+
+const parseJsonField = (value, fieldName) => {
+  if (!value || !String(value).trim()) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new Error(`${fieldName} must be valid JSON`);
+  }
+};
 
 const showProfileCompletionRequiredModal = () => {
   Modal.confirm({
@@ -484,6 +545,7 @@ const Schemes = React.memo(() => {
   const { apiRequest } = useApi();
   const { getRole } = useAuth();
   const isAdmin = getRole() === ROLES.ADMIN;
+  const [createForm] = Form.useForm();
   
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
@@ -513,6 +575,8 @@ const Schemes = React.memo(() => {
   const [eligibilityModalVisible, setEligibilityModalVisible] = useState(false);
   const [eligibleSchemes, setEligibleSchemes] = useState([]);
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [createSubmitting, setCreateSubmitting] = useState(false);
 
   // Fetch schemes
   const fetchSchemes = useCallback(async (page = 1, keyword = searchKeyword) => {
@@ -619,6 +683,16 @@ const Schemes = React.memo(() => {
     setSubSchemes([]);
   }, []);
 
+  useEffect(() => {
+    const schemeId = sessionStorage.getItem("open_scheme_id");
+    if (!schemeId) {
+      return;
+    }
+
+    sessionStorage.removeItem("open_scheme_id");
+    handleSchemeClick({ _id: schemeId, schemeName: "Loading scheme..." });
+  }, [handleSchemeClick]);
+
   const handleCheckEligibility = useCallback(async () => {
     setEligibilityLoading(true);
     setEligibilityModalVisible(true);
@@ -644,6 +718,66 @@ const Schemes = React.memo(() => {
     setEligibilityModalVisible(false);
     setEligibleSchemes([]);
   }, []);
+
+  const openCreateSchemeModal = useCallback(() => {
+    createForm.setFieldsValue({
+      directUse: true,
+      schemeType: "STANDALONE",
+      governmentLevel: "CENTRAL",
+      sector: "AGRICULTURE",
+      status: "ACTIVE",
+      benefitsJson: defaultBenefitsJson,
+      applicationDetailsJson: defaultApplicationJson,
+      eligibilityV2Json: defaultEligibilityJson,
+    });
+    setCreateModalVisible(true);
+  }, [createForm]);
+
+  const closeCreateSchemeModal = useCallback(() => {
+    setCreateModalVisible(false);
+    createForm.resetFields();
+  }, [createForm]);
+
+  const handleCreateScheme = useCallback(async (values) => {
+    try {
+      setCreateSubmitting(true);
+
+      const payload = {
+        schemeName: values.schemeName.trim(),
+        schemeCode: values.schemeCode.trim().toUpperCase(),
+        schemeType: values.schemeType,
+        directUse: values.directUse ?? true,
+        parentSchemeId: values.parentSchemeId?.trim() || null,
+        governmentLevel: values.governmentLevel,
+        ministry: {
+          name: values.ministryName.trim(),
+          officialWebsite: values.ministryWebsite?.trim() || null,
+        },
+        department: values.department?.trim() || null,
+        sector: values.sector || null,
+        category: values.category?.trim() || null,
+        sub_category: values.subCategory?.trim() || null,
+        description: {
+          short: values.shortDescription.trim(),
+          detailed: values.detailedDescription?.trim() || null,
+        },
+        benefits: parseJsonField(values.benefitsJson, "Benefits JSON"),
+        applicationDetails: parseJsonField(values.applicationDetailsJson, "Application details JSON"),
+        eligibilityV2: parseJsonField(values.eligibilityV2Json, "Eligibility JSON"),
+        status: values.status,
+        launchDate: values.launchDate?.trim() || null,
+      };
+
+      await apiRequest(API_ENDPOINTS.SCHEMES_CREATE, "POST", payload);
+      message.success("Scheme created successfully and notifications sent to users");
+      closeCreateSchemeModal();
+      fetchSchemes(1, searchKeyword);
+    } catch (error) {
+      message.error(error.message || "Failed to create scheme");
+    } finally {
+      setCreateSubmitting(false);
+    }
+  }, [apiRequest, closeCreateSchemeModal, fetchSchemes, searchKeyword]);
 
   // Delete scheme (mark isDeleted: true)
   const handleDeleteScheme = useCallback(async (schemeId) => {
@@ -693,6 +827,17 @@ const Schemes = React.memo(() => {
         </div>
 
         <div className="controls-section">
+          {isAdmin && (
+            <Button
+              icon={<PlusOutlined />}
+              size="large"
+              className="admin-add-scheme-btn"
+              onClick={openCreateSchemeModal}
+            >
+              Add Scheme
+            </Button>
+          )}
+
           <Popover
             content={
               <FilterContent 
@@ -867,6 +1012,134 @@ const Schemes = React.memo(() => {
             </Row>
           </>
         )}
+      </Modal>
+
+      <Modal
+        open={createModalVisible}
+        onCancel={closeCreateSchemeModal}
+        onOk={() => createForm.submit()}
+        confirmLoading={createSubmitting}
+        okText="Create Scheme"
+        width={920}
+        className="add-scheme-modal"
+        title="Add New Scheme"
+        destroyOnHidden
+      >
+        <Form
+          form={createForm}
+          layout="vertical"
+          onFinish={handleCreateScheme}
+          initialValues={{
+            directUse: true,
+            schemeType: "STANDALONE",
+            governmentLevel: "CENTRAL",
+            sector: "AGRICULTURE",
+            status: "ACTIVE",
+          }}
+        >
+          <Row gutter={16}>
+            <Col xs={24} md={12}>
+              <Form.Item name="schemeName" label="Scheme Name" rules={[{ required: true, message: "Scheme name is required" }]}>
+                <Input placeholder="Enter scheme name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="schemeCode" label="Scheme Code" rules={[{ required: true, message: "Scheme code is required" }]}>
+                <Input placeholder="Enter unique scheme code" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="schemeType" label="Scheme Type" rules={[{ required: true, message: "Scheme type is required" }]}>
+                <Select options={SCHEME_TYPES} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="governmentLevel" label="Government Level" rules={[{ required: true, message: "Government level is required" }]}>
+                <Select options={GOVERNMENT_LEVELS} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="sector" label="Sector" rules={[{ required: true, message: "Sector is required" }]}>
+                <Select options={CATEGORIES} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="status" label="Status" rules={[{ required: true, message: "Status is required" }]}>
+                <Select options={[
+                  { value: "ACTIVE", label: "ACTIVE" },
+                  { value: "INACTIVE", label: "INACTIVE" },
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "CLOSED", label: "CLOSED" },
+                ]} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="directUse" label="Direct Use" valuePropName="checked">
+                <Switch checkedChildren="Yes" unCheckedChildren="No" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="launchDate" label="Launch Date (ISO)">
+                <Input placeholder="2026-03-24T00:00:00+00:00" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="ministryName" label="Ministry Name" rules={[{ required: true, message: "Ministry name is required" }]}>
+                <Input placeholder="Ministry name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="ministryWebsite" label="Ministry Website">
+                <Input placeholder="https://example.gov.in" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="department" label="Department">
+                <Input placeholder="Department name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="parentSchemeId" label="Parent Scheme ID">
+                <Input placeholder="Optional umbrella scheme ObjectId" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="category" label="Category">
+                <Input placeholder="Optional category" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="subCategory" label="Sub Category">
+                <Input placeholder="Optional sub category" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="shortDescription" label="Short Description" rules={[{ required: true, message: "Short description is required" }]}>
+                <TextArea rows={3} placeholder="Brief scheme summary" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="detailedDescription" label="Detailed Description">
+                <TextArea rows={5} placeholder="Detailed scheme description" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="benefitsJson" label="Benefits JSON">
+                <TextArea rows={8} className="json-editor" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="applicationDetailsJson" label="Application Details JSON">
+                <TextArea rows={6} className="json-editor" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="eligibilityV2Json" label="Eligibility JSON">
+                <TextArea rows={12} className="json-editor" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       </Modal>
     </div>
   );

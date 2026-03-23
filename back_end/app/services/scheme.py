@@ -2,12 +2,14 @@ from fastapi import status, HTTPException
 from bson import ObjectId
 from typing import Optional
 import math
+from datetime import datetime
 
 from app.services.error import raise_http_error
 from app.configs.config import settings
 from app.db.mongo import get_collection
 from app.utils.mongo_helpers import serialize_enums
-from app.utils.date_time import serialize_datetime_utc
+from app.utils.date_time import serialize_datetime_utc, current_time_utc
+from app.services.notifications import create_bulk_notifications
 
 
 def get_schemes_collection():
@@ -15,6 +17,163 @@ def get_schemes_collection():
         db_name=settings.PRODUCTION_DATABASE_NAME,
         collection_name=settings.SCHEMES_COLLECTION_NAME
     )
+
+
+def get_users_collection():
+    return get_collection(
+        db_name=settings.PRODUCTION_DATABASE_NAME,
+        collection_name=settings.USERS_COLLECTION_NAME,
+    )
+
+
+def _parse_optional_datetime(date_value: Optional[str], field_name: str):
+    if not date_value:
+        return None
+
+    if isinstance(date_value, datetime):
+        return date_value
+
+    if not isinstance(date_value, str):
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{field_name} must be a valid ISO date string",
+        )
+
+    try:
+        normalized = date_value.strip().replace("Z", "+00:00")
+        return datetime.fromisoformat(normalized)
+    except ValueError:
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{field_name} must be a valid ISO date string",
+        )
+
+
+def create_scheme(scheme_payload: dict, token: dict):
+    """Create a new scheme document and notify all non-admin users."""
+    try:
+        role = str(token.get("role") or "").lower()
+        if role != "admin":
+            raise_http_error(
+                status_code=status.HTTP_403_FORBIDDEN,
+                message="Only admins can create schemes",
+            )
+
+        schemes_collection = get_schemes_collection()
+        users_collection = get_users_collection()
+
+        payload = serialize_enums(scheme_payload)
+        scheme_name = (payload.get("schemeName") or "").strip()
+        scheme_code = (payload.get("schemeCode") or "").strip().upper()
+
+        if not scheme_name or not scheme_code:
+            raise_http_error(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                message="Scheme name and scheme code are required",
+            )
+
+        existing = schemes_collection.find_one({"schemeCode": scheme_code, "isDeleted": {"$ne": True}})
+        if existing:
+            raise_http_error(
+                status_code=status.HTTP_409_CONFLICT,
+                message=f"Scheme code '{scheme_code}' already exists",
+            )
+
+        parent_scheme_id = payload.get("parentSchemeId")
+        if parent_scheme_id:
+            if not ObjectId.is_valid(parent_scheme_id):
+                raise_http_error(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    message="Invalid parent scheme id",
+                )
+            parent_scheme_id = ObjectId(parent_scheme_id)
+        else:
+            parent_scheme_id = None
+
+        launch_date = _parse_optional_datetime(payload.get("launchDate"), "launchDate")
+        application_details = payload.get("applicationDetails") or None
+        if application_details:
+            if application_details.get("startDate"):
+                application_details["startDate"] = _parse_optional_datetime(application_details.get("startDate"), "applicationDetails.startDate")
+            if application_details.get("endDate"):
+                application_details["endDate"] = _parse_optional_datetime(application_details.get("endDate"), "applicationDetails.endDate")
+
+        now = current_time_utc()
+        document = {
+            "schemeName": scheme_name,
+            "schemeCode": scheme_code,
+            "schemeType": payload.get("schemeType"),
+            "directUse": bool(payload.get("directUse", True)),
+            "parentSchemeId": parent_scheme_id,
+            "governmentLevel": payload.get("governmentLevel"),
+            "ministry": payload.get("ministry"),
+            "department": payload.get("department") or None,
+            "sector": payload.get("sector") or None,
+            "category": payload.get("category") or None,
+            "sub_category": payload.get("sub_category") or None,
+            "description": payload.get("description") or {},
+            "benefits": payload.get("benefits") or None,
+            "applicationDetails": application_details,
+            "eligibilityV2": payload.get("eligibilityV2") or None,
+            "status": payload.get("status") or "ACTIVE",
+            "isDeleted": bool(payload.get("isDeleted", False)),
+            "createdAt": now,
+            "updatedAt": now,
+            "launchDate": launch_date,
+        }
+
+        inserted = schemes_collection.insert_one(document)
+        inserted_id = str(inserted.inserted_id)
+
+        try:
+            recipient_ids = []
+            for user_doc in users_collection.find(
+                {"role": {"$ne": "admin"}, "is_deleted": {"$ne": True}, "is_active": True},
+                {"_id": 1},
+            ):
+                user_id = user_doc.get("_id")
+                if user_id:
+                    recipient_ids.append(str(user_id))
+
+            if recipient_ids:
+                notifier = {
+                    "kind": "admin",
+                    "id": token.get("user_id"),
+                    "name": token.get("username") or "Admin",
+                }
+                reference = {
+                    "kind": "scheme",
+                    "id": inserted_id,
+                    "api_url": f"/api/v1/backend/schemes/detail/{inserted_id}",
+                }
+                message = f"A new scheme is now available: {scheme_name}"
+                meta = {
+                    "scheme_name": scheme_name,
+                    "scheme_code": scheme_code,
+                }
+                create_bulk_notifications(
+                    recipient_ids,
+                    "NEW_SCHEME",
+                    notifier,
+                    reference,
+                    message,
+                    meta=meta,
+                )
+        except Exception:
+            pass
+
+        return {
+            "id": inserted_id,
+            "schemeCode": scheme_code,
+            "schemeName": scheme_name,
+            "createdAt": serialize_datetime_utc(now),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        error_msg = f"Error occurred while processing create_scheme() :: {str(e)}"
+        raise Exception(error_msg)
 
 
 def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE"):

@@ -172,6 +172,19 @@
   border-color: #ff4d4f !important;
 }
 
+.controls-section .admin-add-scheme-btn {
+  background: rgba(15, 23, 42, 0.24) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18) !important;
+}
+
+.controls-section .admin-add-scheme-btn:hover {
+  background: rgba(15, 23, 42, 0.36) !important;
+  border-color: rgba(255, 255, 255, 0.52) !important;
+}
+
 /* ============ FILTER POPOVER ============ */
 .filter-popover-content {
   width: 280px;
@@ -203,6 +216,21 @@
 .filter-header .ant-typography {
   color: #1f2937 !important;
   font-weight: 600 !important;
+}
+
+.add-scheme-modal .ant-modal-body {
+  max-height: 72vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.add-scheme-modal .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.add-scheme-modal .json-editor {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  min-height: 148px !important;
 }
 
 /* ============ INFO BAR ============ */

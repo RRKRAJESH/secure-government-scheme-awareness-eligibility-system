@@ -254,6 +254,27 @@ class SchemeSearchFilters(BaseModel):
     limit: int = 10
 
 
+class SchemeCreateSchema(AppBaseModel):
+    schemeName: str
+    schemeCode: str
+    schemeType: SchemeType
+    directUse: bool = True
+    parentSchemeId: Optional[str] = None
+    governmentLevel: GovernmentLevel
+    ministry: Ministry
+    department: Optional[str] = None
+    sector: Optional[str] = None
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    description: Description
+    benefits: Optional[dict] = None
+    applicationDetails: Optional[dict] = None
+    eligibilityV2: Optional[dict] = None
+    status: SchemeStatus = SchemeStatus.ACTIVE
+    isDeleted: bool = False
+    launchDate: Optional[str] = None
+
+
 # ===== RESPONSE MODELS =====
 class PaginationInfo(BaseModel):
     currentPage: int

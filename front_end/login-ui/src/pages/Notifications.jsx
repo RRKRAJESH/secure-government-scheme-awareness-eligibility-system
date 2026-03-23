@@ -8,6 +8,57 @@ import { useAuth } from "../hooks/useAuth";
 import "../styles/notifications.css";
 const { Title, Text } = Typography;
 
+const getNotificationDestination = (notification, refUrl) => {
+  const reference = notification?.reference || {};
+  const referenceKind = reference.kind || null;
+  const referenceId = reference.id || null;
+
+  if (referenceKind === "post" && referenceId) {
+    return {
+      type: "dashboard",
+      state: { open_tab: "grievances", open_post_id: String(referenceId) },
+      session: { open_tab: "grievances", open_post_id: String(referenceId) },
+    };
+  }
+
+  if (referenceKind === "scheme" && referenceId) {
+    return {
+      type: "dashboard",
+      state: { open_tab: "schemes", open_scheme_id: String(referenceId) },
+      session: { open_tab: "schemes", open_scheme_id: String(referenceId) },
+    };
+  }
+
+  if (refUrl) {
+    return {
+      type: "route",
+      url: refUrl,
+    };
+  }
+
+  return null;
+};
+
+const markNotificationRead = async (notificationId) => {
+  if (!notificationId) {
+    return;
+  }
+
+  const token = localStorage.getItem("access_token");
+  await fetch(API_ENDPOINTS.NOTIFICATIONS_MARK_READ, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ notification_ids: [notificationId] }),
+  });
+
+  try {
+    window.dispatchEvent(new Event("notifications:updated"));
+  } catch (e) {}
+};
+
 const NotificationCard = React.memo(({ notification, index, unread }) => {
   const navigate = useNavigate();
   const msg = notification.message || notification.title || "";
@@ -24,6 +75,7 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
       return null;
     }
   })();
+  const destination = getNotificationDestination(notification, refUrl);
   return (
     <Card className={`notification-card ${unread ? "unread" : "read"}`}>
       <Row justify="space-between" align="top" style={{ marginBottom: 12 }}>
@@ -40,43 +92,29 @@ const NotificationCard = React.memo(({ notification, index, unread }) => {
 
       <div className="notification-details">
         <Text type="secondary">🕐 {createdAt ? formatDateTimeIST(createdAt) : ""}</Text>
-        {refUrl && (
+        {destination && (
           <Text style={{ marginLeft: 12 }} type="secondary">
             <Button
               type="link"
               size="small"
               className="view-btn"
-              onClick={() => {
-                const postId = notification?.reference?.id || null;
-                const notifId = notification?.id || null;
-                if (postId) {
+              onClick={async () => {
+                try {
+                  await markNotificationRead(notification?.id || null);
+                } catch (e) {}
+
+                if (destination.type === "dashboard") {
                   try {
-                    // mark this notification as read on the backend, then navigate
-                    const token = localStorage.getItem("access_token");
-                    if (notifId) {
-                      fetch(API_ENDPOINTS.NOTIFICATIONS_MARK_READ, {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                        },
-                        body: JSON.stringify({ notification_ids: [notifId] }),
-                      })
-                        .then((r) => r.json())
-                        .then(() => {
-                          try {
-                            window.dispatchEvent(new Event("notifications:updated"));
-                          } catch (e) {}
-                        })
-                        .catch(() => {});
-                    }
-                    // prefer passing state so Dashboard responds even when already mounted
-                    sessionStorage.setItem("open_post_id", String(postId));
-                    sessionStorage.setItem("open_tab", "grievances");
+                    Object.entries(destination.session || {}).forEach(([key, value]) => {
+                      sessionStorage.setItem(key, value);
+                    });
                   } catch (e) {}
-                  navigate("/dashboard", { state: { open_tab: "grievances", open_post_id: String(postId) } });
-                } else {
-                  navigate(refUrl);
+                  navigate("/dashboard", { state: destination.state });
+                  return;
+                }
+
+                if (destination.type === "route" && destination.url) {
+                  navigate(destination.url);
                 }
               }}
             >

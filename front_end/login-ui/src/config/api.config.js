@@ -107,6 +107,12 @@ export const API_ENDPOINTS = {
   // Response: { data: { schemes: [...], pagination: {...} } }
   SCHEMES_ELIGIBLE: `${API_BASE_URL}/api/v1/backend/schemes/eligible`,
 
+  // POST /schemes/create
+  // Headers: Authorization: Bearer {token}
+  // Request: full scheme payload
+  // Response: { data: { id, schemeName, schemeCode } }
+  SCHEMES_CREATE: `${API_BASE_URL}/api/v1/backend/schemes/create`,
+
   // PUT /schemes/{scheme_id}/mark-deleted
   // Headers: Authorization: Bearer {token}
   // Request: { isDeleted: true }

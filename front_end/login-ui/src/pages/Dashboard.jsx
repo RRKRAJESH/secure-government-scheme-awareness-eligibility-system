@@ -143,6 +143,11 @@ function Dashboard() {
         if (st.open_profile_form) {
           setOpenProfileForm(true);
         }
+        if (st.open_scheme_id) {
+          try {
+            sessionStorage.setItem("open_scheme_id", String(st.open_scheme_id));
+          } catch (e) {}
+        }
         if (st.open_post_id) {
           try {
             sessionStorage.setItem("open_post_id", String(st.open_post_id));
@@ -171,6 +176,9 @@ function Dashboard() {
         const detail = ev && ev.detail;
         if (detail && detail.open_tab) {
           try {
+            if (detail.open_scheme_id) {
+              sessionStorage.setItem("open_scheme_id", String(detail.open_scheme_id));
+            }
             if (detail.open_post_id) {
               sessionStorage.setItem("open_post_id", String(detail.open_post_id));
             }

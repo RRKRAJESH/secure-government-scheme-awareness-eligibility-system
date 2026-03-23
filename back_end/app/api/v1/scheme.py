@@ -9,7 +9,8 @@ from app.schemas.scheme_schema import (
     SchemeSearchResponse,
     GovernmentLevel,
     SchemeType,
-    SchemeStatus
+    SchemeStatus,
+    SchemeCreateSchema,
 )
 from app.schemas.common_schema import ErrorResponse
 from app.utils.auth import verify_token
@@ -19,11 +20,42 @@ from app.services.scheme import (
     search_schemes,
     get_scheme_by_code,
     mark_scheme_deleted,
-    get_eligible_schemes_for_user
+    get_eligible_schemes_for_user,
+    create_scheme,
 )
 from app.services.update_profile import is_profile_complete
 
 router = APIRouter()
+
+
+@router.post(
+    "/create",
+    response_model=Union[dict, ErrorResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_scheme_handler(
+    payload: SchemeCreateSchema,
+    token: dict = Depends(verify_token),
+):
+    """Create a new scheme and notify users."""
+    try:
+        result = create_scheme(payload.model_dump(), token)
+        return {"error": False, "data": result}
+
+    except HTTPException:
+        raise
+
+    except ValueError as e:
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{str(e)}",
+        )
+
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}",
+        )
 
 
 @router.get(
