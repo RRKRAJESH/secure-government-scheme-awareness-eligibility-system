@@ -7,6 +7,30 @@ from app.utils.mongo_helpers import serialize_enums
 from app.utils.date_time import current_time_utc
 
 
+def is_profile_complete(profile_data):
+    """Return True when the minimum profile fields required for eligibility are present."""
+    if not profile_data:
+        return False
+
+    profile = profile_data.get("profile") or {}
+    basic = profile.get("basic_info") or {}
+    comm = profile.get("communication_info") or {}
+    addr = profile.get("address_info") or {}
+
+    required_checks = [
+        basic.get("name"),
+        basic.get("dob"),
+        basic.get("gender"),
+        comm.get("phone"),
+        addr.get("address_line_1"),
+        addr.get("district"),
+        addr.get("pincode"),
+        basic.get("social_category"),
+    ]
+
+    return all(required_checks)
+
+
 def update_profile_info(update_payload, token):
     """Update user profile with nested structure matching new schema"""
     try:
@@ -97,25 +121,7 @@ def get_current_profile_info(token):
                 if k not in fields_to_remove
             }
         
-        # Check if profile is complete by verifying required nested fields
-        is_complete = False
-        if profile_data:
-            profile = profile_data.get("profile") or {}
-            basic = profile.get("basic_info") or {}
-            comm = profile.get("communication_info") or {}
-            addr = profile.get("address_info") or {}
-
-            required_checks = [
-                basic.get("name"),
-                basic.get("dob"),
-                basic.get("gender"),
-                comm.get("phone"),
-                addr.get("address_line_1"),
-                addr.get("district"),
-                addr.get("pincode"),
-                basic.get("social_category"),
-            ]
-            is_complete = all(required_checks)
+        is_complete = is_profile_complete(profile_data)
         
         return {
             "profile_info": profile_data if profile_data else {},

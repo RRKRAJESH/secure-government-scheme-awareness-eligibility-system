@@ -21,6 +21,7 @@ from app.services.scheme import (
     mark_scheme_deleted,
     get_eligible_schemes_for_user
 )
+from app.services.update_profile import is_profile_complete
 
 router = APIRouter()
 
@@ -245,10 +246,14 @@ async def get_eligible_schemes_handler(
 
         user_profile = user_profile_collection.find_one({"user_id": ObjectId(user_id)})
 
-        if not user_profile:
+        if not user_profile or not is_profile_complete(user_profile):
             raise_http_error(
-                status_code=status.HTTP_404_NOT_FOUND,
-                message="User profile not found"
+                status_code=status.HTTP_409_CONFLICT,
+                message="Please complete your profile before checking scheme eligibility.",
+                error_data={
+                    "reason": "PROFILE_INCOMPLETE",
+                    "open_tab": "profile"
+                }
             )
 
         result = get_eligible_schemes_for_user(user_profile)

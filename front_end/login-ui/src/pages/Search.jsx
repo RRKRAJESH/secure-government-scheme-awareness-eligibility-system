@@ -34,6 +34,37 @@ import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
 
+const showProfileCompletionRequiredModal = () => {
+  Modal.confirm({
+    title: "Profile update required",
+    content: (
+      <div>
+        <Text>
+          Please complete your profile before checking scheme eligibility.
+        </Text>
+        <br />
+        <Text type="secondary">
+          Add your basic details, phone number, address, and social category to continue.
+        </Text>
+      </div>
+    ),
+    okText: "Update Profile",
+    cancelText: "Close",
+    centered: true,
+    onOk: () => {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("notifications:updated", {
+            detail: { open_tab: "profile", open_profile_form: true },
+          })
+        );
+      } catch (error) {
+        sessionStorage.setItem("open_tab", "profile");
+      }
+    },
+  });
+};
+
 // Filter options built from SECTORS constant
 const CATEGORIES = SECTORS.map((s) => ({ value: s, label: s.replace("_", " ") }));
 
@@ -462,7 +493,11 @@ const SearchScheme = React.memo(() => {
         setEligibleSchemes(response.data.schemes || []);
       }
     } catch (error) {
-      message.error(error.message || "Failed to check eligibility");
+      if (error.reason === "PROFILE_INCOMPLETE") {
+        showProfileCompletionRequiredModal();
+      } else {
+        message.error(error.message || "Failed to check eligibility");
+      }
       setEligibilityView(false);
     } finally {
       setEligibilityLoading(false);

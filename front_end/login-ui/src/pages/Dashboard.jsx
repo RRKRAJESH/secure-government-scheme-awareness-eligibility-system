@@ -140,6 +140,9 @@ function Dashboard() {
       const st = location && location.state;
       if (st && st.open_tab) {
         setActiveTab(st.open_tab);
+        if (st.open_profile_form) {
+          setOpenProfileForm(true);
+        }
         if (st.open_post_id) {
           try {
             sessionStorage.setItem("open_post_id", String(st.open_post_id));
@@ -170,6 +173,9 @@ function Dashboard() {
           try {
             if (detail.open_post_id) {
               sessionStorage.setItem("open_post_id", String(detail.open_post_id));
+            }
+            if (detail.open_profile_form) {
+              setOpenProfileForm(true);
             }
             setActiveTab(detail.open_tab);
           } catch (e) {}
@@ -210,10 +216,7 @@ function Dashboard() {
       if (e.key === "logout") {
         handleLogout();
       } else {
-        // Reset openProfileForm when switching tabs
-        if (e.key !== "profile") {
-          setOpenProfileForm(false);
-        }
+        setOpenProfileForm(false);
         setActiveTab(e.key);
       }
     },
