@@ -19,7 +19,15 @@ def register_user(register_user_info_payload):
 
         username = register_user_info_payload.get("username")
         password = register_user_info_payload.get("password")
-        user_role = register_user_info_payload.get("role").lower()
+        requested_role = str(register_user_info_payload.get("role") or "USER").upper()
+
+        if requested_role != "USER":
+            raise_http_error(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                message="Register endpoint can only create user accounts",
+            )
+
+        user_role = "user"
 
         user_existing_check = users_collection.find_one({"username": {"$regex": username, "$options": "i"}})
         

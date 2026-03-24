@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, AfterValidator
-from typing import Annotated
+from pydantic import BaseModel, Field
+from typing import Literal
 from enum import Enum
 
 class UserRoles(str, Enum):
@@ -9,7 +9,7 @@ class UserRoles(str, Enum):
 class RegisterUserSchema(BaseModel):
     username: str = Field(min_length= 3)
     password: str = Field(min_length=3)
-    role: UserRoles
+    role: Literal["USER"] = "USER"
 
 class LoginUser(BaseModel):
     username: str = Field(min_length=3)
