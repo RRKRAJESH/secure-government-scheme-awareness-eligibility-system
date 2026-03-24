@@ -48,11 +48,8 @@ function Login() {
       login(token, loginType, values.username);
       message.success("Login Successful");
 
-      if (loginType === ROLES.ADMIN) {
-        navigate(ROUTES.ADMIN);
-      } else {
-        navigate(ROUTES.DASHBOARD);
-      }
+      // Admins use the same Dashboard shell — navigate there instead of /admin
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
       message.error("Server error. Please try again.");
       console.error("Login error:", err);

@@ -22,7 +22,8 @@ import {
   DollarOutlined,
   FileTextOutlined,
   GlobalOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import API_ENDPOINTS from "../config/api.config";
@@ -32,6 +33,37 @@ import "../styles/search.css";
 import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
+
+const showProfileCompletionRequiredModal = () => {
+  Modal.confirm({
+    title: "Profile update required",
+    content: (
+      <div>
+        <Text>
+          Please complete your profile before checking scheme eligibility.
+        </Text>
+        <br />
+        <Text type="secondary">
+          Add your basic details, phone number, address, and social category to continue.
+        </Text>
+      </div>
+    ),
+    okText: "Update Profile",
+    cancelText: "Close",
+    centered: true,
+    onOk: () => {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("notifications:updated", {
+            detail: { open_tab: "profile", open_profile_form: true },
+          })
+        );
+      } catch (error) {
+        sessionStorage.setItem("open_tab", "profile");
+      }
+    },
+  });
+};
 
 // Filter options built from SECTORS constant
 const CATEGORIES = SECTORS.map((s) => ({ value: s, label: s.replace("_", " ") }));
@@ -45,6 +77,7 @@ const GOVERNMENT_LEVELS = [
 const BENEFIT_TYPES = [
   { value: "INFRASTRUCTURE_SUPPORT", label: "Infrastructure Support" },
   { value: "SERVICE", label: "Service" },
+  { value: "SERVICE_SUPPORT", label: "Service Support" },
   { value: "SUBSIDY", label: "Subsidy" },
   { value: "PRICE_SUPPORT", label: "Price Support" },
   { value: "LOAN", label: "Loan" },
@@ -52,6 +85,7 @@ const BENEFIT_TYPES = [
   { value: "TRAINING", label: "Training" },
   { value: "INSURANCE", label: "Insurance" },
   { value: "PENSION", label: "Pension" },
+  { value: "NA", label: "NA" },
 ];
 
 // Shared color helpers
@@ -195,7 +229,12 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                     <BankOutlined /> {scheme.ministry.name}
                   </div>
                 )}
-                <Tag color="green" style={{ marginTop: 12 }}>{scheme.sector?.replace("_", " ")}</Tag>
+                <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <Tag color="green">{scheme.sector?.replace("_", " ")}</Tag>
+                  {scheme.category && <Tag color="blue">{scheme.category.replace(/_/g, " ")}</Tag>}
+                  {scheme.sub_category && <Tag color="geekblue">{scheme.sub_category.replace(/_/g, " ")}</Tag>}
+                  {scheme.department && <Tag color="orange">{scheme.department.replace(/_/g, " ")}</Tag>}
+                </div>
               </div>
             </div>
 
@@ -239,48 +278,42 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
               </div>
             )}
 
-            {/* Eligibility Section */}
-            {scheme.eligibility && (
+            {/* Eligibility Section (eligibilityV2) */}
+            {scheme.eligibilityV2 && (
               <div className="detail-section eligibility-section">
                 <div className="section-header">
                   <InfoCircleOutlined className="section-icon" />
                   <span>Eligibility Criteria</span>
                 </div>
                 <div className="section-content">
-                  <table className="detail-info-table">
-                    <tbody>
-                      {scheme.eligibility.minAge && (
-                        <tr>
-                          <td className="label-cell">Age Range</td>
-                          <td className="value-cell">{scheme.eligibility.minAge} - {scheme.eligibility.maxAge || "No limit"} years</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.incomeLimit && (
-                        <tr>
-                          <td className="label-cell">Income Limit</td>
-                          <td className="value-cell">₹{scheme.eligibility.incomeLimit?.toLocaleString()}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.landHolding && (
-                        <tr>
-                          <td className="label-cell">Land Holding</td>
-                          <td className="value-cell">{scheme.eligibility.landHolding.min || 0} - {scheme.eligibility.landHolding.max || "No limit"} {scheme.eligibility.landHolding.unit}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.casteCategory?.length > 0 && (
-                        <tr>
-                          <td className="label-cell">Sector</td>
-                          <td className="value-cell">{scheme.eligibility.casteCategory.join(", ")}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                  {scheme.eligibility.requiredDocuments?.length > 0 && (
+                  {scheme.eligibilityV2.inclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Inclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.inclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Rule ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.exclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Exclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.exclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Exclusion ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.requiredDocuments?.length > 0 && (
                     <div className="documents-section">
                       <Text strong style={{ display: 'block', marginBottom: 8 }}>Required Documents:</Text>
                       <div className="document-tags">
-                        {scheme.eligibility.requiredDocuments.map((doc, idx) => (
-                          <Tag key={idx} color="purple">{doc}</Tag>
+                        {scheme.eligibilityV2.requiredDocuments.map((doc, idx) => (
+                          <Tag key={idx} color={doc.mandatory ? "red" : "purple"}>
+                            {doc.name}{doc.mandatory ? " *" : ""}
+                          </Tag>
                         ))}
                       </div>
                     </div>
@@ -361,6 +394,11 @@ const SearchScheme = React.memo(() => {
   const [schemes, setSchemes] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, totalCount: 0, totalPages: 1 });
   const [hasSearched, setHasSearched] = useState(false);
+  
+  // Eligibility view state
+  const [eligibilityView, setEligibilityView] = useState(false);
+  const [eligibleSchemes, setEligibleSchemes] = useState([]);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
   
   // Detail modal state
   const [selectedScheme, setSelectedScheme] = useState(null);
@@ -443,6 +481,106 @@ const SearchScheme = React.memo(() => {
     setHasSearched(false);
     setSchemes([]);
   }, []);
+
+  // Check eligibility against user profile
+  const handleCheckEligibility = useCallback(async () => {
+    setEligibilityLoading(true);
+    setEligibilityView(true);
+    setEligibleSchemes([]);
+    try {
+      const response = await apiRequest(API_ENDPOINTS.SCHEMES_ELIGIBLE, "GET");
+      if (response?.data) {
+        setEligibleSchemes(response.data.schemes || []);
+      }
+    } catch (error) {
+      if (error.reason === "PROFILE_INCOMPLETE") {
+        showProfileCompletionRequiredModal();
+      } else {
+        message.error(error.message || "Failed to check eligibility");
+      }
+      setEligibilityView(false);
+    } finally {
+      setEligibilityLoading(false);
+    }
+  }, [apiRequest]);
+
+  const backFromEligibility = useCallback(() => {
+    setEligibilityView(false);
+    setEligibleSchemes([]);
+  }, []);
+
+  // ELIGIBILITY VIEW - Show eligible schemes for the user
+  if (eligibilityView) {
+    return (
+      <div className="results-wrapper">
+        <div className="results-page-header">
+          <Button
+            icon={<CheckCircleOutlined />}
+            onClick={backFromEligibility}
+          >
+            Back to Search
+          </Button>
+          <Title level={3} style={{ margin: 0, flex: 1, textAlign: "center" }}>
+            Your Eligible Schemes
+          </Title>
+          <div style={{ width: 140 }} />
+        </div>
+
+        <div className="results-page-container">
+          <div className="results-page-content">
+            {eligibilityLoading ? (
+              <div className="loading-state">
+                <Spin size="large" />
+                <Text type="secondary">Checking eligibility...</Text>
+              </div>
+            ) : eligibleSchemes.length === 0 ? (
+              <div className="no-results">
+                <Empty
+                  description={
+                    <span>
+                      No eligible schemes found.{" "}
+                      <Text type="secondary">
+                        Please complete your profile to unlock more results.
+                      </Text>
+                    </span>
+                  }
+                />
+                <Button type="primary" onClick={backFromEligibility} style={{ marginTop: 16 }}>
+                  Back to Search
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="results-info-bar">
+                  <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 6 }} />
+                  <Text>
+                    You are eligible for <Text strong>{eligibleSchemes.length}</Text> scheme(s)
+                  </Text>
+                </div>
+                <div className="schemes-grid-scroll">
+                  <Row gutter={[16, 16]}>
+                    {eligibleSchemes.map((scheme) => (
+                      <Col xs={24} sm={12} lg={8} key={scheme._id}>
+                        <SchemeCard scheme={scheme} onClick={handleSchemeClick} />
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <SchemeDetailModal
+          visible={detailModalVisible}
+          scheme={selectedScheme}
+          subSchemes={subSchemes}
+          onClose={closeDetailModal}
+          loading={detailLoading}
+        />
+      </div>
+    );
+  }
 
   // RESULTS PAGE - Full takeover when hasSearched is true
   if (hasSearched) {
@@ -559,6 +697,14 @@ const SearchScheme = React.memo(() => {
             ghost
           >
             {showFilters ? "Hide Filters" : "Show Filters"}
+          </Button>
+          <Button
+            icon={<CheckCircleOutlined />}
+            type="primary"
+            onClick={handleCheckEligibility}
+            loading={eligibilityLoading}
+          >
+            Check My Eligibility
           </Button>
         </div>
 

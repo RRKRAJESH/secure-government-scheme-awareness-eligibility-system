@@ -103,6 +103,10 @@
 
 .filter-toggle {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .filter-toggle .ant-btn {

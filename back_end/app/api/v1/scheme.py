@@ -9,7 +9,8 @@ from app.schemas.scheme_schema import (
     SchemeSearchResponse,
     GovernmentLevel,
     SchemeType,
-    SchemeStatus
+    SchemeStatus,
+    SchemeCreateSchema,
 )
 from app.schemas.common_schema import ErrorResponse
 from app.utils.auth import verify_token
@@ -18,10 +19,43 @@ from app.services.scheme import (
     get_scheme_by_id,
     search_schemes,
     get_scheme_by_code,
-    get_eligible_schemes_for_user
+    mark_scheme_deleted,
+    get_eligible_schemes_for_user,
+    create_scheme,
 )
+from app.services.update_profile import is_profile_complete
 
 router = APIRouter()
+
+
+@router.post(
+    "/create",
+    response_model=Union[dict, ErrorResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_scheme_handler(
+    payload: SchemeCreateSchema,
+    token: dict = Depends(verify_token),
+):
+    """Create a new scheme and notify users."""
+    try:
+        result = create_scheme(payload.model_dump(), token)
+        return {"error": False, "data": result}
+
+    except HTTPException:
+        raise
+
+    except ValueError as e:
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{str(e)}",
+        )
+
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}",
+        )
 
 
 @router.get(
@@ -72,13 +106,7 @@ async def search_schemes_handler(
     governmentLevel: Optional[GovernmentLevel] = Query(None, description="Filter by government level"),
     schemeType: Optional[SchemeType] = Query(None, description="Filter by scheme type"),
     status_filter: Optional[SchemeStatus] = Query(SchemeStatus.ACTIVE, alias="status", description="Filter by status"),
-    minAge: Optional[int] = Query(None, ge=0, description="Minimum age eligibility"),
-    maxAge: Optional[int] = Query(None, ge=0, description="Maximum age eligibility"),
-    landHolding: Optional[float] = Query(None, ge=0, description="Land holding in hectares"),
-    incomeLimit: Optional[float] = Query(None, ge=0, description="Annual income"),
-    casteCategory: Optional[str] = Query(None, description="Caste category (SC/ST/OBC/GENERAL/EWS/ANY)"),
     benefitType: Optional[str] = Query(None, description="Filter by benefit type"),
-    state: Optional[str] = Query(None, description="State name"),
     directUse: Optional[bool] = Query(None, description="Filter by directly applicable schemes"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=50, description="Items per page"),
@@ -93,12 +121,6 @@ async def search_schemes_handler(
             "schemeType": schemeType.value if schemeType else None,
             "benefitType": benefitType,
             "status": status_filter.value if status_filter else None,
-            "minAge": minAge,
-            "maxAge": maxAge,
-            "landHolding": landHolding,
-            "incomeLimit": incomeLimit,
-            "casteCategory": casteCategory,
-            "state": state,
             "directUse": directUse,
             "page": page,
             "limit": limit
@@ -142,6 +164,40 @@ async def get_scheme_detail_handler(
     """Get scheme details by ID"""
     try:
         result = get_scheme_by_id(scheme_id)
+
+        return {
+            "error": False,
+            "data": result
+        }
+
+    except HTTPException:
+        raise
+
+    except ValueError as e:
+        raise_http_error(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=f"{str(e)}"
+        )
+
+    except Exception as e:
+        raise_http_error(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=f"An unexpected error occurred: {str(e)}"
+        )
+
+
+@router.put(
+    "/{scheme_id}/mark-deleted",
+    response_model=Union[dict, ErrorResponse],
+    status_code=status.HTTP_200_OK
+)
+async def mark_scheme_deleted_handler(
+    scheme_id: str,
+    token: str = Depends(verify_token)
+):
+    """Mark a scheme as deleted (soft delete)."""
+    try:
+        result = mark_scheme_deleted(scheme_id)
 
         return {
             "error": False,
@@ -222,10 +278,14 @@ async def get_eligible_schemes_handler(
 
         user_profile = user_profile_collection.find_one({"user_id": ObjectId(user_id)})
 
-        if not user_profile:
+        if not user_profile or not is_profile_complete(user_profile):
             raise_http_error(
-                status_code=status.HTTP_404_NOT_FOUND,
-                message="User profile not found"
+                status_code=status.HTTP_409_CONFLICT,
+                message="Please complete your profile before checking scheme eligibility.",
+                error_data={
+                    "reason": "PROFILE_INCOMPLETE",
+                    "open_tab": "profile"
+                }
             )
 
         result = get_eligible_schemes_for_user(user_profile)

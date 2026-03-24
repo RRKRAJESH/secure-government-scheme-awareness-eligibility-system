@@ -26,6 +26,7 @@ const AuthForm = React.memo(({
       layout="vertical"
       form={form}
       onFinish={handleFinish}
+      autoComplete="off"
     >
       {/* Username Field */}
       <Form.Item
@@ -39,6 +40,7 @@ const AuthForm = React.memo(({
           prefix={<UserOutlined />}
           placeholder="Enter username"
           size="large"
+          autoComplete="new-username"
         />
       </Form.Item>
 
@@ -55,6 +57,7 @@ const AuthForm = React.memo(({
           prefix={<LockOutlined />}
           placeholder="Enter password"
           size="large"
+          autoComplete="new-password"
         />
       </Form.Item>
 

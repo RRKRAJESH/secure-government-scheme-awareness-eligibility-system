@@ -14,7 +14,9 @@ import {
   Typography,
   message,
   Popover,
-  Divider
+  Divider,
+  Form,
+  Switch
 } from "antd";
 import { 
   SearchOutlined, 
@@ -25,15 +27,109 @@ import {
   FileTextOutlined,
   GlobalOutlined,
   InfoCircleOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined,
+  PlusOutlined
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
+import useAuth from "../hooks/useAuth";
+import { ROLES } from "../config/constants";
 import API_ENDPOINTS from "../config/api.config";
 import { SECTORS } from "../config/constants";
 import { formatDateTimeIST } from "../utils/dateFormat";
 import "../styles/schemes.css";
 
 const { Title, Text, Paragraph } = Typography;
+const { TextArea } = Input;
+
+const defaultBenefitsJson = JSON.stringify(
+  {
+    benefitType: "CASH_TRANSFER",
+    financial: {
+      totalAmount: 0,
+      currency: "INR",
+      installmentCount: 1,
+      installmentAmount: 0,
+    },
+    disbursementSchedule: [],
+    paymentMode: "DBT",
+    frequency: "YEARLY",
+  },
+  null,
+  2,
+);
+
+const defaultApplicationJson = JSON.stringify(
+  {
+    mode: "ONLINE",
+    officialWebsite: "",
+    startDate: null,
+    endDate: null,
+  },
+  null,
+  2,
+);
+
+const defaultEligibilityJson = JSON.stringify(
+  {
+    type: "RULE_BASED",
+    inclusionRules: [],
+    exclusionRules: [],
+    requiredDocuments: [],
+    operationalChecks: [],
+    resultComputation: {
+      eligibleIf: {
+        all: [],
+      },
+    },
+  },
+  null,
+  2,
+);
+
+const parseJsonField = (value, fieldName) => {
+  if (!value || !String(value).trim()) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new Error(`${fieldName} must be valid JSON`);
+  }
+};
+
+const showProfileCompletionRequiredModal = () => {
+  Modal.confirm({
+    title: "Profile update required",
+    content: (
+      <div>
+        <Text>
+          Please complete your profile before checking scheme eligibility.
+        </Text>
+        <br />
+        <Text type="secondary">
+          Add your basic details, phone number, address, and social category to continue.
+        </Text>
+      </div>
+    ),
+    okText: "Update Profile",
+    cancelText: "Close",
+    centered: true,
+    onOk: () => {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("notifications:updated", {
+            detail: { open_tab: "profile", open_profile_form: true },
+          })
+        );
+      } catch (error) {
+        sessionStorage.setItem("open_tab", "profile");
+      }
+    },
+  });
+};
 
 // Filter options
 const SCHEME_TYPES = [
@@ -53,6 +149,7 @@ const GOVERNMENT_LEVELS = [
 const BENEFIT_TYPES = [
   { value: "INFRASTRUCTURE_SUPPORT", label: "Infrastructure Support" },
   { value: "SERVICE", label: "Service" },
+  { value: "SERVICE_SUPPORT", label: "Service Support" },
   { value: "SUBSIDY", label: "Subsidy" },
   { value: "PRICE_SUPPORT", label: "Price Support" },
   { value: "LOAN", label: "Loan" },
@@ -60,6 +157,7 @@ const BENEFIT_TYPES = [
   { value: "TRAINING", label: "Training" },
   { value: "INSURANCE", label: "Insurance" },
   { value: "PENSION", label: "Pension" },
+  { value: "NA", label: "NA" },
 ];
 
 const PAGE_SIZE_OPTIONS = [
@@ -70,7 +168,7 @@ const PAGE_SIZE_OPTIONS = [
 ];
 
 // Scheme Card Component
-const SchemeCard = React.memo(({ scheme, onClick }) => {
+const SchemeCard = React.memo(({ scheme, onClick, onDelete }) => {
   const getLevelColor = (level) => ({
     CENTRAL: "orange",
     STATE: "cyan",
@@ -133,6 +231,17 @@ const SchemeCard = React.memo(({ scheme, onClick }) => {
           <div className="scheme-added-date">
             Posted At: {formatDateTimeIST(scheme.createdAt)}
           </div>
+        )}
+
+        {onDelete && (
+          <Button
+            type="text"
+            danger
+            size="small"
+            onClick={(e) => { e.stopPropagation(); onDelete(scheme); }}
+            className="scheme-delete-btn"
+            icon={<DeleteOutlined />}
+          />
         )}
       </div>
     </Card>
@@ -220,7 +329,12 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
                     <BankOutlined /> {scheme.ministry.name}
                   </div>
                 )}
-                <Tag color="green" style={{ marginTop: 12 }}>{scheme.sector?.replace("_", " ")}</Tag>
+                <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <Tag color="green">{scheme.sector?.replace("_", " ")}</Tag>
+                  {scheme.category && <Tag color="blue">{scheme.category.replace(/_/g, " ")}</Tag>}
+                  {scheme.sub_category && <Tag color="geekblue">{scheme.sub_category.replace(/_/g, " ")}</Tag>}
+                  {scheme.department && <Tag color="orange">{scheme.department.replace(/_/g, " ")}</Tag>}
+                </div>
               </div>
             </div>
 
@@ -264,48 +378,42 @@ const SchemeDetailModal = React.memo(({ visible, scheme, subSchemes, onClose, lo
               </div>
             )}
 
-            {/* Eligibility Section */}
-            {scheme.eligibility && (
+            {/* Eligibility Section (eligibilityV2) */}
+            {scheme.eligibilityV2 && (
               <div className="detail-section eligibility-section">
                 <div className="section-header">
                   <InfoCircleOutlined className="section-icon" />
                   <span>Eligibility Criteria</span>
                 </div>
                 <div className="section-content">
-                  <table className="detail-info-table">
-                    <tbody>
-                      {scheme.eligibility.minAge && (
-                        <tr>
-                          <td className="label-cell">Age Range</td>
-                          <td className="value-cell">{scheme.eligibility.minAge} - {scheme.eligibility.maxAge || "No limit"} years</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.incomeLimit && (
-                        <tr>
-                          <td className="label-cell">Income Limit</td>
-                          <td className="value-cell">₹{scheme.eligibility.incomeLimit?.toLocaleString()}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.landHolding && (
-                        <tr>
-                          <td className="label-cell">Land Holding</td>
-                          <td className="value-cell">{scheme.eligibility.landHolding.min || 0} - {scheme.eligibility.landHolding.max || "No limit"} {scheme.eligibility.landHolding.unit}</td>
-                        </tr>
-                      )}
-                      {scheme.eligibility.casteCategory?.length > 0 && (
-                        <tr>
-                          <td className="label-cell">Category</td>
-                          <td className="value-cell">{scheme.eligibility.casteCategory.join(", ")}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                  {scheme.eligibility.requiredDocuments?.length > 0 && (
+                  {scheme.eligibilityV2.inclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Inclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.inclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Rule ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.exclusionRules?.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Exclusion Rules:</Text>
+                      <ul className="scheme-desc-list">
+                        {scheme.eligibilityV2.exclusionRules.map((rule, idx) => (
+                          <li key={idx}>{rule.title || `Exclusion ${idx + 1}`}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {scheme.eligibilityV2.requiredDocuments?.length > 0 && (
                     <div className="documents-section">
                       <Text strong style={{ display: 'block', marginBottom: 8 }}>Required Documents:</Text>
                       <div className="document-tags">
-                        {scheme.eligibility.requiredDocuments.map((doc, idx) => (
-                          <Tag key={idx} color="purple">{doc}</Tag>
+                        {scheme.eligibilityV2.requiredDocuments.map((doc, idx) => (
+                          <Tag key={idx} color={doc.mandatory ? "red" : "purple"}>
+                            {doc.name}{doc.mandatory ? " *" : ""}
+                          </Tag>
                         ))}
                       </div>
                     </div>
@@ -435,6 +543,9 @@ const FilterContent = ({ filters, onFilterChange, onClear, activeFiltersCount })
 // Main Schemes Component
 const Schemes = React.memo(() => {
   const { apiRequest } = useApi();
+  const { getRole } = useAuth();
+  const isAdmin = getRole() === ROLES.ADMIN;
+  const [createForm] = Form.useForm();
   
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState({
@@ -459,6 +570,13 @@ const Schemes = React.memo(() => {
   
   // Filter popover state
   const [filterVisible, setFilterVisible] = useState(false);
+
+  // Eligibility modal state
+  const [eligibilityModalVisible, setEligibilityModalVisible] = useState(false);
+  const [eligibleSchemes, setEligibleSchemes] = useState([]);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [createSubmitting, setCreateSubmitting] = useState(false);
 
   // Fetch schemes
   const fetchSchemes = useCallback(async (page = 1, keyword = searchKeyword) => {
@@ -565,6 +683,119 @@ const Schemes = React.memo(() => {
     setSubSchemes([]);
   }, []);
 
+  useEffect(() => {
+    const schemeId = sessionStorage.getItem("open_scheme_id");
+    if (!schemeId) {
+      return;
+    }
+
+    sessionStorage.removeItem("open_scheme_id");
+    handleSchemeClick({ _id: schemeId, schemeName: "Loading scheme..." });
+  }, [handleSchemeClick]);
+
+  const handleCheckEligibility = useCallback(async () => {
+    setEligibilityLoading(true);
+    setEligibilityModalVisible(true);
+    setEligibleSchemes([]);
+    try {
+      const response = await apiRequest(API_ENDPOINTS.SCHEMES_ELIGIBLE, "GET");
+      if (response?.data) {
+        setEligibleSchemes(response.data.schemes || []);
+      }
+    } catch (error) {
+      if (error.reason === "PROFILE_INCOMPLETE") {
+        showProfileCompletionRequiredModal();
+      } else {
+        message.error(error.message || "Failed to check eligibility");
+      }
+      setEligibilityModalVisible(false);
+    } finally {
+      setEligibilityLoading(false);
+    }
+  }, [apiRequest]);
+
+  const closeEligibilityModal = useCallback(() => {
+    setEligibilityModalVisible(false);
+    setEligibleSchemes([]);
+  }, []);
+
+  const openCreateSchemeModal = useCallback(() => {
+    createForm.setFieldsValue({
+      directUse: true,
+      schemeType: "STANDALONE",
+      governmentLevel: "CENTRAL",
+      sector: "AGRICULTURE",
+      status: "ACTIVE",
+      benefitsJson: defaultBenefitsJson,
+      applicationDetailsJson: defaultApplicationJson,
+      eligibilityV2Json: defaultEligibilityJson,
+    });
+    setCreateModalVisible(true);
+  }, [createForm]);
+
+  const closeCreateSchemeModal = useCallback(() => {
+    setCreateModalVisible(false);
+    createForm.resetFields();
+  }, [createForm]);
+
+  const handleCreateScheme = useCallback(async (values) => {
+    try {
+      setCreateSubmitting(true);
+
+      const payload = {
+        schemeName: values.schemeName.trim(),
+        schemeCode: values.schemeCode.trim().toUpperCase(),
+        schemeType: values.schemeType,
+        directUse: values.directUse ?? true,
+        parentSchemeId: values.parentSchemeId?.trim() || null,
+        governmentLevel: values.governmentLevel,
+        ministry: {
+          name: values.ministryName.trim(),
+          officialWebsite: values.ministryWebsite?.trim() || null,
+        },
+        department: values.department?.trim() || null,
+        sector: values.sector || null,
+        category: values.category?.trim() || null,
+        sub_category: values.subCategory?.trim() || null,
+        description: {
+          short: values.shortDescription.trim(),
+          detailed: values.detailedDescription?.trim() || null,
+        },
+        benefits: parseJsonField(values.benefitsJson, "Benefits JSON"),
+        applicationDetails: parseJsonField(values.applicationDetailsJson, "Application details JSON"),
+        eligibilityV2: parseJsonField(values.eligibilityV2Json, "Eligibility JSON"),
+        status: values.status,
+        launchDate: values.launchDate?.trim() || null,
+      };
+
+      await apiRequest(API_ENDPOINTS.SCHEMES_CREATE, "POST", payload);
+      message.success("Scheme created successfully and notifications sent to users");
+      closeCreateSchemeModal();
+      fetchSchemes(1, searchKeyword);
+    } catch (error) {
+      message.error(error.message || "Failed to create scheme");
+    } finally {
+      setCreateSubmitting(false);
+    }
+  }, [apiRequest, closeCreateSchemeModal, fetchSchemes, searchKeyword]);
+
+  // Delete scheme (mark isDeleted: true)
+  const handleDeleteScheme = useCallback(async (schemeId) => {
+    const confirmed = window.confirm("Delete this scheme? This will mark it as deleted and remove it from the list.");
+    if (!confirmed) return;
+
+    try {
+      // call API to mark deleted
+      const url = API_ENDPOINTS.SCHEMES_MARK_DELETED.replace('{scheme_id}', schemeId);
+      await apiRequest(url, "PUT", { isDeleted: true });
+      message.success("Scheme marked deleted");
+      // refresh current page
+      fetchSchemes(pagination.currentPage || 1, searchKeyword);
+    } catch (err) {
+      message.error(err.message || "Failed to delete scheme");
+    }
+  }, [apiRequest, fetchSchemes, pagination.currentPage, searchKeyword]);
+
   return (
     <div className="schemes-wrapper">
       {/* Top Bar - Search, Filter, Pagination */}
@@ -580,9 +811,33 @@ const Schemes = React.memo(() => {
             allowClear
             className="schemes-search-input"
           />
+
+          {!isAdmin && (
+            <Button
+              icon={<CheckCircleOutlined />}
+              type="primary"
+              size="large"
+              onClick={handleCheckEligibility}
+              loading={eligibilityLoading}
+              className="eligibility-action-btn"
+            >
+              <span className="eligibility-action-label">Check My Eligibility</span>
+            </Button>
+          )}
         </div>
 
         <div className="controls-section">
+          {isAdmin && (
+            <Button
+              icon={<PlusOutlined />}
+              size="large"
+              className="admin-add-scheme-btn"
+              onClick={openCreateSchemeModal}
+            >
+              Add Scheme
+            </Button>
+          )}
+
           <Popover
             content={
               <FilterContent 
@@ -678,7 +933,11 @@ const Schemes = React.memo(() => {
             <Row gutter={[16, 16]} className="schemes-grid">
               {schemes.map((scheme) => (
                 <Col xs={24} sm={12} lg={8} xl={8} key={scheme._id}>
-                  <SchemeCard scheme={scheme} onClick={handleSchemeClick} />
+                  <SchemeCard
+                    scheme={scheme}
+                    onClick={handleSchemeClick}
+                    onDelete={isAdmin ? async (s) => { await handleDeleteScheme(s._id); } : undefined}
+                  />
                 </Col>
               ))}
             </Row>
@@ -706,6 +965,182 @@ const Schemes = React.memo(() => {
         onClose={closeDetailModal}
         loading={detailLoading}
       />
+
+      {/* Eligibility Modal */}
+      <Modal
+        open={eligibilityModalVisible}
+        onCancel={closeEligibilityModal}
+        footer={<Button onClick={closeEligibilityModal}>Close</Button>}
+        width="80vw"
+        style={{ maxWidth: 1100 }}
+        title={
+          <span>
+            <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 8 }} />
+            Your Eligible Schemes
+          </span>
+        }
+        centered
+      >
+        {eligibilityLoading ? (
+          <div className="loading-state" style={{ padding: 40 }}>
+            <Spin size="large" />
+            <Text type="secondary" style={{ display: "block", marginTop: 12 }}>Checking eligibility...</Text>
+          </div>
+        ) : eligibleSchemes.length === 0 ? (
+          <div style={{ padding: 40 }}>
+            <Empty
+              description={
+                <span>
+                  No eligible schemes found.{" "}
+                  <Text type="secondary">Complete your profile to unlock more results.</Text>
+                </span>
+              }
+            />
+          </div>
+        ) : (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <CheckCircleOutlined style={{ color: "#52c41a", marginRight: 6 }} />
+              <Text>You are eligible for <Text strong>{eligibleSchemes.length}</Text> scheme(s)</Text>
+            </div>
+            <Row gutter={[16, 16]}>
+              {eligibleSchemes.map((scheme) => (
+                <Col xs={24} sm={12} lg={8} key={scheme._id}>
+                  <SchemeCard scheme={scheme} onClick={(s) => { closeEligibilityModal(); handleSchemeClick(s); }} />
+                </Col>
+              ))}
+            </Row>
+          </>
+        )}
+      </Modal>
+
+      <Modal
+        open={createModalVisible}
+        onCancel={closeCreateSchemeModal}
+        onOk={() => createForm.submit()}
+        confirmLoading={createSubmitting}
+        okText="Create Scheme"
+        width={920}
+        className="add-scheme-modal"
+        title="Add New Scheme"
+        destroyOnHidden
+      >
+        <Form
+          form={createForm}
+          layout="vertical"
+          onFinish={handleCreateScheme}
+          initialValues={{
+            directUse: true,
+            schemeType: "STANDALONE",
+            governmentLevel: "CENTRAL",
+            sector: "AGRICULTURE",
+            status: "ACTIVE",
+          }}
+        >
+          <Row gutter={16}>
+            <Col xs={24} md={12}>
+              <Form.Item name="schemeName" label="Scheme Name" rules={[{ required: true, message: "Scheme name is required" }]}>
+                <Input placeholder="Enter scheme name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="schemeCode" label="Scheme Code" rules={[{ required: true, message: "Scheme code is required" }]}>
+                <Input placeholder="Enter unique scheme code" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="schemeType" label="Scheme Type" rules={[{ required: true, message: "Scheme type is required" }]}>
+                <Select options={SCHEME_TYPES} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="governmentLevel" label="Government Level" rules={[{ required: true, message: "Government level is required" }]}>
+                <Select options={GOVERNMENT_LEVELS} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="sector" label="Sector" rules={[{ required: true, message: "Sector is required" }]}>
+                <Select options={CATEGORIES} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="status" label="Status" rules={[{ required: true, message: "Status is required" }]}>
+                <Select options={[
+                  { value: "ACTIVE", label: "ACTIVE" },
+                  { value: "INACTIVE", label: "INACTIVE" },
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "CLOSED", label: "CLOSED" },
+                ]} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="directUse" label="Direct Use" valuePropName="checked">
+                <Switch checkedChildren="Yes" unCheckedChildren="No" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="launchDate" label="Launch Date (ISO)">
+                <Input placeholder="2026-03-24T00:00:00+00:00" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="ministryName" label="Ministry Name" rules={[{ required: true, message: "Ministry name is required" }]}>
+                <Input placeholder="Ministry name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="ministryWebsite" label="Ministry Website">
+                <Input placeholder="https://example.gov.in" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="department" label="Department">
+                <Input placeholder="Department name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="parentSchemeId" label="Parent Scheme ID">
+                <Input placeholder="Optional umbrella scheme ObjectId" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="category" label="Category">
+                <Input placeholder="Optional category" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="subCategory" label="Sub Category">
+                <Input placeholder="Optional sub category" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="shortDescription" label="Short Description" rules={[{ required: true, message: "Short description is required" }]}>
+                <TextArea rows={3} placeholder="Brief scheme summary" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="detailedDescription" label="Detailed Description">
+                <TextArea rows={5} placeholder="Detailed scheme description" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="benefitsJson" label="Benefits JSON">
+                <TextArea rows={8} className="json-editor" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="applicationDetailsJson" label="Application Details JSON">
+                <TextArea rows={6} className="json-editor" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="eligibilityV2Json" label="Eligibility JSON">
+                <TextArea rows={12} className="json-editor" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 });

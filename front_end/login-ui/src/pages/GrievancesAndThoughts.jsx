@@ -144,13 +144,6 @@ const PostCard = React.memo(({ post, onClick, onComment, onEdit }) => {
       currentUserId &&
       normalize(post.user_id) === normalize(currentUserId));
   const postedBy = isMine ? "You" : postedByRaw;
-  const initials = (isMine ? username || "You" : postedByRaw || "U")
-    .toString()
-    .split(" ")
-    .map((s) => s[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 
   return (
     <Card
@@ -179,10 +172,11 @@ const PostCard = React.memo(({ post, onClick, onComment, onEdit }) => {
             alignItems: "center",
           }}
         >
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             <Tooltip title="Comments">
               <Text type="secondary">💬 {post.comments_count || 0}</Text>
             </Tooltip>
+            <Text type="secondary">Posted By: {postedBy}</Text>
             {isMine && (
               <Tooltip title="Edit">
                 <Button

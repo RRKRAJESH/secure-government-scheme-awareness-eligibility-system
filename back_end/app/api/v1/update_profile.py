@@ -13,9 +13,9 @@ router = APIRouter()
 
 @router.post("/update", response_model=Union[ProfileUpdateSuccessMessageSchema, ErrorResponse], status_code=status.HTTP_202_ACCEPTED)
 async def update_profile_handler(payload: ProfileUpdateSchema, token: str = Depends(verify_token)):
-    """Update user profile with flat structure"""
+    """Update user profile with nested structure"""
     try:
-        input_data = payload.model_dump()
+        input_data = payload.model_dump(exclude_none=True)
         update_profile_info(update_payload=input_data, token=token)
 
         return {

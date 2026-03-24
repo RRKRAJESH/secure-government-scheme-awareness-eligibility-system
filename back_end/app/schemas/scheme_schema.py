@@ -5,7 +5,7 @@ from enum import Enum
 
 class AppBaseModel(BaseModel):
     class Config:
-        extra = "forbid"
+        extra = "allow"
 
 
 # ===== ENUMS =====
@@ -42,6 +42,12 @@ class BenefitType(str, Enum):
     TRAINING = "TRAINING"
     EQUIPMENT = "EQUIPMENT"
     MIXED = "MIXED"
+    SERVICE = "SERVICE"
+    PENSION = "PENSION"
+    PRICE_SUPPORT = "PRICE_SUPPORT"
+    INFRASTRUCTURE_SUPPORT = "INFRASTRUCTURE_SUPPORT"
+    SERVICE_SUPPORT = "SERVICE_SUPPORT"
+    NA = "NA"
 
 
 class ApplicationMode(str, Enum):
@@ -86,6 +92,7 @@ class LandHolding(BaseModel):
     unit: Optional[LandUnit] = LandUnit.HECTARE
 
 
+# -- Old eligibility model (kept for backwards compat) --
 class Eligibility(BaseModel):
     minAge: Optional[int] = None
     maxAge: Optional[int] = None
@@ -95,6 +102,49 @@ class Eligibility(BaseModel):
     gender: Optional[Gender] = Gender.ANY
     statesAllowed: Optional[List[str]] = []
     requiredDocuments: Optional[List[str]] = []
+
+
+# -- New EligibilityV2 models --
+class RuleCondition(BaseModel):
+    path: Optional[str] = None
+    op: Optional[str] = None
+    value: Optional[Any] = None
+
+class RuleLogic(BaseModel):
+    all: Optional[List[RuleCondition]] = []
+
+class InclusionRule(BaseModel):
+    id: Optional[str] = None
+    title: Optional[str] = None
+    logic: Optional[RuleLogic] = None
+
+class ExclusionRule(BaseModel):
+    id: Optional[str] = None
+    title: Optional[str] = None
+    logic: Optional[RuleLogic] = None
+
+class RequiredDocument(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+    type: Optional[str] = None
+    mandatory: Optional[bool] = True
+
+class ResultRef(BaseModel):
+    ref: Optional[str] = None
+
+class ResultEligibleIf(BaseModel):
+    all: Optional[List[ResultRef]] = []
+
+class ResultComputation(BaseModel):
+    eligibleIf: Optional[ResultEligibleIf] = None
+
+class EligibilityV2(BaseModel):
+    type: Optional[str] = None
+    inclusionRules: Optional[List[InclusionRule]] = []
+    exclusionRules: Optional[List[ExclusionRule]] = []
+    requiredDocuments: Optional[List[RequiredDocument]] = []
+    operationalChecks: Optional[List[Any]] = []
+    resultComputation: Optional[ResultComputation] = None
 
 
 class FinancialBenefit(BaseModel):
@@ -113,12 +163,12 @@ class Benefits(BaseModel):
     benefitType: Optional[str] = None
     financial: Optional[FinancialBenefit] = None
     disbursementSchedule: Optional[List[DisbursementSchedule]] = []
-    paymentMode: Optional[PaymentMode] = None
+    paymentMode: Optional[str] = None
     frequency: Optional[str] = None
 
 
 class ApplicationDetails(BaseModel):
-    mode: Optional[ApplicationMode] = ApplicationMode.ONLINE
+    mode: Optional[str] = None
     officialWebsite: Optional[str] = None
     startDate: Optional[str] = None
     endDate: Optional[str] = None
@@ -130,13 +180,16 @@ class SchemeListItem(BaseModel):
     id: str = Field(alias="_id")
     schemeName: str
     schemeCode: str
-    schemeType: SchemeType
-    sector: AgricultureSector
-    governmentLevel: GovernmentLevel
+    schemeType: Optional[str] = None
+    sector: Optional[str] = None
+    governmentLevel: Optional[str] = None
     description: Optional[Description] = None
-    status: SchemeStatus
+    status: Optional[str] = None
     directUse: bool = True
     benefitType: Optional[str] = None
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    department: Optional[str] = None
     createdAt: Optional[str] = None
 
     class Config:
@@ -148,20 +201,24 @@ class SchemeDetail(BaseModel):
     id: str = Field(alias="_id")
     schemeName: str
     schemeCode: str
-    schemeType: SchemeType
+    schemeType: Optional[str] = None
     directUse: bool = True
     parentSchemeId: Optional[str] = None
-    sector: AgricultureSector
-    governmentLevel: GovernmentLevel
+    sector: Optional[str] = None
+    governmentLevel: Optional[str] = None
     launchDate: Optional[str] = None
     createdAt: Optional[str] = None
+    updatedAt: Optional[str] = None
     ministry: Optional[Ministry] = None
     department: Optional[str] = None
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
     description: Optional[Description] = None
     eligibility: Optional[Eligibility] = None
+    eligibilityV2: Optional[EligibilityV2] = None
     benefits: Optional[Benefits] = None
     applicationDetails: Optional[ApplicationDetails] = None
-    status: SchemeStatus
+    status: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -195,6 +252,27 @@ class SchemeSearchFilters(BaseModel):
     state: Optional[str] = None
     page: int = 1
     limit: int = 10
+
+
+class SchemeCreateSchema(AppBaseModel):
+    schemeName: str
+    schemeCode: str
+    schemeType: SchemeType
+    directUse: bool = True
+    parentSchemeId: Optional[str] = None
+    governmentLevel: GovernmentLevel
+    ministry: Ministry
+    department: Optional[str] = None
+    sector: Optional[str] = None
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    description: Description
+    benefits: Optional[dict] = None
+    applicationDetails: Optional[dict] = None
+    eligibilityV2: Optional[dict] = None
+    status: SchemeStatus = SchemeStatus.ACTIVE
+    isDeleted: bool = False
+    launchDate: Optional[str] = None
 
 
 # ===== RESPONSE MODELS =====

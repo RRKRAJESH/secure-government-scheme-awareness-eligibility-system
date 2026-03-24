@@ -107,6 +107,18 @@ export const API_ENDPOINTS = {
   // Response: { data: { schemes: [...], pagination: {...} } }
   SCHEMES_ELIGIBLE: `${API_BASE_URL}/api/v1/backend/schemes/eligible`,
 
+  // POST /schemes/create
+  // Headers: Authorization: Bearer {token}
+  // Request: full scheme payload
+  // Response: { data: { id, schemeName, schemeCode } }
+  SCHEMES_CREATE: `${API_BASE_URL}/api/v1/backend/schemes/create`,
+
+  // PUT /schemes/{scheme_id}/mark-deleted
+  // Headers: Authorization: Bearer {token}
+  // Request: { isDeleted: true }
+  // Response: { message }
+  SCHEMES_MARK_DELETED: `${API_BASE_URL}/api/v1/backend/schemes/{scheme_id}/mark-deleted`,
+
   // GET /schemes/suggestions?keyword=...&limit=10
   // Headers: Authorization: Bearer {token}
   // Response: { data: { suggestions: [{ id, name, code, type }] } }
@@ -114,6 +126,12 @@ export const API_ENDPOINTS = {
 
   // GET /schemes/categories (deprecated - use SCHEMES_SEARCH with sector filter)
   SCHEMES_CATEGORIES: `${API_BASE_URL}/api/v1/backend/schemes/categories`,
+
+  // USERS
+  // GET /users/list
+  USERS_LIST: `${API_BASE_URL}/api/v1/backend/users/list`,
+  // POST /users/delete
+  USERS_DELETE: `${API_BASE_URL}/api/v1/backend/users/delete`,
 };
 
 export default API_ENDPOINTS;

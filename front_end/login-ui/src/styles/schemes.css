@@ -32,11 +32,13 @@
   gap: 12px;
   flex: 1;
   min-width: 300px;
+  flex-wrap: wrap;
 }
 
 .schemes-search-input {
   flex: 1;
-  max-width: 500px;
+  min-width: 280px;
+  max-width: 520px;
 }
 
 .schemes-search-input.ant-input-affix-wrapper {
@@ -170,6 +172,19 @@
   border-color: #ff4d4f !important;
 }
 
+.controls-section .admin-add-scheme-btn {
+  background: rgba(15, 23, 42, 0.24) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18) !important;
+}
+
+.controls-section .admin-add-scheme-btn:hover {
+  background: rgba(15, 23, 42, 0.36) !important;
+  border-color: rgba(255, 255, 255, 0.52) !important;
+}
+
 /* ============ FILTER POPOVER ============ */
 .filter-popover-content {
   width: 280px;
@@ -201,6 +216,21 @@
 .filter-header .ant-typography {
   color: #1f2937 !important;
   font-weight: 600 !important;
+}
+
+.add-scheme-modal .ant-modal-body {
+  max-height: 72vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.add-scheme-modal .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.add-scheme-modal .json-editor {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  min-height: 148px !important;
 }
 
 /* ============ INFO BAR ============ */
@@ -268,6 +298,26 @@
   transition: all 0.3s ease;
   overflow: hidden;
   position: relative;
+}
+
+/* Delete (trash) icon button positioned at top-right of the card */
+.scheme-delete-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 5 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,0.9) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important;
+}
+
+.scheme-delete-btn:hover {
+  background: rgba(255,255,255,1) !important;
 }
 
 .scheme-card:hover,
@@ -728,6 +778,16 @@
 
   .schemes-search-input {
     max-width: none;
+  }
+
+  .search-section {
+    justify-content: stretch;
+  }
+
+  .search-section .eligibility-action-btn,
+  .controls-section .eligibility-action-btn {
+    min-width: 100%;
+    justify-content: center;
   }
 
   .controls-section {

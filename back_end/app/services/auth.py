@@ -49,11 +49,17 @@ def register_user(register_user_info_payload):
 
         users_profile_data = {
             "user_id": ObjectId(user_insert_info.inserted_id),
-            "basic_info": None,
-            "communication_info": None,
-            "education_info": None,
-            "beneficiary_info": None,
-            "crated_at": current_time_utc(),
+            "profile": {
+                "basic_info": None,
+                "communication_info": None,
+                "address_info": None,
+                "economic_info": None,
+                "beneficiary_info": None,
+                "fisheries": None
+            },
+            "registrations": None,
+            "exclusions": None,
+            "created_at": current_time_utc(),
             "updated_at": current_time_utc()
         }
 

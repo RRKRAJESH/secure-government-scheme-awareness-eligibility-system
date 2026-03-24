@@ -8,6 +8,7 @@ import {
   NotificationOutlined,
   BellOutlined,
   BankOutlined,
+    TeamOutlined,
 } from "@ant-design/icons";
 import "../styles/dashboard.css";
 import MainLayout from "./MainLayout";
@@ -15,6 +16,7 @@ import Schemes from "./Schemes";
 import GrievancesAndThoughts from "./GrievancesAndThoughts";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
+import Users from "./Users";
 import ProfileUpdatePrompt from "../components/ProfileUpdatePrompt";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
@@ -24,7 +26,7 @@ import { ROLE_COLORS, ROUTES } from "../config/constants";
 const { Sider, Content } = Layout;
 
 // Memoized content section to prevent unnecessary renders
-const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
+const DashboardContent = React.memo(({ activeTab, openProfileForm, role }) => {
   switch (activeTab) {
     case "grievances":
       return <GrievancesAndThoughts />;
@@ -33,7 +35,12 @@ const DashboardContent = React.memo(({ activeTab, openProfileForm }) => {
       return <Notifications />;
 
     case "profile":
+      // Admins shouldn't see profile; fallback to Schemes
+      if (role === "ADMIN") return <Schemes />;
       return <Profile openFormDirectly={openProfileForm} />;
+
+    case "users":
+      return <Users />;
 
     default:
       return <Schemes />;
@@ -55,7 +62,7 @@ function Dashboard() {
 
   // Get username from JWT token
   const username = getUsername();
-  const profileName = profileData?.name || null;
+  const profileName = profileData?.profile?.basic_info?.name || null;
   const userName = username || profileName || "User";
 
   // Get first letter of username for avatar (uppercase)
@@ -64,20 +71,21 @@ function Dashboard() {
 
   // State for profile update prompt
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
-  const [hasShownPrompt, setHasShownPrompt] = useState(false);
   const [openProfileForm, setOpenProfileForm] = useState(false);
 
-  // Show profile prompt if profile is incomplete and hasn't been shown yet
+  // Keep the prompt visible for incomplete user profiles after login.
   useEffect(() => {
-    if (!profileLoading && !isProfileComplete && !hasShownPrompt) {
-      // Check if user has dismissed the prompt in this session
-      const dismissed = sessionStorage.getItem("profilePromptDismissed");
-      if (!dismissed) {
-        setShowProfilePrompt(true);
-        setHasShownPrompt(true);
-      }
+    if (role === "ADMIN") {
+      setShowProfilePrompt(false);
+      return;
     }
-  }, [profileLoading, isProfileComplete, hasShownPrompt]);
+
+    if (profileLoading) {
+      return;
+    }
+
+    setShowProfilePrompt(!isProfileComplete);
+  }, [profileLoading, isProfileComplete, role]);
 
   const handleProfilePromptUpdate = useCallback(() => {
     setShowProfilePrompt(false);
@@ -85,9 +93,8 @@ function Dashboard() {
     setActiveTab("profile");
   }, []);
 
-  const handleProfilePromptDismiss = useCallback(() => {
+  const handleProfilePromptSkip = useCallback(() => {
     setShowProfilePrompt(false);
-    sessionStorage.setItem("profilePromptDismissed", "true");
   }, []);
 
   const [notificationCount, setNotificationCount] = useState(0);
@@ -133,6 +140,14 @@ function Dashboard() {
       const st = location && location.state;
       if (st && st.open_tab) {
         setActiveTab(st.open_tab);
+        if (st.open_profile_form) {
+          setOpenProfileForm(true);
+        }
+        if (st.open_scheme_id) {
+          try {
+            sessionStorage.setItem("open_scheme_id", String(st.open_scheme_id));
+          } catch (e) {}
+        }
         if (st.open_post_id) {
           try {
             sessionStorage.setItem("open_post_id", String(st.open_post_id));
@@ -161,8 +176,14 @@ function Dashboard() {
         const detail = ev && ev.detail;
         if (detail && detail.open_tab) {
           try {
+            if (detail.open_scheme_id) {
+              sessionStorage.setItem("open_scheme_id", String(detail.open_scheme_id));
+            }
             if (detail.open_post_id) {
               sessionStorage.setItem("open_post_id", String(detail.open_post_id));
+            }
+            if (detail.open_profile_form) {
+              setOpenProfileForm(true);
             }
             setActiveTab(detail.open_tab);
           } catch (e) {}
@@ -203,10 +224,7 @@ function Dashboard() {
       if (e.key === "logout") {
         handleLogout();
       } else {
-        // Reset openProfileForm when switching tabs
-        if (e.key !== "profile") {
-          setOpenProfileForm(false);
-        }
+        setOpenProfileForm(false);
         setActiveTab(e.key);
       }
     },
@@ -263,9 +281,17 @@ function Dashboard() {
                 </span>
               </Menu.Item>
 
-              <Menu.Item key="profile" icon={<ProfileOutlined />}>
-                <span style={{ fontWeight: "bold" }}>Profile</span>
-              </Menu.Item>
+              {role !== "ADMIN" && (
+                <Menu.Item key="profile" icon={<ProfileOutlined />}>
+                  <span style={{ fontWeight: "bold" }}>Profile</span>
+                </Menu.Item>
+              )}
+
+              {role === "ADMIN" && (
+                <Menu.Item key="users" icon={<TeamOutlined />}>
+                  <span style={{ fontWeight: "bold" }}>Users</span>
+                </Menu.Item>
+              )}
 
               <Menu.Item key="logout" icon={<LogoutOutlined />}>
                 <span style={{ fontWeight: "bold" }}>Logout</span>
@@ -275,11 +301,12 @@ function Dashboard() {
 
           <Layout>
             <Content
-              className={`dashboard-content ${activeTab === "grievances" ? "grievances-view" : "default-view"}`}
+              className={`dashboard-content ${["grievances", "users", "notifications", "schemes"].includes(activeTab) ? "grievances-view" : "default-view"} tab-${activeTab}`}
             >
               <DashboardContent
                 activeTab={activeTab}
                 openProfileForm={openProfileForm}
+                role={role}
               />
             </Content>
           </Layout>
@@ -290,7 +317,7 @@ function Dashboard() {
       <ProfileUpdatePrompt
         visible={showProfilePrompt}
         onUpdateProfile={handleProfilePromptUpdate}
-        onDismiss={handleProfilePromptDismiss}
+        onSkip={handleProfilePromptSkip}
       />
     </MainLayout>
   );
