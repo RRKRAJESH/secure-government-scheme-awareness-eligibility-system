@@ -1,0 +1,310 @@
+MongoDB index plan based on current backend API usage
+Generated from analysis of:
+- back_end/app/api/v1/*.py
+- back_end/app/services/*.py
+- back_end/app/middleware/request_response_middleware.py
+j
+Collections found in active backend code:
+- users
+- users_profile
+- grievances_thoughts
+- comments
+- notifications
+- schemes
+- request_response_logger
+
+==================================================
+1. users
+==================================================
+Used by:
+- register/login
+- admin user listing
+- soft delete / deactivate
+- lookups for posts/comments author names
+- recipient scan for bulk notifications
+
+Create these indexes:
+
+1) Case-insensitive unique username index
+db.users.createIndex(
+  { username: 1 },
+  {
+    name: "uq_users_username_ci",
+    unique: true,
+    collation: { locale: "en", strength: 2 }
+  }
+)
+
+Why:
+- register checks username case-insensitively
+- prevents duplicate usernames like Rajesh and rajesh
+
+2) Admin list default sort
+db.users.createIndex(
+  { created_at: -1 },
+  { name: "idx_users_created_at_desc" }
+)
+
+Why:
+- list_users defaults to sorting by created_at
+
+3) Notification recipient scan / active-user filtering
+db.users.createIndex(
+  { is_active: 1, is_deleted: 1, role: 1 },
+  { name: "idx_users_active_deleted_role" }
+)
+
+Why:
+- create_scheme scans users with role != admin, is_deleted != true, is_active = true
+
+Notes:
+- Because the code uses $ne for role and is_deleted in some places, this index helps only partially.
+- Best long-term improvement: normalize queries to exact matches where possible, for example role = "user" and is_deleted = false.
+- list_users supports many sort fields. Do not create one index per sort field unless the user table becomes large and you measure that specific sort as slow.
+
+==================================================
+2. users_profile
+==================================================
+Used by:
+- create default profile on registration
+- update profile
+- fetch current profile
+- fetch profile for eligibility
+
+Create these indexes:
+
+1) One profile per user
+db.users_profile.createIndex(
+  { user_id: 1 },
+  { name: "uq_users_profile_user_id", unique: true }
+)
+
+Why:
+- every profile read/update uses user_id
+- this should be unique by design
+
+==================================================
+3. grievances_thoughts
+==================================================
+Used by:
+- grievance/thought feed listing
+- post detail lookup
+- post update
+- comment count increment on parent post
+
+Create these indexes:
+
+1) Feed query index
+db.grievances_thoughts.createIndex(
+  { post_type: 1, posted_at: -1 },
+  { name: "idx_posts_post_type_posted_at_desc" }
+)
+
+Why:
+- feed endpoint filters by optional post_type and sorts by posted_at descending
+
+2) Global feed sort fallback
+db.grievances_thoughts.createIndex(
+  { posted_at: -1 },
+  { name: "idx_posts_posted_at_desc" }
+)
+
+Why:
+- feed can also run without a post_type filter
+
+Notes:
+- _id is already indexed automatically, so post detail and update queries are already covered.
+- A separate user_id index is not required for current API behavior.
+
+==================================================
+4. comments
+==================================================
+Used by:
+- create comment
+- list comments for a post
+- count comments for a post
+- update comment
+
+Create these indexes:
+
+1) Post comments retrieval and count
+db.comments.createIndex(
+  { post_id: 1, commented_at: -1 },
+  { name: "idx_comments_post_id_commented_at_desc" }
+)
+
+Why:
+- post detail loads comments by post_id and sorts by commented_at descending
+- comment counts by post_id can use the same index prefix
+
+Notes:
+- _id already covers comment update/find_one by comment id.
+- A separate user_id index is not needed for the current API set.
+
+==================================================
+5. notifications
+==================================================
+Used by:
+- notification feed listing
+- mark selected notifications as read
+- mark all unread notifications as read
+- bulk notification fan-out
+
+Create these indexes:
+
+1) Notification feed
+db.notifications.createIndex(
+  { recipient_id: 1, created_at: -1 },
+  { name: "idx_notifications_recipient_created_at_desc" }
+)
+
+Why:
+- get_user_notifications filters by recipient_id and sorts by created_at descending
+
+2) Mark-all-read / unread filter
+db.notifications.createIndex(
+  { recipient_id: 1, is_seen: 1 },
+  { name: "idx_notifications_recipient_is_seen" }
+)
+
+Why:
+- mark_all_read filters by recipient_id and is_seen = false
+
+Notes:
+- _id already covers update_many with _id in [...] for mark_notifications_read.
+
+==================================================
+6. schemes
+==================================================
+Used by:
+- create scheme
+- list schemes
+- multi-filter search
+- get scheme by id
+- get scheme by code
+- eligible schemes for a user
+- sub-scheme lookup for umbrella schemes
+- autocomplete suggestions
+
+Create these indexes:
+
+1) Unique scheme code
+db.schemes.createIndex(
+  { schemeCode: 1 },
+  { name: "uq_schemes_scheme_code", unique: true }
+)
+
+Why:
+- create_scheme checks for duplicate schemeCode
+- get_scheme_by_code reads by exact schemeCode
+
+2) Main listing index
+db.schemes.createIndex(
+  { status: 1, schemeName: 1 },
+  { name: "idx_schemes_status_scheme_name" }
+)
+
+Why:
+- list endpoint filters by status and sorts by schemeName ascending
+
+3) Eligibility listing index
+db.schemes.createIndex(
+  { status: 1, directUse: 1, schemeName: 1 },
+  { name: "idx_schemes_status_direct_use_scheme_name" }
+)
+
+Why:
+- eligible endpoint scans ACTIVE + directUse = true and then sorts by schemeName
+
+4) Sub-scheme lookup index
+db.schemes.createIndex(
+  { parentSchemeId: 1 },
+  { name: "idx_schemes_parent_scheme_id" }
+)
+
+Why:
+- umbrella scheme detail fetches sub-schemes by parentSchemeId
+
+5) Optional search filters index
+db.schemes.createIndex(
+  { status: 1, sector: 1, governmentLevel: 1, schemeType: 1, directUse: 1, schemeName: 1 },
+  { name: "idx_schemes_search_filters" }
+)
+
+Why:
+- helps the structured search endpoint when multiple exact-match filters are used together
+
+Important note about keyword search and suggestions:
+- Current code uses case-insensitive regex on schemeName, schemeCode, description.short, and description.detailed.
+- Non-prefix regex searches do not efficiently use normal B-tree indexes.
+- If search traffic becomes heavy, switch this endpoint to MongoDB Atlas Search or to a text-search-based implementation.
+- A text index is only useful if the code is changed to use $text; it will not speed up the current regex queries.
+
+Optional only if you rewrite search to use $text:
+db.schemes.createIndex(
+  {
+    schemeName: "text",
+    schemeCode: "text",
+    "description.short": "text",
+    "description.detailed": "text"
+  },
+  { name: "txt_schemes_search" }
+)
+
+==================================================
+7. request_response_logger
+==================================================
+Used by:
+- request/response audit logging middleware
+
+Create these indexes:
+
+1) Time-based log access
+db.request_response_logger.createIndex(
+  { timestamp_utc: -1 },
+  { name: "idx_request_logs_timestamp_desc" }
+)
+
+2) Activity + time lookup
+db.request_response_logger.createIndex(
+  { activity: 1, timestamp_utc: -1 },
+  { name: "idx_request_logs_activity_timestamp_desc" }
+)
+
+Optional operational cleanup index:
+db.request_response_logger.createIndex(
+  { timestamp_utc: 1 },
+  {
+    name: "ttl_request_logs_90d",
+    expireAfterSeconds: 7776000
+  }
+)
+
+Why:
+- the app currently only writes logs, but these indexes help if you inspect logs by time/activity
+- TTL is useful if you do not want this collection to grow forever
+
+==================================================
+Priority order
+==================================================
+Create first:
+1) users.username case-insensitive unique
+2) users_profile.user_id unique
+3) notifications(recipient_id, created_at)
+4) comments(post_id, commented_at)
+5) grievances_thoughts(post_type, posted_at)
+6) schemes.schemeCode unique
+7) schemes(status, schemeName)
+8) schemes(status, directUse, schemeName)
+9) schemes(parentSchemeId)
+
+Create later if needed after measuring production load:
+1) users(is_active, is_deleted, role)
+2) grievances_thoughts(posted_at)
+3) notifications(recipient_id, is_seen)
+4) schemes structured multi-filter index
+5) request_response_logger indexes and TTL
+
+Final recommendation:
+- Before creating every optional index, run explain() on the slow endpoints in production-like data.
+- The highest-value wins in this codebase are username uniqueness, profile lookup, notification feed, comments-by-post, post feed, and scheme lookup/listing.j
