@@ -1,0 +1,5569 @@
+[{
+  "_id": {
+    "$oid": "699de2c9fddb476c4a535aec"
+  },
+  "schemeName": "Pradhan Mantri Kisan Samman Nidhi",
+  "schemeCode": "PM-KISAN",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Income support scheme providing financial assistance to farmer families.",
+    "detailed": "The Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a flagship income support scheme launched by the Government of India in 2019 to provide financial assistance to small and marginal farmers. Under this scheme, eligible landholding farmer families receive ₹6,000 per year in three equal installments of ₹2,000, which are directly transferred to their bank accounts through the Direct Benefit Transfer (DBT) system. The objective of the scheme is to help farmers meet agricultural expenses such as purchasing seeds, fertilizers, and other inputs, while also supporting their household needs. The scheme covers all landholding farmers across the country, subject to certain exclusion criteria such as institutional landholders, income tax payers, and higher-income professionals. By ensuring timely financial support and eliminating intermediaries, PM-KISAN aims to improve farmers’ financial stability and promote sustainable agricultural practices."
+  },
+  "benefits": {
+    "benefitType": "CASH_TRANSFER",
+    "financial": {
+      "totalAmount": 6000,
+      "currency": "INR",
+      "installmentCount": 3,
+      "installmentAmount": 2000
+    },
+    "disbursementSchedule": [
+      {
+        "period": "APRIL-JULY",
+        "amount": 2000
+      },
+      {
+        "period": "AUGUST-NOVEMBER",
+        "amount": 2000
+      },
+      {
+        "period": "DECEMBER-MARCH",
+        "amount": 2000
+      }
+    ],
+    "paymentMode": "DBT",
+    "frequency": "YEARLY"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://pmkisan.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2019-02-24T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de3e1fddb476c4a535aee"
+  },
+  "schemeName": "Pradhan Mantri Fasal Bima Yojana",
+  "schemeCode": "PMFBY",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Crop insurance scheme providing financial support to farmers in case of crop loss.",
+    "detailed": "The Pradhan Mantri Fasal Bima Yojana (PMFBY) is a crop insurance scheme launched by the Government of India in 2016 to provide financial protection to farmers against crop losses due to natural calamities, pests, and diseases. The scheme offers insurance coverage at highly subsidized premium rates—2% of the sum insured for Kharif crops, 1.5% for Rabi crops, and 5% for commercial and horticultural crops—with the remaining premium shared by the government. It aims to ensure income stability for farmers, encourage the adoption of modern agricultural practices, and safeguard them from financial distress caused by crop failure. The scheme uses technology such as remote sensing and mobile applications for faster claim assessment and settlement, and compensation is directly credited to farmers’ bank accounts. PMFBY is available to all farmers, including loanee and non-loanee farmers, making it one of the largest crop insurance programs in the world"
+  },
+  "benefits": {
+    "benefitType": "INSURANCE",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "SEASONAL"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://pmfby.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_CROP_SOWING_EXISTS",
+        "title": "Crop sowing details must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "assets.agriculture.cropSowingDetails.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_CROP_SOWING",
+        "name": "Crop Sowing Details",
+        "type": "CROP_SOWING_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_CROP_SOWING_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2016-02-18T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de455fddb476c4a535af0"
+  },
+  "schemeName": "Soil Health Card Scheme",
+  "schemeCode": "SHC",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Scheme to provide soil nutrient status and crop-wise fertilizer recommendations to farmers.",
+    "detailed": "The Soil Health Card Scheme is a Government of India initiative launched in 2015 to help farmers improve agricultural productivity by providing detailed information about the health and nutrient status of their soil. Under this scheme, farmers are issued Soil Health Cards that contain data on key soil parameters such as nitrogen, phosphorus, potassium, pH level, and other micronutrients, along with crop-wise fertilizer recommendations. The objective is to promote balanced and efficient use of fertilizers, reduce input costs, and prevent soil degradation. Soil samples are collected periodically and tested in laboratories, and the results are shared with farmers to guide them in making informed decisions about soil management. By encouraging sustainable farming practices, the scheme aims to enhance crop yield and maintain long-term soil fertility."
+  },
+  "benefits": {
+    "benefitType": "SERVICE",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://soilhealth.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land details must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_DETAILS",
+        "name": "Land Details",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-02-19T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de4b4fddb476c4a535af2"
+  },
+  "schemeName": "Kisan Credit Card",
+  "schemeCode": "KCC",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Credit scheme providing short-term loans to farmers for agricultural and allied activities.",
+    "detailed": "The Kisan Credit Card (KCC) scheme is a Government of India initiative introduced in 1998 to provide farmers with timely and affordable credit for their agricultural and allied activities. Under this scheme, farmers are issued a credit card that allows them to access short-term loans for expenses such as purchasing seeds, fertilizers, pesticides, and meeting other cultivation and household needs. The scheme offers flexible repayment options aligned with the crop cycle, along with relatively low interest rates and interest subvention benefits for prompt repayment. It also provides coverage for allied activities like dairy, fisheries, and animal husbandry. The KCC helps reduce farmers’ dependence on informal sources of credit and ensures easy access to institutional finance, thereby supporting agricultural productivity and financial inclusion in rural areas."
+  },
+  "benefits": {
+    "benefitType": "LOAN",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "SEASONAL"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://www.myscheme.gov.in/schemes/kcc",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MAX_AGE_75",
+        "title": "Maximum age 75",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "lte",
+              "value": 75
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_MAX_AGE_75"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "1998-08-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de541fddb476c4a535af4"
+  },
+  "schemeName": "Pradhan Mantri Kisan Maan Dhan Yojana",
+  "schemeCode": "PM-KMY",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Pension scheme providing assured monthly income to small and marginal farmers after retirement age.",
+    "detailed": "The Pradhan Mantri Kisan Maan Dhan Yojana (PM-KMY) is a government pension scheme launched in 2019 to provide social security to small and marginal farmers in India. Under this scheme, eligible farmers aged between 18 and 40 years can voluntarily enroll by making a monthly contribution ranging from ₹55 to ₹200, depending on their age at entry, with an equal contribution made by the government. Upon reaching the age of 60, beneficiaries receive a fixed monthly pension of ₹3,000. In case of the farmer’s death, the spouse is entitled to receive 50% of the pension as a family pension. The scheme aims to ensure financial stability and livelihood security for farmers during old age, reducing their dependence on others and promoting dignity and independence"
+  },
+  "benefits": {
+    "benefitType": "PENSION",
+    "financial": {
+      "totalAmount": 3000,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": 3000
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "DBT",
+    "frequency": "MONTHLY"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://maandhan.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_AGE_18_TO_40",
+        "title": "Age must be 18 to 40",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            },
+            {
+              "path": "profile.basic_info.age",
+              "op": "lte",
+              "value": 40
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_MAX_2_HA",
+        "title": "Landholding must be <= 2 hectares (requires hectare unit in assets)",
+        "logic": {
+          "any": [
+            {
+              "all": [
+                {
+                  "path": "assets.land.unit",
+                  "op": "eq",
+                  "value": "HECTARE"
+                },
+                {
+                  "path": "assets.land.area",
+                  "op": "lte",
+                  "value": 2
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_AGE_18_TO_40"
+          },
+          {
+            "ref": "INC_LAND_MAX_2_HA"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2019-09-12T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de57efddb476c4a535af6"
+  },
+  "schemeName": "Agriculture Infrastructure Fund",
+  "schemeCode": "AIF",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Financing facility for creation of post-harvest management and community farming infrastructure.",
+    "detailed": "The Agriculture Infrastructure Fund (AIF) is a financing scheme launched by the Government of India in 2020 to support the development of post-harvest management infrastructure and community farming assets. The scheme provides medium- to long-term debt financing with interest subvention and credit guarantee support for projects such as warehouses, cold storage units, processing facilities, and supply chain infrastructure. It is available to a wide range of beneficiaries including farmers, Farmer Producer Organizations (FPOs), cooperatives, agri-entrepreneurs, and startups. The objective of the scheme is to reduce post-harvest losses, improve value addition, and enhance farmers’ income by strengthening agricultural infrastructure. By facilitating access to affordable credit and encouraging private and community investment, the Agriculture Infrastructure Fund aims to modernize the agriculture sector and promote sustainable growth."
+  },
+  "benefits": {
+    "benefitType": "LOAN",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://agriinfra.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_PROJECT_PROPOSAL",
+        "name": "Project Proposal",
+        "type": "PROJECT_PROPOSAL",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2020-07-08T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de5bbfddb476c4a535af8"
+  },
+  "schemeName": "Formation and Promotion of 10,000 Farmer Producer Organizations",
+  "schemeCode": "FPO-10000",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Scheme to promote formation and support of 10,000 Farmer Producer Organizations (FPOs) across India.",
+    "detailed": "The Formation and Promotion of 10,000 Farmer Producer Organizations (FPOs) scheme was launched in 2020 to strengthen farmers' collective bargaining power and improve market access. The scheme provides financial assistance and handholding support for the formation of FPOs, enabling small and marginal farmers to aggregate produce, reduce input costs, and enhance income. It includes equity grants, credit guarantee support, and capacity-building assistance."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://sfacindia.com",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FPO_REG",
+        "name": "FPO Registration Documents",
+        "type": "FPO_REGISTRATION_DOCS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2020-02-29T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de5f2fddb476c4a535afa"
+  },
+  "schemeName": "Ayushman Sahakar Scheme",
+  "schemeCode": "AYUSHMAN-SAHKAR",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "National Cooperative Development Corporation (NCDC)",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Scheme to assist cooperatives in setting up healthcare infrastructure in rural areas.",
+    "detailed": "Ayushman Sahakar Scheme was launched in 2020 to support cooperative societies in establishing and upgrading healthcare infrastructure in rural and semi-urban areas. The scheme provides term loans to cooperatives for setting up hospitals, medical colleges, and other health facilities. It aims to strengthen rural healthcare services while promoting cooperative-based development."
+  },
+  "benefits": {
+    "benefitType": "LOAN",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "ONLINE",
+    "officialWebsite": "https://www.ncdc.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_COOP_REG",
+        "name": "Cooperative Registration Certificate",
+        "type": "COOP_REG_CERT",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_PROJECT_PROPOSAL",
+        "name": "Project Proposal",
+        "type": "PROJECT_PROPOSAL",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2020-10-19T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de617fddb476c4a535afc"
+  },
+  "schemeName": "National Bamboo Mission",
+  "schemeCode": "NBM",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Mission to promote holistic development of bamboo sector in India.",
+    "detailed": "National Bamboo Mission (NBM) aims to promote the growth and development of the bamboo sector in India by increasing area under bamboo cultivation, strengthening post-harvest management, and improving market access. The mission supports farmers, producer groups, and entrepreneurs through subsidies for plantation, nursery development, and value addition infrastructure to enhance income and employment opportunities."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://nbm.nic.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2018-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de654fddb476c4a535afe"
+  },
+  "schemeName": "National Beekeeping and Honey Mission",
+  "schemeCode": "NBHM",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "National Bee Board",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Mission to promote scientific beekeeping and enhance honey production in India.",
+    "detailed": "National Beekeeping and Honey Mission (NBHM) was launched to promote scientific beekeeping practices, increase honey production, and strengthen the beekeeping industry value chain. The mission provides financial assistance for capacity building, infrastructure development, quality control laboratories, and marketing support. It aims to enhance farmers’ income through allied agricultural activities."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://nbb.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BEE_REG",
+        "name": "Beekeeping Registration (if applicable)",
+        "type": "BEEKEEPING_REG_OPTIONAL",
+        "mandatory": false
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2020-05-14T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de69efddb476c4a535b00"
+  },
+  "schemeName": "National Mission on Edible Oils – Oil Palm",
+  "schemeCode": "NMEO-OP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Mission to increase domestic production of edible oils by promoting oil palm cultivation.",
+    "detailed": "National Mission on Edible Oils – Oil Palm (NMEO-OP) was launched in 2021 to increase domestic production of edible oils and reduce import dependency. The mission focuses on expanding oil palm cultivation area, improving productivity, and supporting farmers through financial assistance for planting material, maintenance, and irrigation support. It also provides viability gap funding and price assurance mechanisms."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://oilpalm.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2021-08-18T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de6d1fddb476c4a535b02"
+  },
+  "schemeName": "National Mission on Natural Farming",
+  "schemeCode": "NMNF",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Mission to promote chemical-free natural farming practices across India.",
+    "detailed": "National Mission on Natural Farming (NMNF) aims to promote sustainable, chemical-free farming practices based on indigenous knowledge systems. The mission supports farmers through cluster-based implementation, training, capacity building, certification support, and assistance for bio-input resource centers. The objective is to improve soil health, reduce input costs, and enhance farmers’ income while promoting environmentally sustainable agriculture."
+  },
+  "benefits": {
+    "benefitType": "SERVICE",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://naturalfarming.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2023-11-22T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de713fddb476c4a535b04"
+  },
+  "schemeName": "Pradhan Mantri Krishi Sinchai Yojana",
+  "schemeCode": "PMKSY",
+  "schemeType": "UMBRELLA",
+  "directUse": false,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Umbrella scheme to ensure water access and improve irrigation efficiency.",
+    "detailed": "Pradhan Mantri Krishi Sinchai Yojana (PMKSY) was launched in 2015 to enhance irrigation coverage and improve water use efficiency in agriculture. The scheme aims to achieve the objective of 'Har Khet Ko Pani' and promote precision irrigation practices. It integrates multiple irrigation-related programs under a unified framework."
+  },
+  "benefits": {
+    "benefitType": "NA",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://pmksy.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-07-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de76ffddb476c4a535b07"
+  },
+  "schemeName": "Pradhan Mantri Annadata Aay Sanrakshan Abhiyan",
+  "schemeCode": "PM-AASHA",
+  "schemeType": "UMBRELLA",
+  "directUse": false,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Umbrella scheme to ensure remunerative prices for farmers' produce.",
+    "detailed": "Pradhan Mantri Annadata Aay Sanrakshan Abhiyan (PM-AASHA) was launched in 2018 to protect farmers' income by ensuring remunerative prices for agricultural produce. The scheme integrates mechanisms such as price support and price deficiency payments to reduce the risk of price volatility."
+  },
+  "benefits": {
+    "benefitType": "NA",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://agriwelfare.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2018-09-12T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de7a1fddb476c4a535b09"
+  },
+  "schemeName": "Green Revolution – Krishonnati Yojana",
+  "schemeCode": "KRISHONNATI-YOJANA",
+  "schemeType": "UMBRELLA",
+  "directUse": false,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Umbrella scheme aimed at improving agricultural productivity and farmer income.",
+    "detailed": "Green Revolution – Krishonnati Yojana is an umbrella scheme that consolidates various agricultural development programs to enhance productivity, promote sustainable farming practices, and increase farmers’ income. It integrates multiple sub-schemes related to crop production, horticulture, mechanization, marketing, and sustainable agriculture under a unified framework."
+  },
+  "benefits": {
+    "benefitType": "NA",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://agriwelfare.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de7d1fddb476c4a535b0b"
+  },
+  "schemeName": "National Mission on Sustainable Agriculture",
+  "schemeCode": "NMSA",
+  "schemeType": "UMBRELLA",
+  "directUse": false,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Umbrella mission to promote sustainable and climate-resilient agricultural practices.",
+    "detailed": "National Mission on Sustainable Agriculture (NMSA) focuses on promoting climate-resilient farming, efficient water use, soil health management, and sustainable agricultural practices. The mission integrates various sub-schemes aimed at improving productivity while conserving natural resources and adapting to climate change."
+  },
+  "benefits": {
+    "benefitType": "NA",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://nmsa.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-02-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de7f7fddb476c4a535b0d"
+  },
+  "schemeName": "Mission for Integrated Development of Horticulture",
+  "schemeCode": "MIDH",
+  "schemeType": "UMBRELLA",
+  "directUse": false,
+  "parentSchemeId": null,
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Umbrella mission to promote holistic growth of the horticulture sector.",
+    "detailed": "Mission for Integrated Development of Horticulture (MIDH) was launched to promote the holistic development of horticulture in India. The mission integrates various sub-schemes related to fruits, vegetables, spices, plantation crops, and post-harvest management. It aims to increase production, improve productivity, strengthen supply chains, and enhance farmers’ income."
+  },
+  "benefits": {
+    "benefitType": "NA",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://midh.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de831fddb476c4a535b0f"
+  },
+  "schemeName": "Accelerated Irrigation Benefit Programme",
+  "schemeCode": "AIBP",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de713fddb476c4a535b04"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Jal Shakti",
+    "officialWebsite": "https://jalshakti-dowr.gov.in"
+  },
+  "department": "Department of Water Resources, River Development and Ganga Rejuvenation",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Programme to provide financial assistance for completion of irrigation projects.",
+    "detailed": "Accelerated Irrigation Benefit Programme (AIBP) was launched to provide central assistance to states for expediting the completion of major and medium irrigation projects. Under PMKSY, AIBP focuses on expanding irrigation coverage and improving water availability to farmers."
+  },
+  "benefits": {
+    "benefitType": "INFRASTRUCTURE_SUPPORT",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://pmksy.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "1996-01-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de881fddb476c4a535b11"
+  },
+  "schemeName": "Har Khet Ko Pani",
+  "schemeCode": "HKKP",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de713fddb476c4a535b04"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Jal Shakti",
+    "officialWebsite": "https://jalshakti-dowr.gov.in"
+  },
+  "department": "Department of Water Resources, River Development and Ganga Rejuvenation",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component to expand irrigation coverage to every farm.",
+    "detailed": "Har Khet Ko Pani (HKKP) is a component of PMKSY aimed at expanding irrigation coverage to unserved and underserved areas. The program supports minor irrigation projects, surface water schemes, and groundwater development to ensure water access to every farm."
+  },
+  "benefits": {
+    "benefitType": "INFRASTRUCTURE_SUPPORT",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://pmksy.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-07-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de8e9fddb476c4a535b13"
+  },
+  "schemeName": "Per Drop More Crop",
+  "schemeCode": "PDMC",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de713fddb476c4a535b04"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting micro-irrigation and water-use efficiency.",
+    "detailed": "Per Drop More Crop (PDMC) is a component of PMKSY that promotes micro-irrigation systems such as drip and sprinkler irrigation to enhance water-use efficiency. The scheme provides financial assistance to farmers for installation of micro-irrigation systems to improve crop productivity and conserve water resources."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": 1,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://pmksy.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-07-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "699de93ffddb476c4a535b15"
+  },
+  "schemeName": "Watershed Development",
+  "schemeCode": "WATERSHED",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de713fddb476c4a535b04"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Land Resources",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component focused on watershed management and rainwater conservation.",
+    "detailed": "Watershed Development is a component under PMKSY aimed at conserving soil and water resources in rainfed and degraded areas. The program supports activities such as rainwater harvesting, soil conservation, groundwater recharge, and sustainable land management to improve agricultural productivity and rural livelihoods."
+  },
+  "benefits": {
+    "benefitType": "INFRASTRUCTURE_SUPPORT",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "NA",
+    "officialWebsite": "https://pmksy.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "PROGRAM_LEVEL",
+    "inclusionRules": [],
+    "exclusionRules": [],
+    "requiredDocuments": [],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": []
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-07-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c1b9991f3b3a1a2a32b4"
+  },
+  "schemeName": "Price Deficiency Payment Scheme",
+  "schemeCode": "PDPS",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de76ffddb476c4a535b07"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component providing direct payment to farmers for price deficiency.",
+    "detailed": "Price Deficiency Payment Scheme (PDPS) is a component of PM-AASHA under which farmers are compensated for the difference between the Minimum Support Price (MSP) and the actual market price when crops are sold below MSP. The objective is to protect farmers from price volatility without direct physical procurement."
+  },
+  "benefits": {
+    "benefitType": "CASH_TRANSFER",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": 1,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "DBT",
+    "frequency": "SEASONAL"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://agriwelfare.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_CROP_SOWING_EXISTS",
+        "title": "Crop sowing details must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "assets.agriculture.cropSowingDetails.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_SALE_RECEIPT",
+        "name": "Sale Receipt / Crop Details",
+        "type": "SALE_RECEIPT_OR_CROP_DETAILS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_CROP_SOWING_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2018-09-12T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c44f991f3b3a1a2a32b6"
+  },
+  "schemeName": "Private Procurement and Stockist Scheme",
+  "schemeCode": "PPSS",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de76ffddb476c4a535b07"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component enabling private agencies to procure crops at MSP.",
+    "detailed": "Private Procurement and Stockist Scheme (PPSS) is a component of PM-AASHA that allows selected private players to procure notified crops at Minimum Support Price (MSP) in pilot districts. The objective is to involve the private sector in procurement operations to ensure farmers receive remunerative prices while reducing the burden on government procurement agencies."
+  },
+  "benefits": {
+    "benefitType": "PRICE_SUPPORT",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "SEASONAL"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://agriwelfare.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_CROP_SOWING_EXISTS",
+        "title": "Crop details must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "assets.agriculture.cropSowingDetails.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_CROP_DETAILS",
+        "name": "Crop Details",
+        "type": "CROP_DETAILS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_CROP_SOWING_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2018-09-12T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c494991f3b3a1a2a32b8"
+  },
+  "schemeName": "Rainfed Area Development",
+  "schemeCode": "RAD",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7d1fddb476c4a535b0b"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting sustainable farming in rainfed areas.",
+    "detailed": "Rainfed Area Development (RAD) is a component under NMSA aimed at improving productivity and sustainability in rainfed regions. The program promotes integrated farming systems, soil and water conservation practices, and livelihood diversification to enhance farmers' income in rain-dependent agricultural areas."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://nmsa.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-02-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c4e3991f3b3a1a2a32ba"
+  },
+  "schemeName": "Soil Health Management",
+  "schemeCode": "SHM",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7d1fddb476c4a535b0b"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting balanced nutrient management and soil fertility improvement.",
+    "detailed": "Soil Health Management (SHM) is a component under NMSA focused on maintaining and improving soil fertility through balanced use of fertilizers, organic inputs, and soil testing. It supports activities such as soil testing laboratories, organic manure promotion, and capacity building to ensure sustainable agricultural productivity."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://nmsa.dac.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-02-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c544991f3b3a1a2a32bc"
+  },
+  "schemeName": "Paramparagat Krishi Vikas Yojana",
+  "schemeCode": "PKVY",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7d1fddb476c4a535b0b"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting organic farming through cluster-based approach.",
+    "detailed": "Paramparagat Krishi Vikas Yojana (PKVY) is a component under NMSA aimed at promoting organic farming through cluster-based implementation. The scheme supports farmers with financial assistance for organic inputs, certification, capacity building, and marketing of organic produce. It encourages sustainable agricultural practices and reduces dependence on chemical fertilizers."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "DBT",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://pgsindia-ncof.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c585991f3b3a1a2a32be"
+  },
+  "schemeName": "National Horticulture Mission",
+  "schemeCode": "NHM",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7d1fddb476c4a535b0b"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting holistic growth of horticulture sector.",
+    "detailed": "National Horticulture Mission (NHM) is a component under MIDH aimed at promoting the integrated development of horticulture crops such as fruits, vegetables, spices, flowers, and plantation crops. The scheme supports area expansion, nursery development, post-harvest management, cold storage infrastructure, and marketing to enhance farmers’ income and productivity."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://midh.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2005-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c5d8991f3b3a1a2a32c0"
+  },
+  "schemeName": "Horticulture Mission for North East and Himalayan States",
+  "schemeCode": "HMNEH",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7f7fddb476c4a535b0d"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting horticulture development in North Eastern and Himalayan states.",
+    "detailed": "Horticulture Mission for North East and Himalayan States (HMNEH) is a component under MIDH focused on the holistic development of horticulture in North Eastern and Himalayan regions. The scheme supports area expansion, nursery development, organic farming, post-harvest infrastructure, and market linkages to enhance productivity and income of farmers in these regions."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://midh.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c6ad991f3b3a1a2a32c4"
+  },
+  "schemeName": "Coconut Development Board",
+  "schemeCode": "CDB",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7f7fddb476c4a535b0d"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Coconut Development Board",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component promoting integrated development of coconut cultivation and industry.",
+    "detailed": "Coconut Development Board (CDB) functions under MIDH to promote the integrated development of coconut cultivation and related industries in India. The scheme supports area expansion, quality planting material production, technology adoption, processing infrastructure, and marketing to enhance farmers’ income and productivity in coconut-growing regions."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://coconutboard.nic.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "1981-01-12T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a3c882991f3b3a1a2a32c6"
+  },
+  "schemeName": "Central Institute for Horticulture",
+  "schemeCode": "CIH",
+  "schemeType": "COMPONENT",
+  "directUse": true,
+  "parentSchemeId": {
+    "$oid": "699de7f7fddb476c4a535b0d"
+  },
+  "governmentLevel": "CENTRAL",
+  "ministry": {
+    "name": "Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://agriwelfare.gov.in"
+  },
+  "department": "Central Institute for Horticulture",
+  "sector": "AGRICULTURE",
+  "category": null,
+  "sub_category": null,
+  "description": {
+    "short": "Component focused on horticulture training and capacity building.",
+    "detailed": "Central Institute for Horticulture (CIH) functions under MIDH to provide training, capacity building, and technical support in horticulture. It aims to enhance skills of farmers, entrepreneurs, and extension workers through modern technologies, improved planting material, and best cultivation practices."
+  },
+  "benefits": {
+    "benefitType": "TRAINING",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "NA"
+  },
+  "applicationDetails": {
+    "mode": "BOTH",
+    "officialWebsite": "https://midh.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_TRAINING_REG",
+        "name": "Registration for Training (if applicable)",
+        "type": "TRAINING_REG_OPTIONAL",
+        "mandatory": false
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-24T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2006-01-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad563d22d509d58a44706f"
+  },
+  "schemeName": "Kalaignarin All Village Integrated Agriculture Development Programme",
+  "schemeCode": "TN-KAVIADP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagriculture.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "RURAL_AGRICULTURE_DEVELOPMENT",
+  "description": {
+    "short": "Village-level programme to improve agricultural productivity and farmer income in Tamil Nadu.",
+    "detailed": "Kalaignarin All Village Integrated Agriculture Development Programme (KAVIADP) is a flagship initiative of the Tamil Nadu Government aimed at improving agricultural productivity and increasing farmers' income across all villages in the state. The programme focuses on integrated development through distribution of quality seeds, farm mechanization support, promotion of horticulture crops, infrastructure development, and capacity building for farmers. The scheme aims to ensure holistic agricultural development and strengthen rural livelihoods."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in/",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2021-08-23T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad57a522d509d58a447071"
+  },
+  "schemeName": "Chief Minister's Dryland Development Mission",
+  "schemeCode": "TN-CMDDM",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "DRYLAND_FARMING",
+  "description": {
+    "short": "Mission to improve productivity and farmer income in dryland areas of Tamil Nadu.",
+    "detailed": "Chief Minister's Dryland Development Mission (CMDDM) is a flagship initiative launched by the Government of Tamil Nadu to enhance agricultural productivity and improve the livelihood of farmers cultivating crops in rain-fed and dryland regions of the state. A significant portion of Tamil Nadu’s agricultural land depends on rainfall rather than assured irrigation, making farming vulnerable to climate variability and low soil moisture. The mission was introduced to address these challenges through a comprehensive and cluster-based development approach that focuses on improving soil fertility, increasing water conservation, promoting climate-resilient crops, and strengthening sustainable agricultural practices.\n\nUnder this mission, the government implements a range of interventions aimed at improving dryland farming systems. These interventions include activities such as summer ploughing to improve soil aeration, application of soil amendments like gypsum and micronutrients to restore soil health, distribution of bio-fertilizers and organic inputs, and promotion of crop diversification suited to dryland conditions. The programme also encourages the adoption of modern and scientific farming techniques that help farmers use available natural resources more efficiently while improving crop yields.\n\nAnother key objective of the mission is to promote water conservation and efficient moisture management in dryland areas. Various field-level practices are supported to improve water retention capacity of the soil and reduce the impact of drought conditions. Farmers receive technical guidance, field demonstrations, and extension support through the Department of Agriculture to ensure that recommended practices are effectively implemented at the village level.\n\nThe Chief Minister’s Dryland Development Mission is implemented in a phased manner covering several districts with large dryland cultivation areas. Through coordinated efforts of agricultural departments and local institutions, the programme aims to increase productivity of dryland crops, enhance farm income, strengthen resilience to climate risks, and support sustainable agricultural development across rural Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2022-01-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad594022d509d58a447073"
+  },
+  "schemeName": "Tamil Nadu Millet Mission",
+  "schemeCode": "TN-MM",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "CROP_DEVELOPMENT",
+  "description": {
+    "short": "Mission to promote millet cultivation, improve farmer income, and encourage climate-resilient agriculture in Tamil Nadu.",
+    "detailed": "Tamil Nadu Millet Mission is an initiative of the Government of Tamil Nadu aimed at promoting the cultivation, production, and consumption of millets across the state. Millets are traditional crops that are highly nutritious and well suited for dryland and rain-fed farming conditions. Recognizing their importance in ensuring food security, improving soil sustainability, and adapting to climate change, the government launched this mission to increase the area under millet cultivation and enhance productivity through scientific farming practices.\n\nThe mission focuses on supporting farmers through the distribution of quality millet seeds, promotion of improved cultivation practices, and field demonstrations that help farmers adopt better crop management techniques. Training programmes and extension services are organized to educate farmers about modern millet cultivation methods, pest management, and post-harvest handling. By strengthening the knowledge and capacity of farmers, the mission aims to make millet farming more productive and economically viable.\n\nAnother important objective of the Tamil Nadu Millet Mission is to strengthen the value chain for millet crops. The government promotes processing, value addition, and market development to increase demand for millet products. Farmers and farmer producer organizations are encouraged to participate in millet-based value chains so that they can obtain better prices and stable market opportunities.\n\nThrough these interventions, the mission seeks to revive traditional millet crops, enhance farm incomes, improve nutritional security, and promote sustainable agricultural practices across Tamil Nadu. The programme plays an important role in supporting dryland farmers and strengthening climate-resilient agriculture in the state."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2023-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad5aaf22d509d58a447075"
+  },
+  "schemeName": "Seed Village Programme",
+  "schemeCode": "TN-SVP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "SEED_DEVELOPMENT",
+  "description": {
+    "short": "Programme to promote production and distribution of quality seeds at village level.",
+    "detailed": "The Seed Village Programme is implemented by the Department of Agriculture and Farmers Welfare in Tamil Nadu to ensure the availability of high-quality seeds to farmers at the local level. Seeds are one of the most critical inputs in agriculture, and the productivity of crops depends significantly on the quality and genetic purity of seeds used for cultivation. The programme aims to encourage farmers to produce quality seeds of improved crop varieties within their own villages so that other farmers in the locality can access certified seeds easily and at affordable prices.\n\nUnder this programme, selected villages are identified based on their suitability for growing specific crops. Farmers in these villages are trained and supported to cultivate a single improved variety of crop for seed production. Foundation or certified seeds are supplied to participating farmers at subsidized rates to ensure that the produced seeds maintain high genetic purity and quality standards. These seeds are later multiplied and distributed within the village or surrounding areas, thereby strengthening the local seed supply system.\n\nThe programme also focuses on capacity building and technical support. Farmers participating in the scheme receive training on seed production techniques, crop management practices, and quality control measures such as maintaining isolation distance, proper harvesting, and seed processing methods. Agricultural officers and seed certification officials regularly monitor the seed production process to ensure that the required standards are maintained.\n\nIn addition to seed production support, farmers may receive assistance for storage infrastructure such as seed storage bins to safely preserve the produced seeds until the next planting season. By promoting decentralized seed production, the Seed Village Programme reduces dependency on external seed sources, improves crop productivity, ensures timely availability of quality seeds, and strengthens the overall agricultural ecosystem in rural Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad5b2522d509d58a447077"
+  },
+  "schemeName": "Crop Productivity Enhancement Programme",
+  "schemeCode": "TN-CPEP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "CROP_PRODUCTIVITY",
+  "description": {
+    "short": "Programme aimed at improving crop yield and farm productivity through improved inputs and scientific farming practices.",
+    "detailed": "The Crop Productivity Enhancement Programme is implemented by the Department of Agriculture and Farmers Welfare of Tamil Nadu with the objective of increasing the productivity of major crops cultivated across the state. Agriculture in many regions of Tamil Nadu faces challenges such as declining soil fertility, pest and disease outbreaks, limited access to quality agricultural inputs, and traditional farming practices that limit yield potential. The programme was introduced to address these issues by supporting farmers with modern technologies, improved seeds, soil nutrient management practices, and integrated crop management strategies.\n\nUnder this programme, farmers are provided with assistance to adopt improved agricultural inputs and technologies that directly contribute to higher crop productivity. Subsidies are offered for the purchase of quality seeds, micronutrient mixtures, bio-fertilizers, and plant protection chemicals that help maintain crop health and improve yield. The programme also promotes the use of scientific farming techniques such as improved crop spacing, integrated pest management practices, and efficient nutrient management systems. These interventions help farmers achieve higher productivity while maintaining soil sustainability.\n\nAnother important component of the programme is farmer training and field demonstrations. Agricultural extension officers conduct demonstrations in farmers’ fields to showcase improved crop production technologies and best management practices. Training sessions are also organized to educate farmers on pest control, nutrient application, crop rotation, and efficient water management methods. These activities help farmers understand the practical benefits of adopting improved agricultural technologies.\n\nThrough the integrated implementation of these activities, the Crop Productivity Enhancement Programme aims to increase crop yields, improve farm income, and strengthen the overall sustainability of agriculture in Tamil Nadu. By encouraging the adoption of improved crop management practices and providing targeted input support, the programme contributes to long-term agricultural development and food security in the state."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad66b622d509d58a447079"
+  },
+  "schemeName": "Agricultural Mechanization Scheme",
+  "schemeCode": "TN-AMS",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "FARM_MECHANIZATION",
+  "description": {
+    "short": "Scheme to promote farm mechanization through subsidies for agricultural machinery.",
+    "detailed": "The Agricultural Mechanization Scheme implemented by the Government of Tamil Nadu aims to improve agricultural efficiency and reduce dependence on manual labor by promoting the use of modern farm machinery. Mechanization plays a crucial role in improving productivity, reducing cultivation costs, and ensuring timely completion of agricultural operations such as land preparation, sowing, irrigation, harvesting, and post-harvest processing. Under this scheme, farmers receive financial assistance in the form of subsidies to purchase agricultural machinery and equipment including tractors, power tillers, rotavators, seed drills, harvesters, and other farm implements.\n\nThe scheme is particularly beneficial for small and marginal farmers who often face difficulties accessing expensive agricultural machinery. To address this challenge, the government also encourages the establishment of Custom Hiring Centres where farmers can rent modern farm equipment at affordable rates. This allows multiple farmers in a region to share machinery resources and reduce overall operational costs.\n\nIn addition to equipment support, the scheme also promotes training and awareness programmes to help farmers understand the benefits of mechanization and the proper use of agricultural machinery. Agricultural extension officers guide farmers on selecting appropriate equipment based on crop type, soil conditions, and farm size.\n\nBy encouraging the adoption of modern farm machinery and supporting shared access through custom hiring services, the Agricultural Mechanization Scheme aims to increase productivity, reduce drudgery, improve operational efficiency, and enhance the overall income of farmers across Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T17:42:48.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad671022d509d58a44707b"
+  },
+  "schemeName": "Soil Health Management Programme",
+  "schemeCode": "TN-SHMP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "SOIL_HEALTH",
+  "description": {
+    "short": "Programme to improve soil fertility and promote scientific nutrient management.",
+    "detailed": "The Soil Health Management Programme implemented by the Government of Tamil Nadu focuses on improving soil fertility and promoting sustainable agricultural practices through scientific soil nutrient management. Soil health plays a critical role in determining crop productivity, and many agricultural fields experience reduced yields due to nutrient deficiencies, imbalanced fertilizer usage, and declining organic matter in the soil. The programme was introduced to address these issues by encouraging farmers to adopt soil testing based nutrient management practices and improve long-term soil sustainability.\n\nUnder this programme, soil samples from farmers' fields are collected and analyzed in soil testing laboratories to determine the nutrient status of the soil. Based on the test results, farmers receive recommendations for balanced fertilizer application and suitable soil amendments to restore soil fertility. The programme also promotes the use of micronutrient mixtures, gypsum, lime, green manure crops, organic manures, and bio-fertilizers to improve soil structure and nutrient availability.\n\nIn addition to soil testing services, the scheme includes farmer training programmes and demonstration activities that educate farmers on the importance of soil health and efficient nutrient management practices. Agricultural extension officers guide farmers in applying fertilizers in the correct quantity and at the appropriate time to maximize crop productivity while minimizing environmental damage.\n\nThrough these interventions, the Soil Health Management Programme aims to improve crop yields, maintain soil fertility, encourage sustainable farming practices, and ensure long-term agricultural productivity across Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SERVICE_SUPPORT",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "NA",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad675722d509d58a44707d"
+  },
+  "schemeName": "Promotion of Organic Farming Scheme",
+  "schemeCode": "TN-POF",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "ORGANIC_FARMING",
+  "description": {
+    "short": "Scheme to promote organic farming practices and reduce chemical usage in agriculture.",
+    "detailed": "The Promotion of Organic Farming Scheme implemented by the Government of Tamil Nadu aims to encourage farmers to adopt environmentally sustainable agricultural practices by reducing dependence on chemical fertilizers and pesticides. Organic farming improves soil health, preserves biodiversity, and produces safer food products while maintaining ecological balance. The scheme promotes the use of organic inputs such as farmyard manure, green manure, compost, vermicompost, and bio-fertilizers to enhance soil fertility and crop productivity naturally.\n\nUnder this scheme, farmers are provided with technical guidance, training programmes, and demonstrations on organic cultivation methods including soil management, biological pest control, crop rotation, and organic nutrient management practices. Agricultural extension officers conduct field demonstrations to showcase successful organic farming models and help farmers gradually transition from conventional farming to organic agriculture.\n\nThe programme also supports the establishment of organic input production units such as vermicompost pits and bio-fertilizer units. Farmers receive assistance for adopting eco-friendly pest management techniques using botanical extracts and biological control agents. By encouraging organic cultivation practices, the scheme aims to improve long-term soil sustainability and reduce environmental pollution caused by excessive chemical usage.\n\nThrough these interventions, the Promotion of Organic Farming Scheme seeks to enhance soil fertility, produce chemical-free food, promote sustainable agriculture, and improve the economic opportunities for farmers engaged in organic farming across Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "launchDate": {
+    "$date": "2015-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad67d622d509d58a44707f"
+  },
+  "schemeName": "Oil Palm Development Programme",
+  "schemeCode": "TN-OPDP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "PLANTATION_CROPS",
+  "description": {
+    "short": "Programme to promote oil palm cultivation and increase domestic edible oil production.",
+    "detailed": "The Oil Palm Development Programme implemented by the Government of Tamil Nadu aims to promote the cultivation of oil palm as a high-value plantation crop to increase domestic production of edible oils. India relies heavily on imports to meet its edible oil demand, and expanding oil palm cultivation is considered an important strategy to reduce this dependence while improving farmers' income. Tamil Nadu has suitable agro-climatic conditions in several districts that support oil palm cultivation when supported by proper irrigation and crop management practices.\n\nUnder this programme, farmers are encouraged to cultivate oil palm by providing quality planting materials, technical guidance, and financial assistance for establishing plantations. The scheme supports farmers during the initial years of plantation establishment, as oil palm is a long-term crop that takes time to begin yielding produce. Assistance may also be provided for irrigation infrastructure such as drip irrigation systems that help maintain optimal moisture conditions for the crop.\n\nThe programme includes extension support and training for farmers on proper plantation management practices such as nutrient management, pest and disease control, irrigation scheduling, and harvesting techniques. Agricultural officers and experts guide farmers on maintaining the health and productivity of oil palm plantations to ensure higher yields over time.\n\nBy promoting oil palm cultivation, the Oil Palm Development Programme aims to increase the availability of edible oils, improve farmer income through high-value crops, and support sustainable agricultural diversification in Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ad67fe22d509d58a447081"
+  },
+  "schemeName": "Onion Development Programme",
+  "schemeCode": "TN-ODP",
+  "schemeType": "STANDALONE",
+  "directUse": true,
+  "parentSchemeId": null,
+  "governmentLevel": "STATE",
+  "ministry": {
+    "name": "Tamil Nadu Ministry of Agriculture and Farmers Welfare",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in"
+  },
+  "department": "Department of Agriculture and Farmers Welfare",
+  "sector": "AGRICULTURE",
+  "category": "AGRICULTURE",
+  "sub_category": "VEGETABLE_CROPS",
+  "description": {
+    "short": "Programme to improve onion cultivation, productivity, and storage facilities in Tamil Nadu.",
+    "detailed": "The Onion Development Programme implemented by the Government of Tamil Nadu aims to improve onion cultivation and increase the productivity of onion crops across the state. Onion is an important commercial vegetable crop cultivated in several districts of Tamil Nadu, and fluctuations in production can significantly impact market prices and farmer income. The programme was introduced to strengthen onion production systems by promoting improved varieties, better cultivation techniques, and scientific crop management practices.\n\nUnder this programme, farmers receive assistance for quality onion seeds and planting materials, as well as support for adopting improved cultivation practices such as proper spacing, balanced fertilizer application, and integrated pest and disease management. Field demonstrations and training programmes are conducted by agricultural extension officers to educate farmers about modern onion cultivation methods and post-harvest handling techniques.\n\nAnother important component of the programme is the promotion of improved storage infrastructure to reduce post-harvest losses. Onions are highly susceptible to spoilage if not stored properly, and the scheme encourages the construction of scientific storage structures that help maintain quality and extend shelf life. By reducing post-harvest losses and improving market availability, farmers can achieve better price realization for their produce.\n\nThrough these interventions, the Onion Development Programme aims to increase onion productivity, reduce storage losses, stabilize market supply, and enhance the income of farmers engaged in vegetable cultivation across Tamil Nadu."
+  },
+  "benefits": {
+    "benefitType": "SUBSIDY",
+    "financial": {
+      "totalAmount": null,
+      "currency": "INR",
+      "installmentCount": null,
+      "installmentAmount": null
+    },
+    "disbursementSchedule": [],
+    "paymentMode": "BANK_TRANSFER",
+    "frequency": "ONETIME"
+  },
+  "applicationDetails": {
+    "mode": "OFFLINE",
+    "officialWebsite": "https://www.tnagrisnet.tn.gov.in",
+    "startDate": null,
+    "endDate": null
+  },
+  "eligibilityV2": {
+    "type": "RULE_BASED",
+    "inclusionRules": [
+      {
+        "id": "INC_STATE_TAMIL_NADU",
+        "title": "Applicant must be from Tamil Nadu",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.address_info.state",
+              "op": "eq",
+              "value": "TAMIL_NADU"
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_MIN_AGE_18",
+        "title": "Minimum age 18",
+        "logic": {
+          "all": [
+            {
+              "path": "profile.basic_info.age",
+              "op": "gte",
+              "value": 18
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_AADHAAR_EXISTS",
+        "title": "Aadhaar must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.aadhaar.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_BANK_EXISTS",
+        "title": "Bank account must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.bank.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_LAND_RECORD_EXISTS",
+        "title": "Land record must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "documents.land_record.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "INC_FARMER_ID_EXISTS",
+        "title": "Farmer ID must exist",
+        "logic": {
+          "all": [
+            {
+              "path": "registrations.farmerId.exists",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      }
+    ],
+    "exclusionRules": [],
+    "requiredDocuments": [
+      {
+        "id": "DOC_AADHAAR",
+        "name": "Aadhaar",
+        "type": "AADHAAR_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_LAND_RECORD",
+        "name": "Land Records",
+        "type": "LAND_RECORD_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_BANK",
+        "name": "Bank Account Details",
+        "type": "BANK_EXISTS",
+        "mandatory": true
+      },
+      {
+        "id": "DOC_FARMER_ID",
+        "name": "Farmer ID",
+        "type": "FARMER_ID_EXISTS",
+        "mandatory": true
+      }
+    ],
+    "operationalChecks": [],
+    "resultComputation": {
+      "eligibleIf": {
+        "all": [
+          {
+            "ref": "INC_STATE_TAMIL_NADU"
+          },
+          {
+            "ref": "INC_MIN_AGE_18"
+          },
+          {
+            "ref": "INC_AADHAAR_EXISTS"
+          },
+          {
+            "ref": "INC_BANK_EXISTS"
+          },
+          {
+            "ref": "INC_LAND_RECORD_EXISTS"
+          },
+          {
+            "ref": "INC_FARMER_ID_EXISTS"
+          }
+        ]
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T00:00:00.000Z"
+  },
+  "launchDate": {
+    "$date": "2014-04-01T00:00:00.000Z"
+  }
+}]

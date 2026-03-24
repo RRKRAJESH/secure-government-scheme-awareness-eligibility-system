@@ -1,0 +1,42 @@
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus,
+.login-card input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+.login-container-main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  width: 400px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Card Top Border */
+.user-card {
+  border-top: 5px solid #52c41a;
+}
+
+.admin-card {
+  border-top: 5px solid #fa8c16;
+}
+
+/* Segmented Active Color */
+.user-segment .ant-segmented-item-selected {
+  background-color: #52c41a !important;
+  color: white !important;
+}
+
+.admin-segment .ant-segmented-item-selected {
+  background-color: #fa8c16 !important;
+  color: white !important;
+}

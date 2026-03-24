@@ -1,0 +1,57 @@
+/* Global scrollbar styling applied across the app */
+/* WebKit browsers */
+/* Apply to all and to specific scrollable areas to prevent overrides */
+*::-webkit-scrollbar,
+.posts-list::-webkit-scrollbar,
+.comments-list::-webkit-scrollbar,
+.notifications-list::-webkit-scrollbar,
+.profile-content::-webkit-scrollbar,
+.scheme-grid-scroll::-webkit-scrollbar,
+.comments-section .section-content::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+*::-webkit-scrollbar-thumb,
+.posts-list::-webkit-scrollbar-thumb,
+.comments-list::-webkit-scrollbar-thumb,
+.notifications-list::-webkit-scrollbar-thumb,
+.profile-content::-webkit-scrollbar-thumb,
+.scheme-grid-scroll::-webkit-scrollbar-thumb,
+.comments-section .section-content::-webkit-scrollbar-thumb {
+  background: #bfbfbf !important;
+  border-radius: 3px !important;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+.posts-list::-webkit-scrollbar-thumb:hover,
+.comments-list::-webkit-scrollbar-thumb:hover,
+.notifications-list::-webkit-scrollbar-thumb:hover,
+.profile-content::-webkit-scrollbar-thumb:hover,
+.scheme-grid-scroll::-webkit-scrollbar-thumb:hover,
+.comments-section .section-content::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c !important;
+}
+
+*::-webkit-scrollbar-track,
+.posts-list::-webkit-scrollbar-track,
+.comments-list::-webkit-scrollbar-track,
+.notifications-list::-webkit-scrollbar-track,
+.profile-content::-webkit-scrollbar-track,
+.scheme-grid-scroll::-webkit-scrollbar-track,
+.comments-section .section-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* Firefox */
+html, body {
+  scrollbar-color: #bfbfbf transparent;
+  scrollbar-width: thin;
+}
+
+/* Provide a selector for scrollable containers if you need more control
+   (kept broad to ensure consistent look across app components). */
+.scrollbar-unified {
+  scrollbar-color: #bfbfbf transparent;
+  scrollbar-width: thin;
+}

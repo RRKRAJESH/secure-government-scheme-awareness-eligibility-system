@@ -1,0 +1,395 @@
+.profile-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  margin: 0 24px 24px 24px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.profile-header h2 {
+  color: #fff !important;
+  margin: 0 !important;
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-status .ant-tag {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+/* Profile Empty State */
+.profile-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  margin: 0 24px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+}
+
+.profile-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.profile-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-content::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.profile-content::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+.profile-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profile-section-card {
+  background: #fafafa !important;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s ease;
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-section-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+.profile-section-card .ant-card-head {
+  padding: 16px !important;
+  background: #e8e8e8 !important;
+  border-bottom: 1px solid #d9d9d9 !important;
+  flex-shrink: 0;
+}
+
+.profile-section-card .ant-card-body {
+  padding: 16px !important;
+  min-height: 240px;
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff !important;
+}
+
+/* Equal height grid for profile cards */
+.profile-content .ant-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.profile-content .ant-col {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.profile-content .ant-col > .profile-section-card {
+  width: 100%;
+}
+
+/* Profile List Styling - Vertical Format */
+.profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-list-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-list-item:last-child {
+  border-bottom: none;
+}
+
+.profile-item-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.profile-item-value {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Incomplete profile button styling */
+.profile-incomplete-btn {
+  background: linear-gradient(135deg, #f5222d 0%, #fa541c 100%) !important;
+  border: none !important;
+  animation: pulse-incomplete 2s infinite;
+}
+
+.profile-incomplete-btn:hover {
+  background: linear-gradient(135deg, #cf1322 0%, #d4380d 100%) !important;
+}
+
+@keyframes pulse-incomplete {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(245, 34, 45, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(245, 34, 45, 0.5);
+  }
+}
+
+.edit-button {
+  height: 44px !important;
+  padding: 0 20px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 16px;
+  }
+
+  .profile-section-card .ant-card-head {
+    padding: 12px !important;
+    flex-direction: column;
+  }
+
+  .edit-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+/* ============ EDIT MODAL FORM STYLING ============ */
+.ant-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-modal .ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 18px 24px;
+  border-bottom: none;
+}
+
+.ant-modal .ant-modal-title {
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.ant-modal .ant-modal-close {
+  color: #ff4d4f !important;
+  background: rgba(255, 77, 79, 0.1) !important;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  top: 12px;
+  right: 12px;
+}
+
+.ant-modal .ant-modal-close:hover {
+  color: #fff !important;
+  background: #ff4d4f !important;
+}
+
+.ant-modal .ant-modal-body {
+  padding: 28px 24px;
+}
+
+.ant-modal .ant-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+/* Form Inputs in Modal */
+.ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.ant-modal .ant-input,
+.ant-modal .ant-select-selector,
+.ant-modal .ant-picker,
+.ant-modal .ant-input-number {
+  border-radius: 8px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  height: 42px !important;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.ant-modal .ant-input:hover,
+.ant-modal .ant-select-selector:hover,
+.ant-modal .ant-picker:hover,
+.ant-modal .ant-input-number:hover {
+  border-color: #667eea !important;
+}
+
+.ant-modal .ant-input:focus,
+.ant-modal .ant-input-focused,
+.ant-modal .ant-select-focused .ant-select-selector,
+.ant-modal .ant-picker-focused,
+.ant-modal .ant-input-number-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Form Sections in Edit Modal */
+.edit-profile-modal .form-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-profile-modal .form-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.edit-profile-modal .form-section h5 {
+  margin-bottom: 16px !important;
+  color: #667eea;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-profile-modal .form-section h5::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+.edit-profile-modal .ant-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.edit-profile-modal .ant-switch-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Update min-height for new layout */
+.profile-section-card {
+  min-height: auto;
+}
+
+.profile-section-card .ant-card-body {
+  min-height: auto;
+}
+
+.ant-modal .ant-select-selection-item,
+.ant-modal .ant-select-selection-placeholder {
+  line-height: 40px !important;
+}
+
+.ant-modal .ant-input-number {
+  width: 100%;
+}
+
+/* Modal Buttons */
+.ant-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  height: 40px !important;
+  padding: 0 24px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.ant-modal .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+.ant-modal .ant-btn-default {
+  height: 40px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+
+/* Switch in Modal */
+.ant-modal .ant-switch-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Checkbox in Modal */
+.ant-modal .ant-checkbox-checked .ant-checkbox-inner {
+  background: #667eea;
+  border-color: #667eea;
+}

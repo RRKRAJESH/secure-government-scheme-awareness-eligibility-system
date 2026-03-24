@@ -1,0 +1,113 @@
+{
+  "_id": { "$oid": "000000000000000000000000" },
+  "user_id": { "$oid": "000000000000000000000000" },
+
+  "profile": {
+    "basic_info": {
+      "name": "string",
+      "gender": "Male|Female|Other|Unknown",
+      "dob": "YYYY-MM-DD",
+      "age": 0,
+      "social_category": "SC|ST|OBC|MBC|GENERAL|EWS|UNKNOWN",
+      "sub_caste": "string|null",
+      "physically_challenged": false
+    },
+
+    "communication_info": {
+      "phone": "string",
+      "email": "string|null"
+    },
+
+    "address_info": {
+      "country": "India",
+      "state": "TAMIL_NADU",
+      "district": "string",
+      "pincode": 0,
+      "door_no": "string|null",
+      "address_line_1": "string",
+      "address_line_2": "string|null"
+    },
+
+    "economic_info": {
+      "annual_income": 0
+    },
+
+    "beneficiary_info": {
+      "are_you_farmer": false,
+      "sectors": {
+        "AGRICULTURE": false,
+        "DAIRY": false,
+        "POULTRY": false,
+        "FISHERIES": false
+      },
+      "agriculture_info": {
+        // It should be validated if the user sectors.AGRICUTURE is true
+        "farmer_category": "MARGINAL|SMALL|SEMI_MEDIUM|MEDIUM|LARGE|UNKNOWN",
+        "hasLand": false,
+        "landArea": 0,
+        "landUnit": "ACRE|HECTARE",
+        "cropSowingDetails": {
+          "season": "KHARIF|RABI|SUMMER|UNKNOWN",
+          "cropNamesEnum": [],
+          "cropNamesOther": [],
+          "cropNameEnumAllowed": [
+            "PADDY",
+            "WHEAT",
+            "MAIZE",
+            "SUGARCANE",
+            "COTTON",
+            "GROUNDNUT",
+            "MILLET",
+            "PULSES",
+            "VEGETABLES",
+            "FRUITS",
+            "OTHER",
+            "UNKNOWN"
+          ]
+        }
+      },
+      "dairy_info": {
+        // It should be validated if the user sectors.DAIRY is true
+        "cattleCount": 0,
+        "milkProducer": false,
+        "hasShed": false
+      },
+      "poultry": {
+        "birdCount": 0,
+        "farmType": "BACKYARD|COMMERCIAL|UNKNOWN",
+        "hasShed": false
+      }
+    },
+
+    "fisheries": {
+      "waterBodyAccess": "OWNED|LEASED|COMMUNITY|NONE|UNKNOWN",
+      "aquaculture": {
+        "active": false,
+        "pondArea": 0,
+        "unit": "HECTARE|ACRE"
+      }
+    }
+  },
+
+  "registrations": {
+    "farmerId": { "exists": false },
+    "livestockRegistration": { "exists": false },
+    "fisheriesLicense": { "exists": false },
+
+    "fpo": {
+      "isMember": false,
+      "registrationDocsExist": false
+    }
+  },
+
+  "exclusions": {
+    "paidIncomeTaxLastAssessmentYear": null,
+    "isInstitutionalLandholder": null,
+    "isGovernmentEmployeeExcluded": null,
+    "monthlyPensionAmount": null,
+    "isExcludedProfessionalCategory": null
+  },
+
+  "created_at": { "$date": "2026-03-22T00:00:00.000Z" },
+  "updated_at": { "$date": "2026-03-22T00:00:00.000Z" }
+}

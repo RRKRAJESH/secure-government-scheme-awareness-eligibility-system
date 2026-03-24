@@ -1,0 +1,261 @@
+.notifications-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.notifications-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.notifications-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.notifications-list {
+  flex: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 8px;
+}
+
+.notifications-list {
+  padding-bottom: 24px; /* ensure pagination sits above bottom edge */
+}
+
+.notifications-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notifications-list::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.notifications-list::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+.notifications-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-card {
+  border-left: 4px solid #d9d9d9 !important;
+  transition: all 0.22s ease;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  padding: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+.notification-card.unread {
+  border-left-color: #ff4d4f !important;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%) !important;
+}
+
+.notification-card.read {
+  border-left-color: #d9d9d9 !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%) !important;
+}
+
+.notification-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  transform: translateX(4px);
+  background: linear-gradient(135deg, #e8ecf1 0%, #dde3ea 100%);
+}
+
+.notification-number {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  min-width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.unread-badge {
+  display: inline-block;
+  background: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.notification-details {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+.unread-banner {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+}
+
+.total-pill {
+  background: rgba(102, 126, 234, 0.12);
+  color: #334155;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(102,126,234,0.18);
+}
+
+.total-pill.total-highlight {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-pill.total-highlight::before {
+  content: '\2728';
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.unread-pill {
+  background: linear-gradient(90deg, #ff4d4f 0%, #ff7a45 100%);
+  box-shadow: 0 6px 18px rgba(255,77,79,0.18);
+}
+
+/* Simple text variants for the header to avoid button-like appearance */
+.total-text {
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.unread-text {
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.view-btn {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: none !important;
+  font-weight: 600;
+  margin-left: 6px;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18) !important;
+}
+
+.view-btn:hover {
+  filter: brightness(0.98);
+}
+
+.mark-all-btn {
+  box-shadow: none;
+}
+
+.mark-all-btn {
+  height: 36px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.mark-all-btn {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+}
+
+.mark-all-btn:hover {
+  filter: brightness(0.98);
+}
+
+.mark-all-btn:active {
+  transform: translateY(1px);
+}
+
+/* small helper to make the icon-only refresh pill match the total/unread pills */
+.refresh-pill-btn {
+  padding: 6px 10px !important;
+  min-width: 44px !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Force the refresh pill to use the same purple gradient as Mark all read */
+.refresh-pill-btn {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18) !important;
+}
+
+/* Stronger selector for the refresh pill when it also has mark-all-btn to ensure purple wins */
+.mark-all-btn.refresh-pill-btn {
+  background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18) !important;
+}
+
+/* Refresh button styled to visually match the pill-style actions */
+/* (removed old .mark-refresh-btn - refresh uses .mark-all-btn + .refresh-pill-btn now) */
+
+/* center the empty state similar to grievances page */
+.no-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  width: 100%;
+  box-sizing: border-box;
+}

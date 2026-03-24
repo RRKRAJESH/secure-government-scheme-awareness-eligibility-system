@@ -1,0 +1,23 @@
+.signup-container-main {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    #ff9933,
+    #ffffff,
+    #138808
+  );
+}
+
+.signup-card {
+  width: 420px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* USER Theme */
+.user-card {
+  border-top: 5px solid #52c41a;
+}
