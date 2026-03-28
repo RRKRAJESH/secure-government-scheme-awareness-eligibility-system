@@ -591,7 +591,14 @@ function Profile({ openFormDirectly = false }) {
     }
   };
 
-  if (profileLoading) return <LoadingSpinner />;
+  if (profileLoading) {
+    return (
+      <LoadingSpinner
+        message="Loading profile..."
+        description="Preparing your profile details, completion status, and saved information."
+      />
+    );
+  }
 
   const hasData = profileData && Object.keys(profileData).length > 0;
 

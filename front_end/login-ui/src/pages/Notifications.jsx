@@ -5,6 +5,7 @@ import { BellOutlined, ReloadOutlined } from "@ant-design/icons";
 import { formatDateTimeIST } from "../utils/dateFormat";
 import API_ENDPOINTS from "../config/api.config";
 import { useAuth } from "../hooks/useAuth";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "../styles/notifications.css";
 const { Title, Text } = Typography;
 
@@ -324,7 +325,10 @@ function Notifications() {
             </div>
           </div>
           {loading ? (
-            <div>Loading...</div>
+            <LoadingSpinner
+              message="Loading notifications..."
+              description="Collecting your latest alerts, mentions, and scheme updates."
+            />
           ) : notifications.length > 0 ? (
             <>
               <div className="notifications-list">

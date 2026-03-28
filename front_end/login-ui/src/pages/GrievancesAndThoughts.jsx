@@ -755,7 +755,10 @@ function GrievancesAndThoughts() {
 
           <div className="posts-list">
             {loadingList ? (
-              <LoadingSpinner message="Loading grievances..." />
+              <LoadingSpinner
+                message="Loading grievances..."
+                description="Fetching the latest grievance posts and comments count for you."
+              />
             ) : grievances.length > 0 ? (
               <>
                 <Row gutter={[16, 16]} className="schemes-grid">
@@ -852,7 +855,10 @@ function GrievancesAndThoughts() {
 
           <div className="posts-list">
             {loadingList ? (
-              <LoadingSpinner message="Loading thoughts..." />
+              <LoadingSpinner
+                message="Loading thoughts..."
+                description="Fetching the latest shared thoughts and discussion activity."
+              />
             ) : thoughts.length > 0 ? (
               <>
                 <Row gutter={[16, 16]} className="schemes-grid">

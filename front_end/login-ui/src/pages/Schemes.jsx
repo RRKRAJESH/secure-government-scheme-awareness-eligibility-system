@@ -34,6 +34,7 @@ import {
 } from "@ant-design/icons";
 import useApi from "../hooks/useApi";
 import useAuth from "../hooks/useAuth";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { ROLES } from "../config/constants";
 import API_ENDPOINTS from "../config/api.config";
 import { SECTORS } from "../config/constants";
@@ -909,10 +910,10 @@ const Schemes = React.memo(() => {
       {/* Schemes Grid */}
       <div className="schemes-content">
         {searchLoading ? (
-          <div className="loading-state">
-            <Spin size="large" />
-            <Text type="secondary">Loading schemes...</Text>
-          </div>
+          <LoadingSpinner
+            message="Loading schemes..."
+            description="We are gathering the latest schemes and applying your current filters."
+          />
         ) : schemes.length === 0 ? (
           <div className="empty-state">
             <Empty 
@@ -982,10 +983,11 @@ const Schemes = React.memo(() => {
         centered
       >
         {eligibilityLoading ? (
-          <div className="loading-state" style={{ padding: 40 }}>
-            <Spin size="large" />
-            <Text type="secondary" style={{ display: "block", marginTop: 12 }}>Checking eligibility...</Text>
-          </div>
+          <LoadingSpinner
+            compact
+            message="Checking eligibility..."
+            description="We are matching your profile against the available scheme rules."
+          />
         ) : eligibleSchemes.length === 0 ? (
           <div style={{ padding: 40 }}>
             <Empty

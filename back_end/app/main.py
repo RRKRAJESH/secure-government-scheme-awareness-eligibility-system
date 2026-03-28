@@ -36,8 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print("FRONT_END_BASE_URL", settings.FRONT_END_BASE_URL)  # Debug print to verify the value is loaded correctly
-
 app.middleware("http")(log_request_response)
 app.include_router(auth_router, prefix= "/auth", tags= ["Authentication"])
 app.include_router(profile_router, prefix= "/profile", tags= ["Profile Information"])
