@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     SCHEMES_COLLECTION_NAME: str
     SECRET_KEY: str
     ALGORITHM: str
+    FRONT_END_BASE_URL: str
 
     class Config:
         env_file = "/home/rajesh/workspace/PP/.env"

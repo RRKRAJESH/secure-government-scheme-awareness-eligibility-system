@@ -13,6 +13,7 @@ from app.api.v1.scheme import router as scheme_router
 from app.api.v1.grievances import router as grievances_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.users import router as users_router
+from app.configs.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,7 +29,7 @@ app = FastAPI(title="Secure Government Scheme Awareness and Eligibility System",
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React dev server
+    allow_origins=["http://localhost:5173", settings.FRONT_END_BASE_URL],  # React dev server and production front-end
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
