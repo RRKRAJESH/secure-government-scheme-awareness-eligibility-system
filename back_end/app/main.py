@@ -29,11 +29,14 @@ app = FastAPI(title="Secure Government Scheme Awareness and Eligibility System",
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", settings.FRONT_END_BASE_URL],  # React dev server and production front-end
+    allow_origins=["http://localhost:5173", 
+                   "https://secure-government-scheme-awareness.vercel.app"],  # React dev server and production front-end
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+print("FRONT_END_BASE_URL", settings.FRONT_END_BASE_URL)  # Debug print to verify the value is loaded correctly
 
 app.middleware("http")(log_request_response)
 app.include_router(auth_router, prefix= "/auth", tags= ["Authentication"])
