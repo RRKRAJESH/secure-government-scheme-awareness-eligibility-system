@@ -19,8 +19,16 @@ from app.schemas.common_schema import ErrorResponse
 router = APIRouter()
 
 
-@router.get("/list", response_model=Optional[NotificationsListResponse], status_code=status.HTTP_200_OK)
-async def list_notifications_handler(page: int = Query(1, ge=1), pageSize: int = Query(20, alias="pageSize", ge=1, le=200), token: dict = Depends(verify_token)):
+@router.get(
+    "/list",
+    response_model=Optional[NotificationsListResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def list_notifications_handler(
+    page: int = Query(1, ge=1),
+    pageSize: int = Query(20, alias="pageSize", ge=1, le=200),
+    token: dict = Depends(verify_token),
+):
     try:
         user_id = token.get("user_id")
         data = get_user_notifications(user_id, page=page, page_size=pageSize)
@@ -29,8 +37,12 @@ async def list_notifications_handler(page: int = Query(1, ge=1), pageSize: int =
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/mark-read", response_model=MarkReadResponse, status_code=status.HTTP_200_OK)
-async def mark_read_handler(payload: MarkReadSchema, token: dict = Depends(verify_token)):
+@router.post(
+    "/mark-read", response_model=MarkReadResponse, status_code=status.HTTP_200_OK
+)
+async def mark_read_handler(
+    payload: MarkReadSchema, token: dict = Depends(verify_token)
+):
     try:
         user_id = token.get("user_id")
         input_data = payload.model_dump()
@@ -41,7 +53,9 @@ async def mark_read_handler(payload: MarkReadSchema, token: dict = Depends(verif
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/mark-all-read", response_model=MarkAllReadResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/mark-all-read", response_model=MarkAllReadResponse, status_code=status.HTTP_200_OK
+)
 async def mark_all_read_handler(token: dict = Depends(verify_token)):
     try:
         user_id = token.get("user_id")

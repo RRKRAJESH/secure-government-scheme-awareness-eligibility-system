@@ -26,7 +26,11 @@ from app.schemas.common_schema import ErrorResponse
 router = APIRouter()
 
 
-@router.get("/list", response_model=Union[PostsListResponse, ErrorResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/list",
+    response_model=Union[PostsListResponse, ErrorResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def list_grievances_handler(
     postType: Optional[PostType] = Query(None, alias="postType"),
     page: int = Query(1, ge=1),
@@ -35,18 +39,34 @@ async def list_grievances_handler(
 ):
     try:
         user_id = token.get("user_id")
-        posts_data = get_user_posts(user_id, post_type=postType.value if postType else None, page=page, page_size=pageSize)
+        posts_data = get_user_posts(
+            user_id,
+            post_type=postType.value if postType else None,
+            page=page,
+            page_size=pageSize,
+        )
         return {"error": False, "data": posts_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create", response_model=Union[CreateResponse, ErrorResponse], status_code=status.HTTP_201_CREATED)
-async def create_grievance_handler(payload: CreatePostSchema, token: dict = Depends(verify_token)):
+@router.post(
+    "/create",
+    response_model=Union[CreateResponse, ErrorResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_grievance_handler(
+    payload: CreatePostSchema, token: dict = Depends(verify_token)
+):
     try:
         user_id = token.get("user_id")
         input_data = payload.model_dump()
-        res = create_post(user_id, input_data["title"], input_data["description"], input_data.get("post_type"))
+        res = create_post(
+            user_id,
+            input_data["title"],
+            input_data["description"],
+            input_data.get("post_type"),
+        )
         return {"error": False, "data": res}
     except HTTPException:
         raise
@@ -54,7 +74,11 @@ async def create_grievance_handler(payload: CreatePostSchema, token: dict = Depe
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/detail/{post_id}", response_model=Union[PostDetailResponse, ErrorResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/detail/{post_id}",
+    response_model=Union[PostDetailResponse, ErrorResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def grievance_detail_handler(post_id: str, token: dict = Depends(verify_token)):
     try:
         res = get_post_with_comments(post_id)
@@ -65,13 +89,24 @@ async def grievance_detail_handler(post_id: str, token: dict = Depends(verify_to
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/{post_id}/comment", response_model=Union[CreateCommentResponse, ErrorResponse], status_code=status.HTTP_201_CREATED)
-async def create_comment_handler(post_id: str, payload: CreateCommentSchema, token: dict = Depends(verify_token)):
+@router.post(
+    "/{post_id}/comment",
+    response_model=Union[CreateCommentResponse, ErrorResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment_handler(
+    post_id: str, payload: CreateCommentSchema, token: dict = Depends(verify_token)
+):
     try:
         user_id = token.get("user_id")
         username = token.get("username")
         input_data = payload.model_dump()
-        comment = create_comment(user_id=user_id, username=username, post_id=post_id, content=input_data.get("commented_content"))
+        comment = create_comment(
+            user_id=user_id,
+            username=username,
+            post_id=post_id,
+            content=input_data.get("commented_content"),
+        )
         return {"error": False, "data": {"comment": comment}}
     except HTTPException:
         raise
@@ -79,15 +114,22 @@ async def create_comment_handler(post_id: str, payload: CreateCommentSchema, tok
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
-@router.put("/{post_id}/update", response_model=Union[UpdateResponse, ErrorResponse], status_code=status.HTTP_200_OK)
-async def update_post_handler(post_id: str, payload: UpdatePostSchema, token: dict = Depends(verify_token)):
+@router.put(
+    "/{post_id}/update",
+    response_model=Union[UpdateResponse, ErrorResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def update_post_handler(
+    post_id: str, payload: UpdatePostSchema, token: dict = Depends(verify_token)
+):
     try:
         user_id = token.get("user_id")
         input_data = payload.model_dump()
         title = input_data.get("title")
         description = input_data.get("description")
-        updated = update_post(user_id=user_id, post_id=post_id, title=title, description=description)
+        updated = update_post(
+            user_id=user_id, post_id=post_id, title=title, description=description
+        )
         return {"error": False, "data": {"post": updated}}
     except HTTPException:
         raise
@@ -95,13 +137,24 @@ async def update_post_handler(post_id: str, payload: UpdatePostSchema, token: di
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/{post_id}/comment/{comment_id}", response_model=Union[UpdateCommentResponse, ErrorResponse], status_code=status.HTTP_200_OK)
-async def update_comment_handler(post_id: str, comment_id: str, payload: UpdateCommentSchema, token: dict = Depends(verify_token)):
+@router.put(
+    "/{post_id}/comment/{comment_id}",
+    response_model=Union[UpdateCommentResponse, ErrorResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def update_comment_handler(
+    post_id: str,
+    comment_id: str,
+    payload: UpdateCommentSchema,
+    token: dict = Depends(verify_token),
+):
     try:
         user_id = token.get("user_id")
         input_data = payload.model_dump()
         new_content = input_data.get("commented_content")
-        updated = update_comment(user_id=user_id, comment_id=comment_id, new_content=new_content)
+        updated = update_comment(
+            user_id=user_id, comment_id=comment_id, new_content=new_content
+        )
         return {"error": False, "data": {"comment": updated}}
     except HTTPException:
         raise

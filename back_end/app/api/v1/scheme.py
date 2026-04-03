@@ -61,56 +61,58 @@ async def create_scheme_handler(
 @router.get(
     "/list",
     response_model=Union[SchemeListResponse, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
 async def list_schemes_handler(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=50, description="Items per page"),
-    status_filter: Optional[SchemeStatus] = Query(SchemeStatus.ACTIVE, alias="status", description="Filter by status"),
-    token: str = Depends(verify_token)
+    status_filter: Optional[SchemeStatus] = Query(
+        SchemeStatus.ACTIVE, alias="status", description="Filter by status"
+    ),
+    token: str = Depends(verify_token),
 ):
     """Get all schemes with pagination"""
     try:
         status_value = status_filter.value if status_filter else None
         result = get_all_schemes(page=page, limit=limit, status_filter=status_value)
 
-        return {
-            "error": False,
-            "data": result
-        }
+        return {"error": False, "data": result}
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
 @router.get(
     "/search",
     response_model=Union[SchemeSearchResponse, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
 async def search_schemes_handler(
     keyword: Optional[str] = Query(None, description="Search keyword"),
     sector: Optional[AgricultureSector] = Query(None, description="Filter by sector"),
-    governmentLevel: Optional[GovernmentLevel] = Query(None, description="Filter by government level"),
+    governmentLevel: Optional[GovernmentLevel] = Query(
+        None, description="Filter by government level"
+    ),
     schemeType: Optional[SchemeType] = Query(None, description="Filter by scheme type"),
-    status_filter: Optional[SchemeStatus] = Query(SchemeStatus.ACTIVE, alias="status", description="Filter by status"),
+    status_filter: Optional[SchemeStatus] = Query(
+        SchemeStatus.ACTIVE, alias="status", description="Filter by status"
+    ),
     benefitType: Optional[str] = Query(None, description="Filter by benefit type"),
-    directUse: Optional[bool] = Query(None, description="Filter by directly applicable schemes"),
+    directUse: Optional[bool] = Query(
+        None, description="Filter by directly applicable schemes"
+    ),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=50, description="Items per page"),
-    token: str = Depends(verify_token)
+    token: str = Depends(verify_token),
 ):
     """Search schemes with filters"""
     try:
@@ -123,7 +125,7 @@ async def search_schemes_handler(
             "status": status_filter.value if status_filter else None,
             "directUse": directUse,
             "page": page,
-            "limit": limit
+            "limit": limit,
         }
 
         # Remove None values
@@ -131,137 +133,106 @@ async def search_schemes_handler(
 
         result = search_schemes(filters)
 
-        return {
-            "error": False,
-            "data": result
-        }
+        return {"error": False, "data": result}
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
 @router.get(
     "/detail/{scheme_id}",
     response_model=Union[SchemeDetailResponse, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
-async def get_scheme_detail_handler(
-    scheme_id: str,
-    token: str = Depends(verify_token)
-):
+async def get_scheme_detail_handler(scheme_id: str, token: str = Depends(verify_token)):
     """Get scheme details by ID"""
     try:
         result = get_scheme_by_id(scheme_id)
 
-        return {
-            "error": False,
-            "data": result
-        }
+        return {"error": False, "data": result}
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
 @router.put(
     "/{scheme_id}/mark-deleted",
     response_model=Union[dict, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
 async def mark_scheme_deleted_handler(
-    scheme_id: str,
-    token: str = Depends(verify_token)
+    scheme_id: str, token: str = Depends(verify_token)
 ):
     """Mark a scheme as deleted (soft delete)."""
     try:
         result = mark_scheme_deleted(scheme_id)
 
-        return {
-            "error": False,
-            "data": result
-        }
+        return {"error": False, "data": result}
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
 @router.get(
     "/code/{scheme_code}",
     response_model=Union[SchemeDetailResponse, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
 async def get_scheme_by_code_handler(
-    scheme_code: str,
-    token: str = Depends(verify_token)
+    scheme_code: str, token: str = Depends(verify_token)
 ):
     """Get scheme details by scheme code"""
     try:
         result = get_scheme_by_code(scheme_code)
 
-        return {
-            "error": False,
-            "data": result
-        }
+        return {"error": False, "data": result}
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
 @router.get(
     "/eligible",
     response_model=Union[SchemeListResponse, ErrorResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
-async def get_eligible_schemes_handler(
-    token: dict = Depends(verify_token)
-):
+async def get_eligible_schemes_handler(token: dict = Depends(verify_token)):
     """Get schemes eligible for current user based on their profile"""
     try:
         from app.db.mongo import get_collection
@@ -273,7 +244,7 @@ async def get_eligible_schemes_handler(
         # Get user profile
         user_profile_collection = get_collection(
             db_name=settings.PRODUCTION_DATABASE_NAME,
-            collection_name=settings.USERS_PROFILE_COLLECTION_NAME
+            collection_name=settings.USERS_PROFILE_COLLECTION_NAME,
         )
 
         user_profile = user_profile_collection.find_one({"user_id": ObjectId(user_id)})
@@ -282,10 +253,7 @@ async def get_eligible_schemes_handler(
             raise_http_error(
                 status_code=status.HTTP_409_CONFLICT,
                 message="Please complete your profile before checking scheme eligibility.",
-                error_data={
-                    "reason": "PROFILE_INCOMPLETE",
-                    "open_tab": "profile"
-                }
+                error_data={"reason": "PROFILE_INCOMPLETE", "open_tab": "profile"},
             )
 
         result = get_eligible_schemes_for_user(user_profile)
@@ -299,35 +267,29 @@ async def get_eligible_schemes_handler(
                     "totalPages": 1,
                     "totalCount": result["totalCount"],
                     "hasNext": False,
-                    "hasPrevious": False
-                }
-            }
+                    "hasPrevious": False,
+                },
+            },
         }
 
     except HTTPException:
         raise
 
     except ValueError as e:
-        raise_http_error(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"{str(e)}"
-        )
+        raise_http_error(status_code=status.HTTP_400_BAD_REQUEST, message=f"{str(e)}")
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )
 
 
-@router.get(
-    "/suggestions",
-    status_code=status.HTTP_200_OK
-)
+@router.get("/suggestions", status_code=status.HTTP_200_OK)
 async def get_scheme_suggestions_handler(
     keyword: str = Query(..., min_length=1, description="Search keyword"),
     limit: int = Query(10, ge=1, le=20, description="Max suggestions"),
-    token: str = Depends(verify_token)
+    token: str = Depends(verify_token),
 ):
     """Get scheme name suggestions for autocomplete"""
     try:
@@ -337,41 +299,38 @@ async def get_scheme_suggestions_handler(
 
         schemes_collection = get_collection(
             db_name=settings.PRODUCTION_DATABASE_NAME,
-            collection_name=settings.SCHEMES_COLLECTION_NAME
+            collection_name=settings.SCHEMES_COLLECTION_NAME,
         )
 
         # Search by scheme name with regex (case-insensitive)
         regex_pattern = re.compile(keyword, re.IGNORECASE)
-        
+
         suggestions = schemes_collection.find(
             {
                 "$or": [
                     {"schemeName": {"$regex": regex_pattern}},
                     {"schemeCode": {"$regex": regex_pattern}},
                 ],
-                "status": "ACTIVE"
+                "status": "ACTIVE",
             },
-            {"schemeName": 1, "schemeCode": 1, "schemeType": 1}
+            {"schemeName": 1, "schemeCode": 1, "schemeType": 1},
         ).limit(limit)
 
         result = []
         for scheme in suggestions:
-            result.append({
-                "id": str(scheme["_id"]),
-                "name": scheme["schemeName"],
-                "code": scheme.get("schemeCode", ""),
-                "type": scheme.get("schemeType", "")
-            })
+            result.append(
+                {
+                    "id": str(scheme["_id"]),
+                    "name": scheme["schemeName"],
+                    "code": scheme.get("schemeCode", ""),
+                    "type": scheme.get("schemeType", ""),
+                }
+            )
 
-        return {
-            "error": False,
-            "data": {
-                "suggestions": result
-            }
-        }
+        return {"error": False, "data": {"suggestions": result}}
 
     except Exception as e:
         raise_http_error(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=f"An unexpected error occurred: {str(e)}"
+            message=f"An unexpected error occurred: {str(e)}",
         )

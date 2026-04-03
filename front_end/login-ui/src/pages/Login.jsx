@@ -21,6 +21,15 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const getApiErrorMessage = (result) => {
+    return (
+      result?.detail?.data?.errorMessage ||
+      result?.data?.errorMessage ||
+      result?.message ||
+      "Invalid credentials"
+    );
+  };
+
   const handleLogin = useCallback(async (values) => {
     setLoading(true);
 
@@ -40,7 +49,7 @@ function Login() {
       const result = await response.json();
 
       if (!response.ok) {
-        message.error(result?.message || "Invalid credentials");
+        message.error(getApiErrorMessage(result));
         return;
       }
 

@@ -8,7 +8,9 @@ from app.schemas.common_schema import ErrorResponse
 router = APIRouter()
 
 
-@router.get("/list", response_model=Union[dict, ErrorResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/list", response_model=Union[dict, ErrorResponse], status_code=status.HTTP_200_OK
+)
 async def list_users_handler(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=200),
@@ -21,9 +23,13 @@ async def list_users_handler(
         role = token.get("role")
         # role may be stored lowercase in the token; compare case-insensitively
         if not role or str(role).upper() != "ADMIN":
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+            )
 
-        result = list_users(page=page, limit=limit, sort_by=sort_by, sort_order=sort_order)
+        result = list_users(
+            page=page, limit=limit, sort_by=sort_by, sort_order=sort_order
+        )
         return {"error": False, "data": result}
     except HTTPException:
         raise
@@ -31,16 +37,22 @@ async def list_users_handler(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/delete", response_model=Union[dict, ErrorResponse], status_code=status.HTTP_200_OK)
+@router.post(
+    "/delete", response_model=Union[dict, ErrorResponse], status_code=status.HTTP_200_OK
+)
 async def delete_user_handler(body: dict, token: dict = Depends(verify_token)):
     try:
         role = token.get("role")
         if not role or str(role).upper() != "ADMIN":
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+            )
 
         user_id = body.get("user_id")
         if not user_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required"
+            )
 
         result = delete_user(user_id=str(user_id))
         return {"error": False, "data": result}
