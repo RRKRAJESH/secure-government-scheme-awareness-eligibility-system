@@ -13,8 +13,7 @@ class Settings(BaseSettings):
     FRONT_END_BASE_URL: str
 
     class Config:
-        # env_file = "/home/ubuntu/final_year_project/secure-government-scheme-awareness-eligibility-system/.env"
-        env_file = "/home/rajesh/workspace/PP/.env"
+        env_file = "/home/ubuntu/final_year_project/secure-government-scheme-awareness-eligibility-system/.env"
 
 
 settings = Settings()
