@@ -65,6 +65,37 @@ const showProfileCompletionRequiredModal = () => {
   });
 };
 
+const showNotAFarmerModal = () => {
+  Modal.confirm({
+    title: "You are not a farmer",
+    content: (
+      <div>
+        <Text>
+          You are not registered as a farmer. Scheme eligibility is only available for farmers.
+        </Text>
+        <br />
+        <Text type="secondary">
+          Please update your profile and mark yourself as a farmer to check eligible schemes.
+        </Text>
+      </div>
+    ),
+    okText: "Update Profile",
+    cancelText: "Close",
+    centered: true,
+    onOk: () => {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("notifications:updated", {
+            detail: { open_tab: "profile", open_profile_form: true },
+          })
+        );
+      } catch (error) {
+        sessionStorage.setItem("open_tab", "profile");
+      }
+    },
+  });
+};
+
 // Filter options built from SECTORS constant
 const CATEGORIES = SECTORS.map((s) => ({ value: s, label: s.replace("_", " ") }));
 
@@ -495,6 +526,8 @@ const SearchScheme = React.memo(() => {
     } catch (error) {
       if (error.reason === "PROFILE_INCOMPLETE") {
         showProfileCompletionRequiredModal();
+      } else if (error.reason === "NOT_A_FARMER") {
+        showNotAFarmerModal();
       } else {
         message.error(error.message || "Failed to check eligibility");
       }

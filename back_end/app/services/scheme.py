@@ -15,7 +15,7 @@ from app.services.notifications import create_bulk_notifications
 def get_schemes_collection():
     return get_collection(
         db_name=settings.PRODUCTION_DATABASE_NAME,
-        collection_name=settings.SCHEMES_COLLECTION_NAME
+        collection_name=settings.SCHEMES_COLLECTION_NAME,
     )
 
 
@@ -72,7 +72,9 @@ def create_scheme(scheme_payload: dict, token: dict):
                 message="Scheme name and scheme code are required",
             )
 
-        existing = schemes_collection.find_one({"schemeCode": scheme_code, "isDeleted": {"$ne": True}})
+        existing = schemes_collection.find_one(
+            {"schemeCode": scheme_code, "isDeleted": {"$ne": True}}
+        )
         if existing:
             raise_http_error(
                 status_code=status.HTTP_409_CONFLICT,
@@ -94,9 +96,13 @@ def create_scheme(scheme_payload: dict, token: dict):
         application_details = payload.get("applicationDetails") or None
         if application_details:
             if application_details.get("startDate"):
-                application_details["startDate"] = _parse_optional_datetime(application_details.get("startDate"), "applicationDetails.startDate")
+                application_details["startDate"] = _parse_optional_datetime(
+                    application_details.get("startDate"), "applicationDetails.startDate"
+                )
             if application_details.get("endDate"):
-                application_details["endDate"] = _parse_optional_datetime(application_details.get("endDate"), "applicationDetails.endDate")
+                application_details["endDate"] = _parse_optional_datetime(
+                    application_details.get("endDate"), "applicationDetails.endDate"
+                )
 
         now = current_time_utc()
         document = {
@@ -128,7 +134,11 @@ def create_scheme(scheme_payload: dict, token: dict):
         try:
             recipient_ids = []
             for user_doc in users_collection.find(
-                {"role": {"$ne": "admin"}, "is_deleted": {"$ne": True}, "is_active": True},
+                {
+                    "role": {"$ne": "admin"},
+                    "is_deleted": {"$ne": True},
+                    "is_active": True,
+                },
                 {"_id": 1},
             ):
                 user_id = user_doc.get("_id")
@@ -192,25 +202,30 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
         skip = (page - 1) * limit
 
         # Fetch schemes (lightweight projection)
-        schemes_cursor = schemes_collection.find(
-            query,
-            {
-                "_id": 1,
-                "schemeName": 1,
-                "schemeCode": 1,
-                "schemeType": 1,
-                "sector": 1,
-                "governmentLevel": 1,
-                "description": 1,
-                "status": 1,
-                "directUse": 1,
-                "benefits": 1,
-                "category": 1,
-                "sub_category": 1,
-                "department": 1,
-                "createdAt": 1,
-            }
-        ).skip(skip).limit(limit).sort("schemeName", 1)
+        schemes_cursor = (
+            schemes_collection.find(
+                query,
+                {
+                    "_id": 1,
+                    "schemeName": 1,
+                    "schemeCode": 1,
+                    "schemeType": 1,
+                    "sector": 1,
+                    "governmentLevel": 1,
+                    "description": 1,
+                    "status": 1,
+                    "directUse": 1,
+                    "benefits": 1,
+                    "category": 1,
+                    "sub_category": 1,
+                    "department": 1,
+                    "createdAt": 1,
+                },
+            )
+            .skip(skip)
+            .limit(limit)
+            .sort("schemeName", 1)
+        )
 
         schemes = []
         for scheme in schemes_cursor:
@@ -247,8 +262,8 @@ def get_all_schemes(page: int = 1, limit: int = 10, status_filter: str = "ACTIVE
                 "totalPages": total_pages,
                 "totalCount": total_count,
                 "hasNext": page < total_pages,
-                "hasPrevious": page > 1
-            }
+                "hasPrevious": page > 1,
+            },
         }
 
     except HTTPException:
@@ -268,7 +283,7 @@ def get_scheme_by_id(scheme_id: str):
         if not ObjectId.is_valid(scheme_id):
             raise_http_error(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                message="Invalid scheme ID format"
+                message="Invalid scheme ID format",
             )
 
         # Find scheme
@@ -276,12 +291,11 @@ def get_scheme_by_id(scheme_id: str):
 
         if not scheme:
             raise_http_error(
-                status_code=status.HTTP_404_NOT_FOUND,
-                message="Scheme not found"
+                status_code=status.HTTP_404_NOT_FOUND, message="Scheme not found"
             )
 
         scheme["_id"] = str(scheme["_id"])
-        
+
         # Convert parentSchemeId if present
         if scheme.get("parentSchemeId"):
             scheme["parentSchemeId"] = str(scheme["parentSchemeId"])
@@ -308,18 +322,15 @@ def get_scheme_by_id(scheme_id: str):
                     "schemeName": 1,
                     "schemeCode": 1,
                     "description": 1,
-                    "status": 1
-                }
+                    "status": 1,
+                },
             )
             for sub in sub_schemes_cursor:
                 sub["_id"] = str(sub["_id"])
                 sub_schemes.append(sub)
 
-        return {
-            "scheme": scheme,
-            "subSchemes": sub_schemes
-        }
-    
+        return {"scheme": scheme, "subSchemes": sub_schemes}
+
     except HTTPException:
         raise
 
@@ -337,18 +348,17 @@ def mark_scheme_deleted(scheme_id: str):
         if not ObjectId.is_valid(scheme_id):
             raise_http_error(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                message="Invalid scheme ID format"
+                message="Invalid scheme ID format",
             )
 
         result = schemes_collection.update_one(
             {"_id": ObjectId(scheme_id)},
-            {"$set": {"isDeleted": True, "status": "DELETED"}}
+            {"$set": {"isDeleted": True, "status": "DELETED"}},
         )
 
         if result.matched_count == 0:
             raise_http_error(
-                status_code=status.HTTP_404_NOT_FOUND,
-                message="Scheme not found"
+                status_code=status.HTTP_404_NOT_FOUND, message="Scheme not found"
             )
 
         return {"message": "Scheme marked deleted"}
@@ -383,7 +393,7 @@ def search_schemes(filters: dict):
                 {"schemeName": {"$regex": keyword, "$options": "i"}},
                 {"schemeCode": {"$regex": keyword, "$options": "i"}},
                 {"description.short": {"$regex": keyword, "$options": "i"}},
-                {"description.detailed": {"$regex": keyword, "$options": "i"}}
+                {"description.detailed": {"$regex": keyword, "$options": "i"}},
             ]
             applied_filters["keyword"] = keyword
 
@@ -414,12 +424,14 @@ def search_schemes(filters: dict):
         # Benefit type filter (matches nested benefits.benefitType or top-level benefitType)
         benefit_type = filters.get("benefitType")
         if benefit_type:
-            query.setdefault("$and", []).append({
-                "$or": [
-                    {"benefits.benefitType": benefit_type},
-                    {"benefitType": benefit_type}
-                ]
-            })
+            query.setdefault("$and", []).append(
+                {
+                    "$or": [
+                        {"benefits.benefitType": benefit_type},
+                        {"benefitType": benefit_type},
+                    ]
+                }
+            )
             applied_filters["benefitType"] = benefit_type
 
         # Pagination
@@ -432,25 +444,30 @@ def search_schemes(filters: dict):
         total_pages = math.ceil(total_count / limit) if total_count > 0 else 1
 
         # Fetch schemes
-        schemes_cursor = schemes_collection.find(
-            query,
-            {
-                "_id": 1,
-                "schemeName": 1,
-                "schemeCode": 1,
-                "schemeType": 1,
-                "sector": 1,
-                "governmentLevel": 1,
-                "description": 1,
-                "status": 1,
-                "directUse": 1,
-                "benefits": 1,
-                "category": 1,
-                "sub_category": 1,
-                "department": 1,
-                "createdAt": 1,
-            }
-        ).skip(skip).limit(limit).sort("schemeName", 1)
+        schemes_cursor = (
+            schemes_collection.find(
+                query,
+                {
+                    "_id": 1,
+                    "schemeName": 1,
+                    "schemeCode": 1,
+                    "schemeType": 1,
+                    "sector": 1,
+                    "governmentLevel": 1,
+                    "description": 1,
+                    "status": 1,
+                    "directUse": 1,
+                    "benefits": 1,
+                    "category": 1,
+                    "sub_category": 1,
+                    "department": 1,
+                    "createdAt": 1,
+                },
+            )
+            .skip(skip)
+            .limit(limit)
+            .sort("schemeName", 1)
+        )
 
         schemes = []
         for scheme in schemes_cursor:
@@ -487,9 +504,9 @@ def search_schemes(filters: dict):
                 "totalPages": total_pages,
                 "totalCount": total_count,
                 "hasNext": page < total_pages,
-                "hasPrevious": page > 1
+                "hasPrevious": page > 1,
             },
-            "appliedFilters": applied_filters
+            "appliedFilters": applied_filters,
         }
 
     except HTTPException:
@@ -510,11 +527,11 @@ def get_scheme_by_code(scheme_code: str):
         if not scheme:
             raise_http_error(
                 status_code=status.HTTP_404_NOT_FOUND,
-                message=f"Scheme with code '{scheme_code}' not found"
+                message=f"Scheme with code '{scheme_code}' not found",
             )
 
         scheme["_id"] = str(scheme["_id"])
-        
+
         if scheme.get("parentSchemeId"):
             scheme["parentSchemeId"] = str(scheme["parentSchemeId"])
 
@@ -562,6 +579,7 @@ _PATH_ALIASES = {
 def _compute_age(dob_str: str):
     """Return age in years given a YYYY-MM-DD date string, or None on error."""
     from datetime import date, datetime
+
     try:
         dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
         today = date.today()
@@ -594,7 +612,9 @@ def _evaluate_predicate(pred: dict, doc: dict) -> bool:
     if resolved_path == "__ALWAYS_TRUE__":
         actual, found = True, True
     elif resolved_path == "__CROP_SOWING_EXISTS__":
-        cd, _ = _resolve_path("profile.beneficiary_info.agriculture_info.cropSowingDetails", doc)
+        cd, _ = _resolve_path(
+            "profile.beneficiary_info.agriculture_info.cropSowingDetails", doc
+        )
         actual = bool(cd and (cd.get("cropNamesEnum") or cd.get("cropNamesOther")))
         found = True
     else:
@@ -684,6 +704,7 @@ def _is_scheme_eligible(eligibility_v2: dict, user_profile: dict) -> bool:
 
 # ---------------------------------------------------------------------------
 
+
 def get_eligible_schemes_for_user(user_profile: dict):
     """Get schemes eligible for user based on their profile using eligibilityV2 rules"""
     try:
@@ -693,6 +714,21 @@ def get_eligible_schemes_for_user(user_profile: dict):
             age = _compute_age(dob)
             if age is not None:
                 user_profile["profile"]["basic_info"]["age"] = age
+
+        # Extract farmer status — used to gate all farming-sector schemes
+        beneficiary_info = (user_profile.get("profile") or {}).get(
+            "beneficiary_info"
+        ) or {}
+        is_farmer = bool(beneficiary_info.get("are_you_farmer", False))
+
+        # All sectors that require the user to be a registered farmer
+        _FARMER_SECTORS = {
+            "AGRICULTURE",
+            "DAIRY",
+            "POULTRY",
+            "FISHERIES",
+            "HORTICULTURE",
+        }
 
         schemes_collection = get_schemes_collection()
 
@@ -714,11 +750,16 @@ def get_eligible_schemes_for_user(user_profile: dict):
                 "department": 1,
                 "createdAt": 1,
                 "eligibilityV2": 1,
-            }
+            },
         ).sort("schemeName", 1)
 
         eligible_schemes = []
         for scheme in schemes_cursor:
+            # Gate: non-farmers are never eligible for farming-sector schemes
+            scheme_sector = (scheme.get("sector") or "").upper()
+            if scheme_sector in _FARMER_SECTORS and not is_farmer:
+                continue
+
             ev2 = scheme.get("eligibilityV2")
             if not ev2 or not _is_scheme_eligible(ev2, user_profile):
                 continue
@@ -740,10 +781,7 @@ def get_eligible_schemes_for_user(user_profile: dict):
 
             eligible_schemes.append(scheme)
 
-        return {
-            "schemes": eligible_schemes,
-            "totalCount": len(eligible_schemes)
-        }
+        return {"schemes": eligible_schemes, "totalCount": len(eligible_schemes)}
 
     except HTTPException:
         raise

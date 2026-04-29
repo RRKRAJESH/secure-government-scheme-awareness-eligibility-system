@@ -256,6 +256,16 @@ async def get_eligible_schemes_handler(token: dict = Depends(verify_token)):
                 error_data={"reason": "PROFILE_INCOMPLETE", "open_tab": "profile"},
             )
 
+        beneficiary_info = (user_profile.get("profile") or {}).get(
+            "beneficiary_info"
+        ) or {}
+        if not bool(beneficiary_info.get("are_you_farmer", False)):
+            raise_http_error(
+                status_code=status.HTTP_409_CONFLICT,
+                message="You are not a farmer. Please update your profile to indicate that you are a farmer before checking scheme eligibility.",
+                error_data={"reason": "NOT_A_FARMER", "open_tab": "profile"},
+            )
+
         result = get_eligible_schemes_for_user(user_profile)
 
         return {
