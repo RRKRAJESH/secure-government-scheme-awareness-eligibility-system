@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Table, Typography, Spin, message, Tag, Avatar, Badge, Card, Popconfirm, Button } from "antd";
 import {
   TeamOutlined,
@@ -23,6 +23,12 @@ function Users() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [stats, setStats] = useState({
+    total_users: 0,
+    active_users: 0,
+    inactive_users: 0,
+    total_logins: 0,
+  });
   const [sorter, setSorter] = useState({ field: undefined, order: undefined });
 
   // Helper to update both page/limit and keep sort state
@@ -50,6 +56,12 @@ function Users() {
       const res = await apiRequest(url, "GET");
       if (res && res.data) {
         setUsers(res.data.users || []);
+        setStats({
+          total_users: res.data.stats?.total_users || 0,
+          active_users: res.data.stats?.active_users || 0,
+          inactive_users: res.data.stats?.inactive_users || 0,
+          total_logins: res.data.stats?.total_logins || 0,
+        });
         setPagination((p) => ({
           ...p,
           page: res.data.pagination?.page || page,
@@ -85,13 +97,6 @@ function Users() {
       message.error("Failed to remove user");
     }
   }, [apiRequest, fetchUsers, pagination.page, pagination.limit]);
-
-  /* derived stats – exclude admin users */
-  const nonAdminUsers = useMemo(() => users.filter((u) => String(u.role).toUpperCase() !== "ADMIN"), [users]);
-  const activeCount = useMemo(() => nonAdminUsers.filter((u) => u.is_active).length, [nonAdminUsers]);
-  const inactiveCount = useMemo(() => nonAdminUsers.filter((u) => !u.is_active).length, [nonAdminUsers]);
-  const totalLogins = useMemo(() => nonAdminUsers.reduce((a, u) => a + (u.success_login_count || 0), 0), [nonAdminUsers]);
-
 
   const columns = [
     {
@@ -152,11 +157,11 @@ function Users() {
     },
     {
       title: "Last Login",
-      dataIndex: "updated_at",
-      key: "updated_at",
+      dataIndex: "last_login_at",
+      key: "last_login_at",
       width: 180,
-      sorter: (a, b) => new Date(a.updated_at || 0) - new Date(b.updated_at || 0),
-      render: (t) => (t ? <Text type="secondary">{formatDateTimeIST(t)}</Text> : <Text type="secondary">—</Text>),
+      sorter: (a, b) => new Date(a.last_login_at || 0) - new Date(b.last_login_at || 0),
+      render: (t) => (t ? <Text type="secondary">{formatDateTimeIST(t)}</Text> : <Text type="secondary">-</Text>),
     },
     {
       title: "Joined",
@@ -203,7 +208,7 @@ function Users() {
           <div className="users-stat-inner">
             <div className="users-stat-icon-wrap total"><TeamOutlined /></div>
             <div>
-              <div className="users-stat-value">{nonAdminUsers.length}</div>
+              <div className="users-stat-value">{stats.total_users}</div>
               <div className="users-stat-label">Total Users</div>
             </div>
           </div>
@@ -212,7 +217,7 @@ function Users() {
           <div className="users-stat-inner">
             <div className="users-stat-icon-wrap active"><CheckCircleOutlined /></div>
             <div>
-              <div className="users-stat-value">{activeCount}</div>
+              <div className="users-stat-value">{stats.active_users}</div>
               <div className="users-stat-label">Active</div>
             </div>
           </div>
@@ -221,7 +226,7 @@ function Users() {
           <div className="users-stat-inner">
             <div className="users-stat-icon-wrap inactive"><CloseCircleOutlined /></div>
             <div>
-              <div className="users-stat-value">{inactiveCount}</div>
+              <div className="users-stat-value">{stats.inactive_users}</div>
               <div className="users-stat-label">Inactive</div>
             </div>
           </div>
@@ -230,7 +235,7 @@ function Users() {
           <div className="users-stat-inner">
             <div className="users-stat-icon-wrap logins"><LoginOutlined /></div>
             <div>
-              <div className="users-stat-value">{totalLogins}</div>
+              <div className="users-stat-value">{stats.total_logins}</div>
               <div className="users-stat-label">Total Logins</div>
             </div>
           </div>
@@ -243,7 +248,7 @@ function Users() {
           <div className="users-loading"><Spin size="large" /></div>
         ) : (
           <Table
-            dataSource={nonAdminUsers}
+            dataSource={users}
             columns={columns}
             rowKey={(r) => r.id}
             pagination={{

@@ -52,7 +52,7 @@ def register_user(register_user_info_payload):
             "is_active": True,
             "user_profile_updated": False,
             "user_profile_id": None,
-            "last_login_at": current_time_utc(),
+            "last_login_at": None,
             "created_at": current_time_utc(),
             "updated_at": current_time_utc(),
             "is_deleted": False,
@@ -115,6 +115,7 @@ def login_user(login_user_info):
 
         username = login_user_info.get("username")
         password = login_user_info.get("password")
+        requested_role = str(login_user_info.get("role") or "USER").upper()
 
         user_existing_check = users_collection.find_one({"username": username})
         if not user_existing_check:
@@ -139,6 +140,13 @@ def login_user(login_user_info):
             raise_http_error(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 message="Invalid email or password",
+            )
+
+        actual_role = str(user_existing_check.get("role") or "").upper()
+        if actual_role != requested_role:
+            raise_http_error(
+                status_code=status.HTTP_403_FORBIDDEN,
+                message="You are not authorized to use this login",
             )
 
         user_info = dict()

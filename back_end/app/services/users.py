@@ -39,24 +39,53 @@ def list_users(
             "role": "role",
             "is_active": "is_active",
             "success_login_count": "success_login_count",
-            "updated_at": "updated_at",
+            "last_login_at": "last_login_at",
             "created_at": "created_at",
         }
         sort_field = sort_map.get(str(sort_by)) if sort_by else "created_at"
         sort_dir = -1 if str(sort_order).lower() == "descend" else 1
 
-        total = coll.count_documents({})
+        non_admin_query = {
+            "$expr": {
+                "$ne": [
+                    {"$toUpper": {"$ifNull": ["$role", ""]}},
+                    "ADMIN",
+                ]
+            }
+        }
+
+        total = coll.count_documents(non_admin_query)
         skip = (page - 1) * limit
+
+        stats_pipeline = [
+            {"$match": non_admin_query},
+            {
+                "$group": {
+                    "_id": None,
+                    "total_users": {"$sum": 1},
+                    "active_users": {
+                        "$sum": {"$cond": [{"$eq": ["$is_active", True]}, 1, 0]}
+                    },
+                    "inactive_users": {
+                        "$sum": {"$cond": [{"$eq": ["$is_active", True]}, 0, 1]}
+                    },
+                    "total_logins": {"$sum": {"$ifNull": ["$success_login_count", 0]}},
+                }
+            },
+        ]
+        stats_doc = next(coll.aggregate(stats_pipeline), None) or {}
+
         # include login/count, updated_at (last activity), and is_active flag
         cursor = (
             coll.find(
-                {},
+                non_admin_query,
                 {
                     "_id": 1,
                     "username": 1,
                     "email": 1,
                     "role": 1,
                     "created_at": 1,
+                    "last_login_at": 1,
                     "success_login_count": 1,
                     "updated_at": 1,
                     "is_active": 1,
@@ -82,6 +111,11 @@ def list_users(
                     "created_at": (
                         str(doc.get("created_at")) if doc.get("created_at") else None
                     ),
+                    "last_login_at": (
+                        str(doc.get("last_login_at"))
+                        if doc.get("last_login_at")
+                        else None
+                    ),
                     "success_login_count": (
                         int(doc.get("success_login_count"))
                         if doc.get("success_login_count") is not None
@@ -102,6 +136,12 @@ def list_users(
 
         return {
             "users": users,
+            "stats": {
+                "total_users": int(stats_doc.get("total_users", 0)),
+                "active_users": int(stats_doc.get("active_users", 0)),
+                "inactive_users": int(stats_doc.get("inactive_users", 0)),
+                "total_logins": int(stats_doc.get("total_logins", 0)),
+            },
             "pagination": {
                 "page": page,
                 "limit": limit,

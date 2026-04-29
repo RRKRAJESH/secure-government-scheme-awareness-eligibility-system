@@ -6,8 +6,6 @@ import { STORAGE_KEYS } from "../config/constants";
  */
 export const useAuth = () => {
   const getToken = () => localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-
-  const getRole = () => localStorage.getItem(STORAGE_KEYS.ROLE);
   const getStoredUsername = () => localStorage.getItem(STORAGE_KEYS.USERNAME);
 
   // Decode JWT token to get user info (username, user_id, role)
@@ -49,11 +47,48 @@ export const useAuth = () => {
     );
   };
 
+  const getRole = () => {
+    const payload = getTokenPayload();
+    const role =
+      payload?.role ||
+      payload?.user_role ||
+      payload?.userRole ||
+      localStorage.getItem(STORAGE_KEYS.ROLE);
+    return role ? String(role).toUpperCase() : null;
+  };
+
   const isAuthenticated = () => !!getToken();
 
   const login = (token, role, username = null) => {
     localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-    localStorage.setItem(STORAGE_KEYS.ROLE, role);
+    const payloadPart = token ? token.split(".")[1] : null;
+    let resolvedRole = role;
+    if (payloadPart) {
+      try {
+        const base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const decoded = atob(padded);
+        const json = decodeURIComponent(
+          Array.prototype.map
+            .call(
+              decoded,
+              (char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`
+            )
+            .join("")
+        );
+        const payload = JSON.parse(json);
+        resolvedRole =
+          payload?.role || payload?.user_role || payload?.userRole || role;
+      } catch {
+        resolvedRole = role;
+      }
+    }
+    if (resolvedRole) {
+      localStorage.setItem(
+        STORAGE_KEYS.ROLE,
+        String(resolvedRole).toUpperCase()
+      );
+    }
     if (username) {
       localStorage.setItem(STORAGE_KEYS.USERNAME, username);
       return;
